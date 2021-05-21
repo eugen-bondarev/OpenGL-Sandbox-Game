@@ -1,0 +1,38 @@
+{
+  "name": "Forgio",
+  "version": "0.0.1",
+  "type": "Application",
+  "appOrLibName": "Forgio",
+  "dirs": {
+    "external": "External",
+    "src": "Source",
+    "build": "Build"
+  },
+  "codeCase": "pascal",
+  "pch": "pch",
+  "formats": {
+    "source": "cpp",
+    "header": "h"
+  },
+  "submodules": [
+    {
+      "url": "https://github.com/glfw/glfw",
+      "name": "glfw",
+      "lib": "glfw",
+      "include": "include"
+    },
+    {
+      "url": "https://github.com/Perlmint/glew-cmake",
+      "name": "glew",
+      "cmake": "build/cmake",
+      "lib": "glew_s",
+      "include": "include"
+    },
+    {
+      "url": "https://github.com/gabime/spdlog",
+      "name": "spdlog",
+      "lib": "spdlog",
+      "include": "include"
+    }
+  ]
+}
