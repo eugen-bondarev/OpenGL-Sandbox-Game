@@ -1,7 +1,13 @@
-int main()
-{
-    DEBUG_LOG_OUT("Debug mode!");
-    LOG_OUT("Hello, world!");
+#include "Core/Window.h"
+
+int main() {
+    Window window;
+
+    while (!window.ShouldClose()) {
+        window.PollEvents();
+
+        window.SwapBuffers();
+    }
 
     return 0;
 }

@@ -7,6 +7,8 @@
 #include <string>
 #include <map>
 
+#include "Util/Structures.h"
+
 #ifdef NDEBUG
 #   define PROJECTOR_RELEASE
 #else
