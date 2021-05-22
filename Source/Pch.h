@@ -9,6 +9,8 @@
 
 #include "Util/Structures.h"
 
+#define FORGIO_ROOT "D:/Dev/Forgio/"
+
 #ifdef NDEBUG
 #   define PROJECTOR_RELEASE
 #else
