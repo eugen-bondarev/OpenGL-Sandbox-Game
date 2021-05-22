@@ -32,3 +32,6 @@ target_link_libraries(${PROJECTOR_APP_NAME} glew_s)
 add_subdirectory(External/spdlog)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/spdlog/include)
 target_link_libraries(${PROJECTOR_APP_NAME} spdlog)
+
+add_subdirectory(External/glm)
+target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glm)

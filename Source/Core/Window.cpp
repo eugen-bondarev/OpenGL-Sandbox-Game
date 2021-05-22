@@ -6,6 +6,14 @@ Window::Window(Size size, const std::string& title) {
 
     glfwWindow = glfwCreateWindow(size.width, size.height, title.c_str(), nullptr, nullptr);
     glfwMaximizeWindow(glfwWindow);
+    glfwMakeContextCurrent(glfwWindow);
+
+    GLint GlewInitResult = glewInit();
+    if (GLEW_OK != GlewInitResult) 
+    {
+        printf("ERROR: %s",glewGetErrorString(GlewInitResult));
+        exit(EXIT_FAILURE);
+    }
 }
 
 Window::~Window() {
