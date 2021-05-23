@@ -33,6 +33,12 @@ void Vao::Unbind() const
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+void Vao::Render() const {
+    Bind();
+    glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, nullptr);  
+    Unbind();
+}
+
 GLuint Vao::GetVertexCount() const
 {
     return m_VertexCount;

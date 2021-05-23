@@ -19,6 +19,7 @@ file(GLOB src
 add_executable(${PROJECTOR_APP_NAME} ${src})
 
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME})
+target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/External)
 target_precompile_headers(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/Pch.h)
 
 add_subdirectory(External/glfw)

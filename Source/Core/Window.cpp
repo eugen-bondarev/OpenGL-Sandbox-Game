@@ -1,6 +1,8 @@
 #include "Window.h"
 
 Window::Window(Size size, const std::string& title) {
+    this->size = size;
+
     glfwInit();
     glfwDefaultWindowHints();
 
@@ -8,17 +10,42 @@ Window::Window(Size size, const std::string& title) {
     glfwMaximizeWindow(glfwWindow);
     glfwMakeContextCurrent(glfwWindow);
 
-    GLint GlewInitResult = glewInit();
-    if (GLEW_OK != GlewInitResult) 
-    {
-        printf("ERROR: %s",glewGetErrorString(GlewInitResult));
+    GLint glewInitResult = glewInit();
+    if (GLEW_OK != glewInitResult) {
+        printf("ERROR: %s",glewGetErrorString(glewInitResult));
         exit(EXIT_FAILURE);
     }
+
+    // Todo: move it somewhere..
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    glfwSetWindowUserPointer(glfwWindow, this);
+    glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
+        Window* self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+        self->size.width = width;
+        self->size.height = height;
+        self->CalculateSpace();
+    });
+
+    CalculateSpace();
 }
 
 Window::~Window() {
     glfwDestroyWindow(glfwWindow);
     glfwTerminate();
+}
+
+Size Window::GetSize() const {
+    return size;
+}
+
+Mat4 Window::GetSpace() const {
+    return space;
+}
+
+void Window::CalculateSpace() {
+    space = Math::Ortho(-size.width / 2.0f, size.width / 2.0f, -size.height / 2.0f, size.height / 2.0f);
 }
 
 bool Window::ShouldClose() const {

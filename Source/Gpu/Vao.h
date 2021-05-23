@@ -4,24 +4,21 @@
 
 #include "VertexBufferLayout.h"
 
-class Vao : public GpuEntity
-{
+class Vao : public GpuEntity {
 public:
     template <typename T_Vertex>
-    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices)
-    {
+    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices) {
         m_Attributes.resize(layouts.size());
 
         glGenVertexArrays(1, &m_Handle);
 
         glBindVertexArray(m_Handle);
 
-        unsigned int vbo{0};
+        unsigned int vbo{ 0 };
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T_Vertex), &vertices[0], GL_STATIC_DRAW);
-        for (int i = 0; i < layouts.size(); i++)
-        {
+        for (int i = 0; i < layouts.size(); i++) {
             glVertexAttribPointer(i, layouts[i].Size, GL_FLOAT, GL_FALSE, layouts[i].Stride, reinterpret_cast<void *>(layouts[i].Offset));
             m_Attributes[i] = i;
         }
@@ -44,6 +41,9 @@ public:
 
     void Bind() const override;
     void Unbind() const override;
+
+    void Render() const;
+
     GLuint GetVertexCount() const;
 
 private:

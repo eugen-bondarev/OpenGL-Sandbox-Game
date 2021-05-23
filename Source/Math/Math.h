@@ -19,10 +19,12 @@ inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(
 namespace Math
 {
     ALIAS_TEMPLATE_FUNCTION(Perspective, glm::perspective)
+    ALIAS_TEMPLATE_FUNCTION(Ortho, glm::ortho)
     ALIAS_TEMPLATE_FUNCTION(Radians, glm::radians)
 
     ALIAS_TEMPLATE_FUNCTION(ToPtr, glm::value_ptr)
 
     ALIAS_TEMPLATE_FUNCTION(Translate, glm::translate)
     ALIAS_TEMPLATE_FUNCTION(Rotate, glm::rotate)
+    ALIAS_TEMPLATE_FUNCTION(Scale, glm::scale)
 }
