@@ -36,6 +36,7 @@ public:
     void CreateUniform(const std::string& name);
     void SetFloat(const std::string& name, GLfloat value);
     void SetInt(const std::string& name, GLint value);
+    void SetVec2(const std::string& name, float const* const vec);
     void SetVec3(const std::string& name, float const* const vec);
     void SetVec4(const std::string& name, float const* const vec);
     void SetMat4x4(const std::string& name, float const* const matrix);

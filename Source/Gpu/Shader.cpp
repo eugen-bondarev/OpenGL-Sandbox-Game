@@ -125,6 +125,19 @@ void Shader::SetMat4x4(const std::string& name, float const* const matrix)
     glUniformMatrix4fv(m_UniformLocations.at(name), 1, GL_FALSE, matrix);
 }
 
+void Shader::SetVec2(const std::string& name, float const* const vec)
+{
+#ifdef A_SHADER_DEBUG
+    if (uniformLocations.find(name) == uniformLocations.end())
+    {
+        LOG_OUT("[DEBUG, File: astrum_gpu/shader.h, Function: set_vec3()]: Variable " << name << " doesn't exist.");
+        return;
+    }
+#endif
+
+    glUniform2fv(m_UniformLocations.at(name), 1, vec);
+}
+
 void Shader::SetVec3(const std::string& name, float const* const vec)
 {
 #ifdef A_SHADER_DEBUG

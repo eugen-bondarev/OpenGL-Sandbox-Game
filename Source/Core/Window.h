@@ -18,6 +18,10 @@ public:
     Size GetSize() const;
     Mat4 GetSpace() const;
 
+    inline GLFWwindow* GetGlfwWindow() {
+        return glfwWindow;
+    }
+
 private:
     Size size;
     Mat4 space;

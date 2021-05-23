@@ -7,14 +7,16 @@
 namespace Primitives {
 namespace Quad {
 
-std::vector<Vertex> vertices = {
-    { { -50, -50, 0 }, { 0, 1 }, { 0, 0, 0 } },
-    { {  50, -50, 0 }, { 1, 1 }, { 0, 0, 0 } },
-    { { -50,  50, 0 }, { 0, 0 }, { 0, 0, 0 } },
-    { {  50,  50, 0 }, { 1, 0 }, { 0, 0, 0 } },
+inline static int tileSize = 16;
+
+inline static std::vector<Vertex> vertices = {
+    { { -tileSize / 2, -tileSize / 2, 0 }, { 0, 1 }, { 0, 0, 0 } },
+    { {  tileSize / 2, -tileSize / 2, 0 }, { 1, 1 }, { 0, 0, 0 } },
+    { { -tileSize / 2,  tileSize / 2, 0 }, { 0, 0 }, { 0, 0, 0 } },
+    { {  tileSize / 2,  tileSize / 2, 0 }, { 1, 0 }, { 0, 0, 0 } },
 };
 
-std::vector<int> indices = { 0, 1, 2, 2, 1, 3 };
+inline static std::vector<int> indices = { 0, 1, 2, 2, 1, 3 };
 
 }
 }

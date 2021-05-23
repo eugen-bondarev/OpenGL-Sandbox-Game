@@ -11,41 +11,96 @@
 #include "Math/Primitive.h"
 #include "Scene/Sprite.h"
 
+#include "Game/Map.h"
+
 int main() {
     Window window;
+
+    Map map({ 2000, 1000 });
 
     TextAsset vsCode = TextAsset("Assets/Shaders/Default/Default.vs");
     TextAsset fsCode = TextAsset("Assets/Shaders/Default/Default.fs");
 
-    std::vector<std::shared_ptr<Sprite>> sprites = {
-        std::make_shared<Sprite>("Assets/Images/Grass.png"),
-        std::make_shared<Sprite>("Assets/Images/Tree1.png")
-    };
+    Sprite sp("Assets/Images/Map1.png");
 
-    Sprite& grass = *sprites[0];
-    Sprite& tree = *sprites[1];
-
-    grass.SetScale(1.0f);
-    tree.SetPosition(100, 0, 0);
-    tree.SetScale(2);
-
-    Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_Model");
+    Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_Offset");
     shader.Bind();
         shader.SetMat4x4("u_Proj", Math::ToPtr(window.GetSpace()));
     shader.Unbind();
 
+    Mat4 view = Mat4(1);
+    Vec2 viewPos = Vec2(0);
+
+    // We need this vector in order to be able to imagine that our camera is in the middle of the map when it's at (0, 0)
+    Vec2 middleOfMap = Vec2(map.GetSize().width, map.GetSize().height) * 16.0f / 2.0f;
+
+    ImageAsset image("Assets/Images/Map1.png");
+    Texture texture(
+        image.GetSize(),
+        image.GetData(),
+        GL_RGBA,
+        image.GetChannels() == 4 ? GL_RGBA : GL_RGB,
+        GL_UNSIGNED_BYTE,
+        std::vector<Texture::param_t> {
+            { ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+            { ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+        }
+    );
+    Vao blockVao(Primitives::Quad::vertices, Vertex::GetLayout(), Primitives::Quad::indices);
+
+    std::map<BlockType, Vec2> tileDictionary = {
+        { BlockType::Grass, Vec2(1, 0) },
+        { BlockType::Dirt, Vec2(4, 1) },
+        { BlockType::Stone, Vec2(7, 0) },
+    };
+
+    Mat4 model = Mat4(1);
+
     while (!window.ShouldClose()) {
+        glClear(GL_COLOR_BUFFER_BIT);
         window.PollEvents();
 
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_W)) { viewPos += Vec2( 0,  1) * 5.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_S)) { viewPos += Vec2( 0, -1) * 5.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 5.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 5.0f; }
+
+        view = Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0));
+
+        Vec2 cameraPosInMap = viewPos + middleOfMap;
+        int xBlocks = 150;
+        int yBlocks = 100;
+        int firstBlockX = cameraPosInMap.x / 16.0f - xBlocks / 2;
+        int lastBlockX = firstBlockX + xBlocks;
+        int firstBlockY = cameraPosInMap.y / 16.0f - yBlocks / 2;
+        int lastBlockY = firstBlockY + yBlocks;
+
         shader.Bind();
-            for (auto& model : sprites) {
-                shader.SetMat4x4("u_Model", Math::ToPtr(model->GetTransform()));
-                model->GetTexture()->Bind();
-                    model->GetVao()->Bind();
-                        glDrawElements(GL_TRIANGLES, model->GetVao()->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
-                    model->GetVao()->Unbind();
-                model->GetTexture()->Unbind();
+        shader.SetMat4x4("u_View", Math::ToPtr(Math::Inverse(view)));
+        blockVao.Bind();
+        texture.Bind();
+
+        // Now that we have our camera position we need to take a chunk of blocks with center in cameraPosInMap.
+        for (int x = firstBlockX; x < lastBlockX; x++) {
+            for (int y = firstBlockY; y < lastBlockY; y++) {
+                BlockType type = map.blocks[x][y];
+                if (type == BlockType::Empty) { continue; }
+
+                model = Mat4(1);
+                model = Math::Translate(model, Vec3(x * 16.0f - cameraPosInMap.x, y * 16.0f - cameraPosInMap.y, 0.0f));
+
+                Vec2 offset = tileDictionary[type];
+                offset *= 16.0f / 144.0f;
+
+                shader.SetVec2("u_Offset", Math::ToPtr(offset));
+                shader.SetMat4x4("u_Model", Math::ToPtr(model));
+                
+                glDrawElements(GL_TRIANGLES, blockVao.GetVertexCount(), GL_UNSIGNED_INT, nullptr);  
             }
+        }
+
+        texture.Unbind();
+        blockVao.Unbind();
         shader.Unbind();
 
         window.SwapBuffers();

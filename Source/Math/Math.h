@@ -21,6 +21,7 @@ namespace Math
     ALIAS_TEMPLATE_FUNCTION(Perspective, glm::perspective)
     ALIAS_TEMPLATE_FUNCTION(Ortho, glm::ortho)
     ALIAS_TEMPLATE_FUNCTION(Radians, glm::radians)
+    ALIAS_TEMPLATE_FUNCTION(Inverse, glm::inverse)
 
     ALIAS_TEMPLATE_FUNCTION(ToPtr, glm::value_ptr)
 
