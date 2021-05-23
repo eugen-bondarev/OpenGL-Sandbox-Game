@@ -32,7 +32,7 @@ int main() {
     Vec2 viewPos = Vec2(0);
 
     // We need this vector in order to be able to imagine that our camera is in the middle of the map when it's at (0, 0)
-    Vec2 middleOfMap = Vec2(map.GetSize().width, map.GetSize().height) * 16.0f / 2.0f;
+    Vec2 middleOfMap = Vec2(map.GetSize().width, map.GetSize().height) / 2.0f;
 
     ImageAsset image("Assets/Images/Map1.png");
     Texture texture(
@@ -60,19 +60,19 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         window.PollEvents();
 
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_W)) { viewPos += Vec2( 0,  1) * 5.0f; }
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_S)) { viewPos += Vec2( 0, -1) * 5.0f; }
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 5.0f; }
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 5.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_W)) { viewPos += Vec2( 0,  1) * 1.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_S)) { viewPos += Vec2( 0, -1) * 1.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 1.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 1.0f; }
 
         view = Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0));
 
-        Vec2 cameraPosInMap = viewPos + middleOfMap;
+        Vec2 cameraPosInMap = (viewPos / 16.0f) + middleOfMap;
         int xBlocks = 150;
         int yBlocks = 100;
-        int firstBlockX = cameraPosInMap.x / 16.0f - xBlocks / 2;
+        int firstBlockX = cameraPosInMap.x - xBlocks / 2;
         int lastBlockX = firstBlockX + xBlocks;
-        int firstBlockY = cameraPosInMap.y / 16.0f - yBlocks / 2;
+        int firstBlockY = cameraPosInMap.y - yBlocks / 2;
         int lastBlockY = firstBlockY + yBlocks;
 
         shader.Bind();
@@ -87,7 +87,7 @@ int main() {
                 if (type == BlockType::Empty) { continue; }
 
                 model = Mat4(1);
-                model = Math::Translate(model, Vec3(x * 16.0f - cameraPosInMap.x, y * 16.0f - cameraPosInMap.y, 0.0f));
+                model = Math::Translate(model, Vec3((x - cameraPosInMap.x) * 16.0f + viewPos.x, (y - cameraPosInMap.y) * 16.0f + viewPos.y, 0.0f));
 
                 Vec2 offset = tileDictionary[type];
                 offset *= 16.0f / 144.0f;
