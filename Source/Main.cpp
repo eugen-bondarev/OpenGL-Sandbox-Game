@@ -23,8 +23,9 @@ int main() {
 
     Sprite sp("Assets/Images/Map1.png");
 
-    Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_Offset");
+    Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_AmountOfTiles", "u_Offset");
     shader.Bind();
+        shader.SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 3.0f)));
         shader.SetMat4x4("u_Proj", Math::ToPtr(window.GetSpace()));
     shader.Unbind();
 
@@ -68,8 +69,8 @@ int main() {
         view = Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0));
 
         Vec2 cameraPosInMap = (viewPos / 16.0f) + middleOfMap;
-        int xBlocks = 150;
-        int yBlocks = 100;
+        int xBlocks = window.GetSize().width / 16.0f + 4.0;
+        int yBlocks = window.GetSize().height / 16.0f + 4.0;
         int firstBlockX = cameraPosInMap.x - xBlocks / 2;
         int lastBlockX = firstBlockX + xBlocks;
         int firstBlockY = cameraPosInMap.y - yBlocks / 2;
@@ -81,21 +82,27 @@ int main() {
         texture.Bind();
 
         // Now that we have our camera position we need to take a chunk of blocks with center in cameraPosInMap.
+        BlockType lastType = BlockType::Empty;
+
         for (int x = firstBlockX; x < lastBlockX; x++) {
             for (int y = firstBlockY; y < lastBlockY; y++) {
                 BlockType type = map.blocks[x][y];
                 if (type == BlockType::Empty) { continue; }
 
-                model = Mat4(1);
-                model = Math::Translate(model, Vec3((x - cameraPosInMap.x) * 16.0f + viewPos.x, (y - cameraPosInMap.y) * 16.0f + viewPos.y, 0.0f));
+                model = Math::Translate(Mat4(1), Vec3((x - cameraPosInMap.x) * 16.0f + viewPos.x, (y - cameraPosInMap.y) * 16.0f + viewPos.y, 0.0f));
 
-                Vec2 offset = tileDictionary[type];
-                offset *= 16.0f / 144.0f;
+                if (type != lastType) {
+                    Vec2 offset = tileDictionary[type];
+                    offset.x *= 16.0f / 144.0f;
+                    offset.y *= 16.0f / 48.0f;
 
-                shader.SetVec2("u_Offset", Math::ToPtr(offset));
+                    shader.SetVec2("u_Offset", Math::ToPtr(offset));
+                    lastType = type;
+                }
+
                 shader.SetMat4x4("u_Model", Math::ToPtr(model));
                 
-                glDrawElements(GL_TRIANGLES, blockVao.GetVertexCount(), GL_UNSIGNED_INT, nullptr);  
+                glDrawElements(GL_TRIANGLES, blockVao.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
             }
         }
 
