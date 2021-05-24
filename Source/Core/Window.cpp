@@ -1,7 +1,7 @@
 #include "Window.h"
 
-Window::Window(Size size, const std::string& title) {
-    this->size = size;
+void Window::Create(Size size, const std::string& title) {
+    Window::size = size;
 
     glfwInit();
     glfwDefaultWindowHints();
@@ -20,27 +20,25 @@ Window::Window(Size size, const std::string& title) {
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-    glfwSetWindowUserPointer(glfwWindow, this);
     glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
-        Window* self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-        self->size.x = width;
-        self->size.y = height;
-        self->CalculateSpace();
+        Window::size.x = width;
+        Window::size.y = height;
+        Window::CalculateSpace();
     });
 
     CalculateSpace();
 }
 
-Window::~Window() {
+void Window::Destroy() {
     glfwDestroyWindow(glfwWindow);
     glfwTerminate();
 }
 
-Size Window::GetSize() const {
+Size Window::GetSize() {
     return size;
 }
 
-Mat4 Window::GetSpace() const {
+Mat4 Window::GetSpace() {
     return space;
 }
 
@@ -48,18 +46,18 @@ void Window::CalculateSpace() {
     space = Math::Ortho(-size.x / 2.0f, size.x / 2.0f, -size.y / 2.0f, size.y / 2.0f);
 }
 
-bool Window::ShouldClose() const {
+bool Window::ShouldClose() {
     return glfwWindowShouldClose(glfwWindow);
 }
 
-void Window::Clear() const {
+void Window::Clear() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Window::PollEvents() const {
+void Window::PollEvents() {
     glfwPollEvents();
 }
 
-void Window::SwapBuffers() const {
+void Window::SwapBuffers() {
     glfwSwapBuffers(glfwWindow);
 }

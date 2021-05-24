@@ -2,6 +2,7 @@
 
 #include "Assets/ImageAsset.h"
 #include "Math/Primitive.h"
+#include "Core/Window.h"
 
 Map::Map(Size size, int blockSizeInPixels) {
     this->size = size;
@@ -23,6 +24,48 @@ Map::Map(Size size, int blockSizeInPixels) {
     quadVao = std::make_shared<Vao>(Primitives::Quad::vertices, QuadVertex::GetLayout(), Primitives::Quad::indices);
 
     GenerateMap(blocks, size);
+    middleOfMap = Vec2(size.x, size.y) / 2.0f;
+}
+
+void Map::Render(Shader& shader, Vec2 viewPos) {
+    Vec2 cameraPosInMap = (viewPos / static_cast<float>(blockSizeInPixels)) + middleOfMap;
+
+    int additionalBlocks = 3;
+    Vec2 blocksAmount = Window::GetSize() / static_cast<float>(blockSizeInPixels) + static_cast<float>(additionalBlocks);
+    
+    chunk_t chunk = {
+        { cameraPosInMap.x - blocksAmount.x / 2, cameraPosInMap.x + blocksAmount.x / 2 },
+        { cameraPosInMap.y - blocksAmount.y / 2, cameraPosInMap.y + blocksAmount.y / 2 }
+    };
+    
+    quadVao->Bind();
+    tileMap->Bind();
+
+    BlockType lastType = BlockType::Empty;
+
+    // Rendering only a chunk
+    for (int x = chunk.x.start; x < chunk.x.end; x++) {
+        for (int y = chunk.y.start; y < chunk.y.end; y++) {
+            BlockType type = blocks[x][y];
+            if (type == BlockType::Empty) { continue; }
+
+            Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
+
+            if (type != lastType) {
+                Vec2 offset = tileDictionary[type] * static_cast<float>(blockSizeInPixels) / tileMap->GetSize();
+
+                shader.SetVec2("u_Offset", Math::ToPtr(offset));
+                lastType = type;
+            }
+
+            shader.SetVec2("u_Pos", Math::ToPtr(blockPosition));
+            
+            glDrawElements(GL_TRIANGLES, quadVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+        }
+    }
+
+    tileMap->Unbind();
+    quadVao->Unbind();
 }
 
 void GenerateMap(Map::blocks_t& map, Size size) {
@@ -55,10 +98,4 @@ void GenerateMap(Map::blocks_t& map, Size size) {
         map[1000 + i][498] = BlockType::Empty;
         map[1000 + i][497] = BlockType::Empty;
     }
-
-    // for (int y = 490; y > 499; y--) {
-    //     for (int i = 0; i < 5; i++) {
-    //         map[1002 + i][y] = BlockType::Empty;
-    //     }
-    // }
 }
