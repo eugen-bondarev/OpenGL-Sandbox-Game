@@ -2,6 +2,9 @@
 
 #include "BlockType.h"
 
+#include "Gpu/Texture.h"
+#include "Gpu/Vao.h"
+
 #include <vector>
 
 class Map {
@@ -15,8 +18,19 @@ public:
         return size;
     }
 
+    inline const std::shared_ptr<Texture> & GetTileMap() const {
+        return tileMap;
+    }
+
+    inline const std::shared_ptr<Vao> & GetVao() const {
+        return quadVao;
+    }
+
     blocks_t blocks;
+
 private:
+    std::shared_ptr<Texture> tileMap;
+    std::shared_ptr<Vao> quadVao;
 
     Size size;
 };

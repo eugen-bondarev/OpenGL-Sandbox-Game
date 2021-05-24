@@ -1,7 +1,25 @@
 #include "Map.h"
 
+#include "Assets/ImageAsset.h"
+#include "Math/Primitive.h"
+
 Map::Map(Size size) {
     this->size = size;
+
+    ImageAsset image("Assets/Images/Map1.png");
+    tileMap = std::make_shared<Texture>(
+        image.GetSize(),
+        image.GetData(),
+        GL_RGBA,
+        image.GetChannels() == 4 ? GL_RGBA : GL_RGB,
+        GL_UNSIGNED_BYTE,
+        std::vector<Texture::param_t> {
+            { ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+            { ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+        }
+    );
+    
+    quadVao = std::make_shared<Vao>(Primitives::Quad::vertices, QuadVertex::GetLayout(), Primitives::Quad::indices);
 
     GenerateMap(blocks, size);
 }

@@ -33,20 +33,6 @@ int main() {
     // We need this vector in order to be able to imagine that our camera is in the middle of the map when it's at (0, 0)
     Vec2 middleOfMap = Vec2(map.GetSize().width, map.GetSize().height) / 2.0f;
 
-    ImageAsset image("Assets/Images/Map1.png");
-    Texture texture(
-        image.GetSize(),
-        image.GetData(),
-        GL_RGBA,
-        image.GetChannels() == 4 ? GL_RGBA : GL_RGB,
-        GL_UNSIGNED_BYTE,
-        std::vector<Texture::param_t> {
-            { ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-            { ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-        }
-    );
-    Vao blockVao(Primitives::Quad::vertices, QuadVertex::GetLayout(), Primitives::Quad::indices);
-
     std::map<BlockType, Vec2> tileDictionary = {
         { BlockType::Grass, Vec2(1, 0) },
         { BlockType::Dirt, Vec2(4, 1) },
@@ -76,8 +62,8 @@ int main() {
 
         shader.Bind();
         shader.SetMat4x4("u_View", Math::ToPtr(Math::Inverse(view)));
-        blockVao.Bind();
-        texture.Bind();
+        map.GetVao()->Bind();
+        map.GetTileMap()->Bind();
 
         // Now that we have our camera position we need to take a chunk of blocks with center in cameraPosInMap.
         BlockType lastType = BlockType::Empty;
@@ -100,12 +86,12 @@ int main() {
 
                 shader.SetVec2("u_Pos", Math::ToPtr(pos));
                 
-                glDrawElements(GL_TRIANGLES, blockVao.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+                glDrawElements(GL_TRIANGLES, map.GetVao()->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
             }
         }
 
-        texture.Unbind();
-        blockVao.Unbind();
+        map.GetTileMap()->Unbind();
+        map.GetVao()->Unbind();
         shader.Unbind();
 
         window.SwapBuffers();
