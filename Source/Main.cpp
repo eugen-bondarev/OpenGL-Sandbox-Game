@@ -31,17 +31,6 @@ int main() {
     Mat4 viewMatrix = Mat4(1);
     Vec2 viewPos = Vec2(0);
 
-    // We need this vector in order to be able to imagine that our camera is in the middle of the map when it's at (0, 0)
-    Vec2 middleOfMap = Vec2(map.GetSize().x, map.GetSize().y) / 2.0f;
-
-    std::map<BlockType, Vec2> tileDictionary = {
-        { BlockType::Grass, Vec2(1, 0) },
-        { BlockType::Dirt, Vec2(4, 1) },
-        { BlockType::Stone, Vec2(7, 0) },
-    };
-
-    Mat4 model = Mat4(1);
-
     while (!Window::ShouldClose()) {
         Window::Clear();
         Window::PollEvents();
