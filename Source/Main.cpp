@@ -16,7 +16,7 @@
 int main() {
     Window window;
 
-    Map map({ 2000, 1000 });
+    Map map({ 2000, 1000 }, 16);
 
     TextAsset vsCode = TextAsset("Assets/Shaders/Default/Default.vs");
     TextAsset fsCode = TextAsset("Assets/Shaders/Default/Default.fs");
@@ -52,13 +52,16 @@ int main() {
 
         view = Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0));
 
-        Vec2 cameraPosInMap = (viewPos / 16.0f) + middleOfMap;
-        int xBlocks = window.GetSize().width / 16.0f + 4.0;
-        int yBlocks = window.GetSize().height / 16.0f + 4.0;
-        int firstBlockX = cameraPosInMap.x - xBlocks / 2;
-        int lastBlockX = firstBlockX + xBlocks;
-        int firstBlockY = cameraPosInMap.y - yBlocks / 2;
-        int lastBlockY = firstBlockY + yBlocks;
+        Vec2 cameraPosInMap = (viewPos / static_cast<float>(map.GetBlockSize())) + middleOfMap;
+
+        float xBlocks = window.GetSize().width / static_cast<float>(map.GetBlockSize()) + 4.0f;
+        float yBlocks = window.GetSize().height / static_cast<float>(map.GetBlockSize()) + 4.0f;
+
+        float middleX = cameraPosInMap.x;
+        float middleY = cameraPosInMap.y;
+
+        Period<float> xAxis = { middleX - xBlocks / 2, middleX + xBlocks / 2 };
+        Period<float> yAxis = { middleY - yBlocks / 2, middleY + yBlocks / 2 };
 
         shader.Bind();
         shader.SetMat4x4("u_View", Math::ToPtr(Math::Inverse(view)));
@@ -68,17 +71,17 @@ int main() {
         // Now that we have our camera position we need to take a chunk of blocks with center in cameraPosInMap.
         BlockType lastType = BlockType::Empty;
 
-        for (int x = firstBlockX; x < lastBlockX; x++) {
-            for (int y = firstBlockY; y < lastBlockY; y++) {
+        for (int x = xAxis.start; x < xAxis.end; x++) {
+            for (int y = yAxis.start; y < yAxis.end; y++) {
                 BlockType type = map.blocks[x][y];
                 if (type == BlockType::Empty) { continue; }
 
-                Vec2 pos = Vec2((x - cameraPosInMap.x) * 16.0f + viewPos.x, (y - cameraPosInMap.y) * 16.0f + viewPos.y);
+                Vec2 pos = Vec2((x - cameraPosInMap.x) * map.GetBlockSize() + viewPos.x, (y - cameraPosInMap.y) * map.GetBlockSize() + viewPos.y);
 
                 if (type != lastType) {
                     Vec2 offset = tileDictionary[type];
-                    offset.x *= 16.0f / 144.0f;
-                    offset.y *= 16.0f / 48.0f;
+                    offset.x *= map.GetBlockSize() / map.GetTileMap()->GetSize().width;
+                    offset.y *= map.GetBlockSize() / map.GetTileMap()->GetSize().height;
 
                     shader.SetVec2("u_Offset", Math::ToPtr(offset));
                     lastType = type;

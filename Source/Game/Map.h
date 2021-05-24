@@ -9,7 +9,7 @@
 
 class Map {
 public:
-    Map(Size size);
+    Map(Size size, int blockSizeInPixels);
 
     using block_row_t = std::vector<BlockType>;
     using blocks_t = std::vector<block_row_t>;
@@ -26,6 +26,10 @@ public:
         return quadVao;
     }
 
+    inline int GetBlockSize() const {
+        return blockSizeInPixels;
+    }
+
     blocks_t blocks;
 
 private:
@@ -33,6 +37,7 @@ private:
     std::shared_ptr<Vao> quadVao;
 
     Size size;
+    int blockSizeInPixels;
 };
 
 void GenerateMap(Map::blocks_t& map, Size size);

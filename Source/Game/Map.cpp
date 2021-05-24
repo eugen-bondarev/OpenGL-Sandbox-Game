@@ -3,8 +3,9 @@
 #include "Assets/ImageAsset.h"
 #include "Math/Primitive.h"
 
-Map::Map(Size size) {
+Map::Map(Size size, int blockSizeInPixels) {
     this->size = size;
+    this->blockSizeInPixels = blockSizeInPixels;
 
     ImageAsset image("Assets/Images/Map1.png");
     tileMap = std::make_shared<Texture>(
@@ -18,7 +19,7 @@ Map::Map(Size size) {
             { ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
         }
     );
-    
+
     quadVao = std::make_shared<Vao>(Primitives::Quad::vertices, QuadVertex::GetLayout(), Primitives::Quad::indices);
 
     GenerateMap(blocks, size);

@@ -24,6 +24,10 @@ public:
     Texture(Size size, unsigned char *data, GLint internalFormat, GLuint format, GLuint type, const std::vector<param_t> parameters);
     ~Texture() override;
 
+    inline Size GetSize() const {
+        return m_Size;
+    }
+
     void Resize(Size size);
 
     void SetParamFV(GLuint name, GLfloat *params);
