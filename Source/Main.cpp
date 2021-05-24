@@ -1,4 +1,5 @@
 #include "Core/Window.h"
+#include "Core/Gui.h"
 
 #include "Assets/TextAsset.h"
 #include "Assets/ImageAsset.h"
@@ -15,6 +16,7 @@
 
 int main() {
     Window::Create();
+    Gui::Create();
 
     Map map({ 2000, 1000 }, 16);
 
@@ -33,6 +35,7 @@ int main() {
     while (!Window::ShouldClose()) {
         Window::Clear();
         Window::PollEvents();
+        Gui::Begin();
 
         if (Window::KeyPressed(GLFW_KEY_W)) viewPos += Vec2( 0,  1) * 4.0f;
         if (Window::KeyPressed(GLFW_KEY_S)) viewPos += Vec2( 0, -1) * 4.0f;
@@ -46,6 +49,9 @@ int main() {
             map.Render(shader, viewPos);
         shader.Unbind();
 
+        ImGui::ShowDemoWindow();
+        
+        Gui::End();
         Window::SwapBuffers();
     }
 

@@ -19,6 +19,10 @@ public:
     static Size GetSize();
     static Mat4 GetSpace();
 
+    inline static GLFWwindow* GetGlfwWindow() {
+        return glfwWindow;
+    }
+
 private:
     inline static Size size;
     inline static Mat4 space;
