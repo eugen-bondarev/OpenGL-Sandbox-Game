@@ -13,14 +13,18 @@ Engine::Engine() {
 void Engine::InitResources() {
     map = std::make_unique<Map>(Size { 2000, 1000 }, 16);
 
-    TextAsset vsCode = TextAsset("Assets/Shaders/Default/Default.vs");
-    TextAsset fsCode = TextAsset("Assets/Shaders/Default/Default.fs");
+    struct {
+        TextAsset vertex = TextAsset("Assets/Shaders/Default/Default.vs");
+        TextAsset fragment = TextAsset("Assets/Shaders/Default/Default.fs");
+    } shaderCode;
 
-    shader = std::make_unique<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_AmountOfTiles", "u_Offset");
-    shader->Bind();
-        shader->SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 3.0f)));
-        shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-    shader->Unbind();
+    colorPass.shader = std::make_unique<Shader>(shaderCode.vertex.GetContent(), shaderCode.fragment.GetContent(), "u_Proj", "u_View", "u_Pos", "u_AmountOfTiles", "u_Offset");
+    colorPass.shader->Bind();
+        colorPass.shader->SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 3.0f)));
+        colorPass.shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+    colorPass.shader->Unbind();
+
+    colorPass.fbo = std::make_unique<ColorFbo>(Window::GetSize());
 }
 
 bool Engine::IsRunning() const {
@@ -43,12 +47,17 @@ void Engine::Control() {
 void Engine::Render() {
     viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
-    shader->Bind();
-    shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-        map->Render(*shader, viewPos);
-    shader->Unbind();
+    colorPass.fbo->Bind();
+    colorPass.fbo->Clear();
+        colorPass.shader->Bind();
+        colorPass.shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
+            map->Render(*colorPass.shader, viewPos);
+        colorPass.shader->Unbind();
+    colorPass.fbo->Unbind();
 
-    ImGui::ShowDemoWindow();
+    ImGui::Begin("Color pass");
+        ImGui::Image((void*)(intptr_t)colorPass.fbo->GetTextureHandle(), ImVec2(800, 600), ImVec2(0, 0), ImVec2(1, -1));
+    ImGui::End();
 }
 
 void Engine::EndFrame() {
