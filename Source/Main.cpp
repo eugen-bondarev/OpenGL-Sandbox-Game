@@ -14,7 +14,6 @@
 #include "Game/Map.h"
 
 int main() {
-    // Window window;
     Window::Create();
 
     Map map({ 2000, 1000 }, 16);
@@ -35,10 +34,10 @@ int main() {
         Window::Clear();
         Window::PollEvents();
 
-        if (glfwGetKey(Window::GetGlfwWindow(), GLFW_KEY_W)) { viewPos += Vec2( 0,  1) * 4.0f; }
-        if (glfwGetKey(Window::GetGlfwWindow(), GLFW_KEY_S)) { viewPos += Vec2( 0, -1) * 4.0f; }
-        if (glfwGetKey(Window::GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 4.0f; }
-        if (glfwGetKey(Window::GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 4.0f; }
+        if (Window::KeyPressed(GLFW_KEY_W)) viewPos += Vec2( 0,  1) * 4.0f;
+        if (Window::KeyPressed(GLFW_KEY_S)) viewPos += Vec2( 0, -1) * 4.0f;
+        if (Window::KeyPressed(GLFW_KEY_A)) viewPos += Vec2(-1,  0) * 4.0f;
+        if (Window::KeyPressed(GLFW_KEY_D)) viewPos += Vec2( 1,  0) * 4.0f;
 
         viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 

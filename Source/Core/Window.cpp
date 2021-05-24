@@ -29,6 +29,10 @@ void Window::Create(Size size, const std::string& title) {
     CalculateSpace();
 }
 
+bool Window::KeyPressed(int key) {
+    return glfwGetKey(glfwWindow, key);
+}
+
 void Window::Destroy() {
     glfwDestroyWindow(glfwWindow);
     glfwTerminate();

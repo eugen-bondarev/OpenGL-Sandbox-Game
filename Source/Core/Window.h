@@ -8,8 +8,6 @@
 
 class Window {
 public:
-    // Window(Size size = { 1920, 1080 }, const std::string& title = "Forgio");
-    // ~Window();
     static void Create(Size size = { 1920, 1080 }, const std::string& title = "Forgio");
     static void Destroy();
 
@@ -17,12 +15,9 @@ public:
     static void Clear();
     static void PollEvents();
     static void SwapBuffers();
+    static bool KeyPressed(int key);
     static Size GetSize();
     static Mat4 GetSpace();
-
-    inline static GLFWwindow* GetGlfwWindow() {
-        return glfwWindow;
-    }
 
 private:
     inline static Size size;
