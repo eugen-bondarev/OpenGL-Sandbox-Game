@@ -51,6 +51,7 @@ void Map::Render(Shader& shader, Vec2 viewPos) {
 
             Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
 
+            // To make sure we don't load the same offset that's currently loaded in the shader.
             if (type != lastType) {
                 Vec2 offset = tileDictionary[type] * static_cast<float>(blockSizeInPixels) / tileMap->GetSize();
 
