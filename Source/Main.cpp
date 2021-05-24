@@ -23,7 +23,7 @@ int main() {
 
     Sprite sp("Assets/Images/Map1.png");
 
-    Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_AmountOfTiles", "u_Offset");
+    Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_AmountOfTiles", "u_Offset");
     shader.Bind();
         shader.SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 3.0f)));
         shader.SetMat4x4("u_Proj", Math::ToPtr(window.GetSpace()));
@@ -47,7 +47,7 @@ int main() {
             { ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
         }
     );
-    Vao blockVao(Primitives::Quad::vertices, Vertex::GetLayout(), Primitives::Quad::indices);
+    Vao blockVao(Primitives::Quad::vertices, QuadVertex::GetLayout(), Primitives::Quad::indices);
 
     std::map<BlockType, Vec2> tileDictionary = {
         { BlockType::Grass, Vec2(1, 0) },
@@ -89,7 +89,7 @@ int main() {
                 BlockType type = map.blocks[x][y];
                 if (type == BlockType::Empty) { continue; }
 
-                model = Math::Translate(Mat4(1), Vec3((x - cameraPosInMap.x) * 16.0f + viewPos.x, (y - cameraPosInMap.y) * 16.0f + viewPos.y, 0.0f));
+                Vec2 pos = Vec2((x - cameraPosInMap.x) * 16.0f + viewPos.x, (y - cameraPosInMap.y) * 16.0f + viewPos.y);
 
                 if (type != lastType) {
                     Vec2 offset = tileDictionary[type];
@@ -100,7 +100,7 @@ int main() {
                     lastType = type;
                 }
 
-                shader.SetMat4x4("u_Model", Math::ToPtr(model));
+                shader.SetVec2("u_Pos", Math::ToPtr(pos));
                 
                 glDrawElements(GL_TRIANGLES, blockVao.GetVertexCount(), GL_UNSIGNED_INT, nullptr);
             }

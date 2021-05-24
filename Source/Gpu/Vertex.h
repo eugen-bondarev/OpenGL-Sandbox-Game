@@ -18,3 +18,16 @@ struct Vertex
         };
     }
 };
+
+struct QuadVertex
+{
+    Vec2 Position;
+    Vec2 UV;
+
+    inline static std::vector<VertexBufferLayout> GetLayout() {
+        return {
+            { 2, sizeof(QuadVertex), offsetof(QuadVertex, Position) },
+            { 2, sizeof(QuadVertex), offsetof(QuadVertex, UV) }
+        };
+    }
+};
