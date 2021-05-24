@@ -1,9 +1,8 @@
 #pragma once
 
-struct Size {
-    float width;
-    float height;
-};
+#include "Math/Math.h"
+
+using Size = Vec2;
 
 template <typename T = int>
 struct Period {

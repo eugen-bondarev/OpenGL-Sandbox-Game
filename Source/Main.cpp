@@ -27,11 +27,11 @@ int main() {
         shader.SetMat4x4("u_Proj", Math::ToPtr(window.GetSpace()));
     shader.Unbind();
 
-    Mat4 view = Mat4(1);
+    Mat4 viewMatrix = Mat4(1);
     Vec2 viewPos = Vec2(0);
 
     // We need this vector in order to be able to imagine that our camera is in the middle of the map when it's at (0, 0)
-    Vec2 middleOfMap = Vec2(map.GetSize().width, map.GetSize().height) / 2.0f;
+    Vec2 middleOfMap = Vec2(map.GetSize().x, map.GetSize().y) / 2.0f;
 
     std::map<BlockType, Vec2> tileDictionary = {
         { BlockType::Grass, Vec2(1, 0) },
@@ -50,21 +50,18 @@ int main() {
         if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 4.0f; }
         if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 4.0f; }
 
-        view = Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0));
+        viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0)));
 
         Vec2 cameraPosInMap = (viewPos / static_cast<float>(map.GetBlockSize())) + middleOfMap;
 
-        float xBlocks = window.GetSize().width / static_cast<float>(map.GetBlockSize()) + 4.0f;
-        float yBlocks = window.GetSize().height / static_cast<float>(map.GetBlockSize()) + 4.0f;
+        int additionalBlocks = 3;
+        Vec2 blocks = window.GetSize() / static_cast<float>(map.GetBlockSize()) + static_cast<float>(additionalBlocks);
 
-        float middleX = cameraPosInMap.x;
-        float middleY = cameraPosInMap.y;
-
-        Period<float> xAxis = { middleX - xBlocks / 2, middleX + xBlocks / 2 };
-        Period<float> yAxis = { middleY - yBlocks / 2, middleY + yBlocks / 2 };
+        Period<float> xAxis = { cameraPosInMap.x - blocks.x / 2, cameraPosInMap.x + blocks.x / 2 };
+        Period<float> yAxis = { cameraPosInMap.y - blocks.y / 2, cameraPosInMap.y + blocks.y / 2 };
 
         shader.Bind();
-        shader.SetMat4x4("u_View", Math::ToPtr(Math::Inverse(view)));
+        shader.SetMat4x4("u_View", Math::ToPtr(viewMatrix));
         map.GetVao()->Bind();
         map.GetTileMap()->Bind();
 
@@ -80,8 +77,8 @@ int main() {
 
                 if (type != lastType) {
                     Vec2 offset = tileDictionary[type];
-                    offset.x *= map.GetBlockSize() / map.GetTileMap()->GetSize().width;
-                    offset.y *= map.GetBlockSize() / map.GetTileMap()->GetSize().height;
+                    offset.x *= map.GetBlockSize() / map.GetTileMap()->GetSize().x;
+                    offset.y *= map.GetBlockSize() / map.GetTileMap()->GetSize().y;
 
                     shader.SetVec2("u_Offset", Math::ToPtr(offset));
                     lastType = type;

@@ -6,7 +6,7 @@ Window::Window(Size size, const std::string& title) {
     glfwInit();
     glfwDefaultWindowHints();
 
-    glfwWindow = glfwCreateWindow(size.width, size.height, title.c_str(), nullptr, nullptr);
+    glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
     glfwMaximizeWindow(glfwWindow);
     glfwMakeContextCurrent(glfwWindow);
 
@@ -23,8 +23,8 @@ Window::Window(Size size, const std::string& title) {
     glfwSetWindowUserPointer(glfwWindow, this);
     glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
         Window* self = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-        self->size.width = width;
-        self->size.height = height;
+        self->size.x = width;
+        self->size.y = height;
         self->CalculateSpace();
     });
 
@@ -45,7 +45,7 @@ Mat4 Window::GetSpace() const {
 }
 
 void Window::CalculateSpace() {
-    space = Math::Ortho(-size.width / 2.0f, size.width / 2.0f, -size.height / 2.0f, size.height / 2.0f);
+    space = Math::Ortho(-size.x / 2.0f, size.x / 2.0f, -size.y / 2.0f, size.y / 2.0f);
 }
 
 bool Window::ShouldClose() const {

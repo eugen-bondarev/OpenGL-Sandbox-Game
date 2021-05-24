@@ -28,8 +28,8 @@ Map::Map(Size size, int blockSizeInPixels) {
 void GenerateMap(Map::blocks_t& map, Size size) {
     const int HORIZONT_LINE = 500;
 
-    int width = static_cast<int>(size.width);
-    int height = static_cast<int>(size.height);
+    int width = static_cast<int>(size.x);
+    int height = static_cast<int>(size.y);
 
     map.resize(width);
     for (int i = 0; i < width; i++) {
@@ -51,10 +51,14 @@ void GenerateMap(Map::blocks_t& map, Size size) {
 
     for (int i = 0; i < 9; i++) {
         map[1000 + i][500] = BlockType::Empty;
+        map[1000 + i][499] = BlockType::Empty;
+        map[1000 + i][498] = BlockType::Empty;
+        map[1000 + i][497] = BlockType::Empty;
     }
 
-    for (int i = 490; i > 499; i--)
-    for (int i = 0; i < 5; i++) {
-        map[1002 + i][499] = BlockType::Empty;
-    }
+    // for (int y = 490; y > 499; y--) {
+    //     for (int i = 0; i < 5; i++) {
+    //         map[1002 + i][y] = BlockType::Empty;
+    //     }
+    // }
 }

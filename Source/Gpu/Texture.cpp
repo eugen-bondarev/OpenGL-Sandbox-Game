@@ -3,7 +3,7 @@
 void Texture::Resize(Size size) {
     m_Size = size;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Size.width, m_Size.height, 0, m_Format, m_Type, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Size.x, m_Size.y, 0, m_Format, m_Type, nullptr);
 }
 
 Texture::Texture(Size size, unsigned char *data, GLint internalFormat, GLuint format, GLuint type, const std::vector<param_t> parameters)
@@ -11,7 +11,7 @@ Texture::Texture(Size size, unsigned char *data, GLint internalFormat, GLuint fo
     glGenTextures(1, &m_Handle);
     glBindTexture(GL_TEXTURE_2D, m_Handle);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Size.width, m_Size.height, 0, m_Format, m_Type, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, m_Size.x, m_Size.y, 0, m_Format, m_Type, data);
 
     for (const auto param : parameters)
     {
