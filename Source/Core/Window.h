@@ -12,6 +12,7 @@ public:
     ~Window();
 
     bool ShouldClose() const;
+    void Clear() const;
     void PollEvents() const;
     void SwapBuffers() const;
 

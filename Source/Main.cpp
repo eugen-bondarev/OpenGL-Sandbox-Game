@@ -21,8 +21,6 @@ int main() {
     TextAsset vsCode = TextAsset("Assets/Shaders/Default/Default.vs");
     TextAsset fsCode = TextAsset("Assets/Shaders/Default/Default.fs");
 
-    Sprite sp("Assets/Images/Map1.png");
-
     Shader shader(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_AmountOfTiles", "u_Offset");
     shader.Bind();
         shader.SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 3.0f)));
@@ -58,13 +56,13 @@ int main() {
     Mat4 model = Mat4(1);
 
     while (!window.ShouldClose()) {
-        glClear(GL_COLOR_BUFFER_BIT);
+        window.Clear();
         window.PollEvents();
 
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_W)) { viewPos += Vec2( 0,  1) * 1.0f; }
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_S)) { viewPos += Vec2( 0, -1) * 1.0f; }
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 1.0f; }
-        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 1.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_W)) { viewPos += Vec2( 0,  1) * 4.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_S)) { viewPos += Vec2( 0, -1) * 4.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_A)) { viewPos += Vec2(-1,  0) * 4.0f; }
+        if (glfwGetKey(window.GetGlfwWindow(), GLFW_KEY_D)) { viewPos += Vec2( 1,  0) * 4.0f; }
 
         view = Math::Translate(Mat4(1), Vec3(viewPos.x, viewPos.y, 0));
 

@@ -10,6 +10,7 @@
 #include "Util/Structures.h"
 
 #define FORGIO_ROOT "D:/Dev/Forgio/"
+// #define FORGIO_ROOT ""
 
 #ifdef NDEBUG
 #   define PROJECTOR_RELEASE

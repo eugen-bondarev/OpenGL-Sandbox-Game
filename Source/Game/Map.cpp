@@ -29,4 +29,13 @@ void GenerateMap(Map::blocks_t& map, Size size) {
             map[x][y] = BlockType::Dirt;
         }
     }
+
+    for (int i = 0; i < 9; i++) {
+        map[1000 + i][500] = BlockType::Empty;
+    }
+
+    for (int i = 490; i > 499; i--)
+    for (int i = 0; i < 5; i++) {
+        map[1002 + i][499] = BlockType::Empty;
+    }
 }

@@ -52,6 +52,10 @@ bool Window::ShouldClose() const {
     return glfwWindowShouldClose(glfwWindow);
 }
 
+void Window::Clear() const {
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void Window::PollEvents() const {
     glfwPollEvents();
 }
