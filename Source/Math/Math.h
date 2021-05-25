@@ -9,6 +9,8 @@ using Vec3 = glm::vec3;
 using Vec4 = glm::vec4;
 using Mat4 = glm::mat4x4;
 
+using Color = Vec4;
+
 #define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF) \
 template<typename... Args> \
 inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(args)...)) \

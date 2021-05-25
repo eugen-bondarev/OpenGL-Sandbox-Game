@@ -21,13 +21,13 @@ Map::Map(Size size, int blockSizeInPixels) {
         }
     );
 
-    quadVao = std::make_shared<Vao>(Primitives::Quad::vertices, QuadVertex::GetLayout(), Primitives::Quad::indices);
+    quadVao = std::make_shared<Vao>(Primitives::Quad::vertices, Vertex::GetLayout(), Primitives::Quad::indices);
 
     GenerateMap(blocks, size);
     middleOfMap = Vec2(size.x, size.y) / 2.0f;
 }
 
-LightData Map::Render(Shader& shader, Vec2 viewPos) {
+LightData Map::Render(std::shared_ptr<Shader>& shader, Vec2 viewPos) {
     LightData lightData;
 
     Vec2 cameraPosInMap = (viewPos / static_cast<float>(blockSizeInPixels)) + middleOfMap;
@@ -66,11 +66,11 @@ LightData Map::Render(Shader& shader, Vec2 viewPos) {
             if (type != lastType) {
                 Vec2 offset = tileDictionary[type] * static_cast<float>(blockSizeInPixels) / tileMap->GetSize();
 
-                shader.SetVec2("u_Offset", Math::ToPtr(offset));
+                shader->SetVec2("u_Offset", Math::ToPtr(offset));
                 lastType = type;
             }
 
-            shader.SetVec2("u_Pos", Math::ToPtr(blockPosition));
+            shader->SetVec2("u_Pos", Math::ToPtr(blockPosition));
             
             glDrawElements(GL_TRIANGLES, quadVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
         }

@@ -5,5 +5,5 @@
 
 struct Block {
     BlockType type;
-    Pos pos;
+    Pos position;
 };

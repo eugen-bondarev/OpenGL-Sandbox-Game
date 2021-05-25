@@ -37,7 +37,7 @@ public:
         return blockSizeInPixels;
     }
 
-    LightData Render(Shader& shader, Vec2 viewPos);
+    LightData Render(std::shared_ptr<Shader>& shader, Vec2 viewPos);
 
     blocks_t blocks;
 

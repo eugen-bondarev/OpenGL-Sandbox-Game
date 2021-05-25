@@ -6,6 +6,12 @@
 #include "Gpu/ColorFbo.h"
 #include "Gpu/LightFbo.h"
 
+#include "Renderer/ColorPass.h"
+#include "Renderer/LightPass.h"
+#include "Renderer/CompositionPass.h"
+
+#include "Renderer/Entities/Sprite.h"
+
 #include <memory>
 
 class Engine {
@@ -20,27 +26,11 @@ public:
     ~Engine();
 
 private:
-    struct {
-        std::unique_ptr<ColorFbo> fbo;
-        std::unique_ptr<Shader> shader;
-    } colorPass;
+    std::shared_ptr<ColorPass> colorPass;
+    std::shared_ptr<LightPass> lightPass;
+    std::unique_ptr<CompositionPass> compositionPass;
 
-    struct {
-        std::unique_ptr<LightFbo> fbo;
-        std::unique_ptr<Shader> shader;
-    } lightPass;
-
-    struct {
-        std::unique_ptr<Vao> canvas;
-        std::unique_ptr<Shader> shader;
-    } composition;
-
-    std::unique_ptr<Map> map;
-    
-    // Light pass
-    std::unique_ptr<Vao> lightVao;
-    std::unique_ptr<Texture> lightTexture;
-    // Light pass
+    std::shared_ptr<Map> map;
 
     Mat4 viewMatrix { Mat4(1) };
     Vec2 viewPos { Vec2(0) };

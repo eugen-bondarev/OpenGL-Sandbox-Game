@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(PROJECTOR_PROJECT_NAME      Forgio)
-set(PROJECTOR_PROJECT_VERSION   0.0.1)
+set(PROJECTOR_PROJECT_VERSION   0.0.2)
 set(PROJECTOR_APP_NAME          Forgio)
 set(PROJECTOR_SRC_DIR_NAME      Source)
 set(CMAKE_CXX_FLAGS     "/std:c++17 /EHsc")

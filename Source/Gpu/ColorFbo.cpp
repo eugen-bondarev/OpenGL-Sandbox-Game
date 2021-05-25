@@ -24,7 +24,17 @@ void ColorFbo::Resize(Size size)
     Framebuffer::Resize(size);
 }
 
-unsigned int ColorFbo::GetTextureHandle() const
+GLuint ColorFbo::GetTextureHandle() const
 {
     return m_Attachments.at(GL_COLOR_ATTACHMENT0)->GetHandle();
+}
+
+void ColorFbo::BindTexture(GLuint slot) const {
+    glActiveTexture(slot);
+    glBindTexture(GL_TEXTURE_2D, GetTextureHandle());
+}
+
+void ColorFbo::UnbindTexture(GLuint slot) const {
+    glActiveTexture(slot);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
