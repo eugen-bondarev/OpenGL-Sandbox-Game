@@ -4,6 +4,7 @@
 
 #include "Gpu/Shader.h"
 #include "Gpu/ColorFbo.h"
+#include "Gpu/LightFbo.h"
 
 #include <memory>
 
@@ -24,7 +25,22 @@ private:
         std::unique_ptr<Shader> shader;
     } colorPass;
 
+    struct {
+        std::unique_ptr<LightFbo> fbo;
+        std::unique_ptr<Shader> shader;
+    } lightPass;
+
+    struct {
+        std::unique_ptr<Vao> canvas;
+        std::unique_ptr<Shader> shader;
+    } composition;
+
     std::unique_ptr<Map> map;
+    
+    // Light pass
+    std::unique_ptr<Vao> lightVao;
+    std::unique_ptr<Texture> lightTexture;
+    // Light pass
 
     Mat4 viewMatrix { Mat4(1) };
     Vec2 viewPos { Vec2(0) };

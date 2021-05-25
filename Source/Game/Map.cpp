@@ -27,7 +27,9 @@ Map::Map(Size size, int blockSizeInPixels) {
     middleOfMap = Vec2(size.x, size.y) / 2.0f;
 }
 
-void Map::Render(Shader& shader, Vec2 viewPos) {
+LightData Map::Render(Shader& shader, Vec2 viewPos) {
+    LightData lightData;
+
     Vec2 cameraPosInMap = (viewPos / static_cast<float>(blockSizeInPixels)) + middleOfMap;
 
     int additionalBlocks = 3;
@@ -47,7 +49,16 @@ void Map::Render(Shader& shader, Vec2 viewPos) {
     for (int x = chunk.x.start; x < chunk.x.end; x++) {
         for (int y = chunk.y.start; y < chunk.y.end; y++) {
             BlockType type = blocks[x][y];
-            if (type == BlockType::Empty) { continue; }
+            if (type == BlockType::Empty) {
+                // Check if this block throws light -> check if it's next to a visible block.
+                if (blocks[x][y - 1] != BlockType::Empty) {
+                    // It does throw light!
+                    Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
+                    lightData.blocksThrowingLight.emplace_back(Block { BlockType::Empty, blockPosition });
+                }
+
+                continue;
+            }
 
             Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
 
@@ -67,6 +78,8 @@ void Map::Render(Shader& shader, Vec2 viewPos) {
 
     tileMap->Unbind();
     quadVao->Unbind();
+
+    return lightData;
 }
 
 void GenerateMap(Map::blocks_t& map, Size size) {

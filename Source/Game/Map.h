@@ -6,6 +6,8 @@
 #include "Gpu/Vao.h"
 #include "Gpu/Shader.h"
 
+#include "LightData.h"
+
 #include <vector>
 
 class Map {
@@ -35,7 +37,7 @@ public:
         return blockSizeInPixels;
     }
 
-    void Render(Shader& shader, Vec2 viewPos);
+    LightData Render(Shader& shader, Vec2 viewPos);
 
     blocks_t blocks;
 

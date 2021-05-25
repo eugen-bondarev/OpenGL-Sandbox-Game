@@ -16,6 +16,13 @@ inline static std::vector<QuadVertex> vertices = {
     { {  tileSize / 2,  tileSize / 2 }, { 1, 0 } },
 };
 
+inline static std::vector<QuadVertex> canvas = {
+    { { -1.0f, -1.0f }, { 0, -1 } },
+    { {  1.0f, -1.0f }, { 1, -1 } },
+    { { -1.0f,  1.0f }, { 0, 0 } },
+    { {  1.0f,  1.0f }, { 1, 0 } },
+};
+
 inline static std::vector<int> indices = { 0, 1, 2, 2, 1, 3 };
 
 }
