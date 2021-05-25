@@ -14,7 +14,7 @@ class Map {
 public:
     Map(Size size, int blockSizeInPixels);
 
-    using block_row_t = std::vector<BlockType>;
+    using block_row_t = std::vector<BlockView>;
     using blocks_t = std::vector<block_row_t>;
     using chunk_t = struct {
         Period<float> x;

@@ -15,7 +15,7 @@ ColorPass::ColorPass() {
 
     shader = std::make_shared<Shader>(shaders.vertex.GetContent(), shaders.fragment.GetContent(), "u_Proj", "u_View", "u_Pos", "u_AmountOfTiles", "u_Offset");
     shader->Bind();
-        shader->SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 3.0f)));
+        shader->SetVec2("u_AmountOfTiles", Math::ToPtr(Vec2(9.0f, 5.0f)));
         shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
     shader->Unbind();
 }

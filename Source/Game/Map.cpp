@@ -8,7 +8,7 @@ Map::Map(Size size, int blockSizeInPixels) {
     this->size = size;
     this->blockSizeInPixels = blockSizeInPixels;
 
-    ImageAsset image("Assets/Images/Map1.png");
+    ImageAsset image("Assets/Images/Map2.png");
     tileMap = std::make_shared<Texture>(
         image.GetSize(),
         image.GetData(),
@@ -48,13 +48,13 @@ LightData Map::Render(std::shared_ptr<Shader>& shader, Vec2 viewPos) {
     // Rendering only a chunk
     for (int x = chunk.x.start; x < chunk.x.end; x++) {
         for (int y = chunk.y.start; y < chunk.y.end; y++) {
-            BlockType type = blocks[x][y];
+            BlockType type = blocks[x][y].type;
             if (type == BlockType::Empty) {
                 // Check if this block throws light -> check if it's next to a visible block.
-                if (blocks[x][y - 1] != BlockType::Empty) {
+                if (blocks[x][y - 1].type != BlockType::Empty) {
                     // It does throw light!
                     Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
-                    lightData.blocksThrowingLight.emplace_back(Block { BlockType::Empty, blockPosition });
+                    lightData.blocksThrowingLight.emplace_back(Block(BlockType::Empty, blockPosition));
                 }
 
                 continue;
