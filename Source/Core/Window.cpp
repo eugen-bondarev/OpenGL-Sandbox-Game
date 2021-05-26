@@ -6,7 +6,15 @@ void Window::Create(Size size, const std::string& title) {
     glfwInit();
     glfwDefaultWindowHints();
 
-    glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+ 
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+    glfwWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
+
     glfwMaximizeWindow(glfwWindow);
     glfwMakeContextCurrent(glfwWindow);
 
@@ -26,6 +34,10 @@ void Window::Create(Size size, const std::string& title) {
         Window::CalculateSpace();
     });
 
+    int w, h;
+    glfwGetWindowSize(glfwWindow, &w, &h);
+    Window::size = { w, h };
+
     CalculateSpace();
 }
 
@@ -44,6 +56,12 @@ Size Window::GetSize() {
 
 Mat4 Window::GetSpace() {
     return space;
+}
+
+Vec2 Window::GetMousePosition() {    
+    double x, y;
+    glfwGetCursorPos(Window::GetGlfwWindow(), &x, &y);
+    return { x, y };
 }
 
 void Window::CalculateSpace() {

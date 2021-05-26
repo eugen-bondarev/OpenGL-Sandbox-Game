@@ -34,4 +34,6 @@ private:
 
     Mat4 viewMatrix { Mat4(1) };
     Vec2 viewPos { Vec2(0) };
+    Vec2 lastViewPos { Vec2(1) };
+    bool redrawMap { true };
 };

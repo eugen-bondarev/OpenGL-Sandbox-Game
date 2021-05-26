@@ -18,6 +18,7 @@ public:
     static bool KeyPressed(int key);
     static Size GetSize();
     static Mat4 GetSpace();
+    static Vec2 GetMousePosition();
 
     inline static GLFWwindow* GetGlfwWindow() {
         return glfwWindow;

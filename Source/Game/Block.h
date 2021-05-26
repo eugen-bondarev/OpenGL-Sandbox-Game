@@ -10,8 +10,7 @@ struct BlockView {
          lm { false },               rm { false },
          lb { false }, mb { false }, rb { false }; // 8 byte
 
-    BlockView() = default;
-    BlockView(BlockType type) { 
+    inline BlockView(BlockType type = BlockType::Empty) { 
         this->type = type; 
     }
 };
@@ -19,7 +18,7 @@ struct BlockView {
 struct Block : BlockView {
     Pos position;
 
-    Block(BlockType type, Pos position) : BlockView(type) {
+    inline Block(BlockType type = BlockType::Empty, Pos position = Pos()) : BlockView(type) {
         this->position = position;
     }
 };

@@ -46,11 +46,33 @@ void Engine::Control() {
 }
 
 void Engine::Render() {
-    LightData lightData;
+    Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), viewMatrix);
 
-    colorPass->Execute(lightData, viewMatrix, viewPos, map);
-    lightPass->Execute(lightData, viewMatrix);
+    if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
+        map->blocks[block.x][block.y] = Block(BlockType::Empty, Vec2());
+        redrawMap = true;
+    }
+
+    if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT)) {
+        map->blocks[block.x][block.y] = Block(BlockType::Dirt);
+        redrawMap = true;
+    }
+
+    if (lastViewPos != viewPos) {
+        lastViewPos = viewPos;
+        redrawMap = true;
+    }
+
+    if (redrawMap) {
+        LightData lightData;
+        map->RecalculateLight();
+        colorPass->Execute(lightData, viewMatrix, viewPos, map);
+        lightPass->Execute(lightData, viewMatrix);
+    }
+
     compositionPass->Execute(colorPass, lightPass);
+    
+    redrawMap = false;
 }
 
 void Engine::EndFrame() {
