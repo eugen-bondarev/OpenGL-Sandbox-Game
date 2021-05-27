@@ -34,6 +34,8 @@ void Window::Create(Size size, const std::string& title) {
         Window::CalculateSpace();
     });
 
+    glfwSwapInterval(1);
+
     int w, h;
     glfwGetWindowSize(glfwWindow, &w, &h);
     Window::size = { w, h };

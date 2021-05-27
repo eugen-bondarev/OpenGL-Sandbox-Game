@@ -46,15 +46,27 @@ void Engine::Control() {
 }
 
 void Engine::Render() {
+    currentTime = static_cast<float>(glfwGetTime());
+    delta = currentTime - lastTime;
+    lastTime = currentTime;
+
+    fpsTimer += delta;
+    if (fpsTimer >= 1.0f) {
+        fps = 1.0f / delta;
+        fpsTimer = 0;
+    }
+
     Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), viewMatrix);
 
     if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
         map->blocks[block.x][block.y] = Block(BlockType::Empty, Vec2());
+        // map->CalculateEmptyNeighbours(block.x, block.y);
         redrawMap = true;
     }
 
     if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT)) {
         map->blocks[block.x][block.y] = Block(BlockType::Dirt);
+        // map->CalculateEmptyNeighbours(block.x, block.y);
         redrawMap = true;
     }
 
@@ -62,6 +74,12 @@ void Engine::Render() {
         lastViewPos = viewPos;
         redrawMap = true;
     }
+
+    ImGui::Begin("Debug");
+        ImGui::Text(("Fps: " + std::to_string(fps)).c_str());
+        ImGui::Text(("Delta: " + std::to_string(delta)).c_str());
+        ImGui::Text(("Blocks rendered: " + std::to_string(map->debug.blocksRendered)).c_str());
+    ImGui::End();
 
     if (redrawMap) {
         LightData lightData;

@@ -25,9 +25,19 @@ Map::Map(Size size, int blockSizeInPixels) {
 
     GenerateMap(blocks, size);
     middleOfMap = Vec2(size.x, size.y) / 2.0f;
+
+    for (int x = 0; x < size.x; x++) {
+        for (int y = 0; y < size.y; y++) {
+            if (blocks[x][y].type == BlockType::Empty) {
+                CalculateEmptyNeighbours(x, y);
+            }
+        }
+    }
 }
 
 void Map::CalculateEmptyNeighbours(int x, int y) {
+    if (x == 0 || y == 0 || x == size.x - 1 || y == size.y - 1) return;
+
     if (blocks[x][y - 1].type != BlockType::Empty) {
         blocks[x][y - 1].mt = true;
     }
@@ -102,54 +112,38 @@ LightData Map::Render(std::shared_ptr<Shader>& shader, Vec2 viewPos) {
         lightData.blocksThrowingLight.clear();
     }
 
-    // if (recalculateLight) {
-    //     lightData.blocksThrowingLight.clear();
+    debug.blocksRendered = 0;
 
-        for (int x = chunk.x.start; x < chunk.x.end; x++) {
-            for (int y = chunk.y.start; y < chunk.y.end; y++) {
-                BlockType type = blocks[x][y].type;
-                if (type == BlockType::Empty) {
-                    if (recalculateLight) {
-                        if (blocks[x][y - 1].type != BlockType::Empty) {
-                            Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
-                            lightData.blocksThrowingLight.emplace_back(Block(BlockType::Empty, blockPosition));
-                        }                    
-                        CalculateEmptyNeighbours(x, y);
-                    }
-                    continue;
+    for (int x = chunk.x.start; x < chunk.x.end; x++) {
+        for (int y = chunk.y.start; y < chunk.y.end; y++) {
+            BlockType type = blocks[x][y].type;
+            if (type == BlockType::Empty) {
+                if (recalculateLight) {
+                    if (blocks[x][y - 1].type != BlockType::Empty || blocks[x][y + 1].type != BlockType::Empty) {
+                        Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
+                        lightData.blocksThrowingLight.emplace_back(Block(BlockType::Empty, blockPosition));
+                    }                    
+                    CalculateEmptyNeighbours(x, y);
                 }
-
-                Vec2 offsetTextureSpace = tileDictionary[type];
-                Vec2 additionalOffset = PickTile(x, y);
-                Vec2 offset = (offsetTextureSpace + additionalOffset) * static_cast<float>(blockSizeInPixels) / tileMap->GetSize();
-                Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
-
-                shader->SetVec2("u_Offset", Math::ToPtr(offset));
-                shader->SetVec2("u_Pos", Math::ToPtr(blockPosition));
-                
-                glDrawElements(GL_TRIANGLES, quadVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+                continue;
             }
+
+            Vec2 offsetTextureSpace = tileDictionary[type];
+            Vec2 additionalOffset = PickTile(x, y);
+            Vec2 offset = (offsetTextureSpace + additionalOffset) * static_cast<float>(blockSizeInPixels) / tileMap->GetSize();
+            Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
+
+            shader->SetVec2("u_Offset", Math::ToPtr(offset));
+            shader->SetVec2("u_Pos", Math::ToPtr(blockPosition));
+            
+            // glDrawElements(GL_TRIANGLES, quadVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            debug.blocksRendered += 1;
         }
+    }
 
-        recalculateLight = false;
-    // } else {
-    //     for (int x = chunk.x.start; x < chunk.x.end; x++) {
-    //         for (int y = chunk.y.start; y < chunk.y.end; y++) {
-    //             BlockType type = blocks[x][y].type;
-    //             if (type == BlockType::Empty) continue;
-
-    //             Vec2 offsetTextureSpace = tileDictionary[type];
-    //             Vec2 additionalOffset = PickTile(x, y);
-    //             Vec2 offset = (offsetTextureSpace + additionalOffset) * static_cast<float>(blockSizeInPixels) / tileMap->GetSize();
-    //             Vec2 blockPosition = Vec2((x - cameraPosInMap.x) * blockSizeInPixels + viewPos.x, (y - cameraPosInMap.y) * blockSizeInPixels + viewPos.y);
-
-    //             shader->SetVec2("u_Offset", Math::ToPtr(offset));
-    //             shader->SetVec2("u_Pos", Math::ToPtr(blockPosition));
-                
-    //             glDrawElements(GL_TRIANGLES, quadVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
-    //         }
-    //     }
-    // }
+    recalculateLight = false;
 
     tileMap->Unbind();
     quadVao->Unbind();

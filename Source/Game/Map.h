@@ -65,6 +65,12 @@ public:
     inline void RecalculateLight() {
         recalculateLight = true;
     }
+    
+    void CalculateEmptyNeighbours(int x, int y);
+
+    struct {
+        unsigned int blocksRendered { 0 };
+    } debug;
 
 private:
     std::shared_ptr<Texture> tileMap;
@@ -77,7 +83,6 @@ private:
 
     chunk_t chunk;
 
-    void CalculateEmptyNeighbours(int x, int y);
     Vec2 PickTile(int x, int y);
 
     inline static std::map<BlockType, Vec2> tileDictionary = {
