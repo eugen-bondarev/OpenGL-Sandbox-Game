@@ -8,29 +8,29 @@
 
 class Window {
 public:
-    static void Create(Size size = { 1920, 1080 }, const std::string& title = "Forgio");
-    static void Destroy();
+	static void Create(Size size = {1920, 1080}, const std::string &title = "Forgio");
+	static void Destroy();
 
-    static bool ShouldClose();
-    static void Clear();
-    static void PollEvents();
-    static void SwapBuffers();
-    static bool KeyPressed(int key);
-    static Size GetSize();
-    static Mat4 GetSpace();
-    static Vec2 GetMousePosition();
+	static bool ShouldClose();
+	static void Clear();
+	static void PollEvents();
+	static void SwapBuffers();
+	static bool KeyPressed(int key);
+	static Size GetSize();
+	static Mat4 GetSpace();
+	static Vec2 GetMousePosition();
 
-    inline static GLFWwindow* GetGlfwWindow() {
-        return glfwWindow;
-    }
+	inline static GLFWwindow *GetGlfwWindow() {
+		return glfwWindow;
+	}
 
 private:
-    inline static Size size;
-    inline static Mat4 space;
-    inline static void CalculateSpace();
+	inline static Size size;
+	inline static Mat4 space;
+	inline static void CalculateSpace();
 
-    inline static GLFWwindow* glfwWindow;
+	inline static GLFWwindow *glfwWindow;
 
-    Window(const Window&) = delete;
-    Window operator=(const Window&) = delete;
+	Window(const Window &) = delete;
+	Window operator=(const Window &) = delete;
 };

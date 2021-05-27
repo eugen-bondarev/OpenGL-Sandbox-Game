@@ -6,9 +6,9 @@
 
 class Gui {
 public:
-    static void Create();
-    static void Destroy();
+	static void Create();
+	static void Destroy();
 
-    static void Begin();
-    static void End();
+	static void Begin();
+	static void End();
 };

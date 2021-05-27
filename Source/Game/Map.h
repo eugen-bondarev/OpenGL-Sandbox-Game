@@ -23,14 +23,18 @@ public:
 	}
 
 	inline chunk_t WhatBlocks(Pos chunk) const {
-		Period<> x{ chunk.x * chunkSize.x, (chunk.x + 1) * chunkSize.x };
-		Period<> y{ chunk.y * chunkSize.y, (chunk.y + 1) * chunkSize.y };
+		Period<> x{ static_cast<int>(chunk.x * chunkSize.x), static_cast<int>((chunk.x + 1.0f) * chunkSize.x) };
+		Period<> y{ static_cast<int>(chunk.y * chunkSize.y), static_cast<int>((chunk.y + 1.0f) * chunkSize.y) };
 		return { x, y };
 	}
 
-private:
 	blocks_t blocks;
 
+	inline Pos GetCenter() const {
+		return amountOfBlocks / 2.0f;
+	}
+
+private:
 	Size chunkSize;
 	Size amountOfChunks;
 	Size amountOfBlocks;

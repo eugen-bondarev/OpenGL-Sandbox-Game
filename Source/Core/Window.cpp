@@ -1,87 +1,88 @@
 #include "Window.h"
 
-void Window::Create(Size size, const std::string& title) {
-    Window::size = size;
+void Window::Create(Size size, const std::string &title) {
+	Window::size = size;
 
-    glfwInit();
-    glfwDefaultWindowHints();
+	glfwInit();
+	glfwDefaultWindowHints();
 
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
- 
-    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-    glfwWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
+	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-    glfwMaximizeWindow(glfwWindow);
-    glfwMakeContextCurrent(glfwWindow);
+	glfwWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
 
-    GLint glewInitResult = glewInit();
-    if (GLEW_OK != glewInitResult) {
-        printf("ERROR: %s",glewGetErrorString(glewInitResult));
-        exit(EXIT_FAILURE);
-    }
+	glfwMaximizeWindow(glfwWindow);
+	glfwMakeContextCurrent(glfwWindow);
 
-    // Todo: move it somewhere..
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GLint glewInitResult = glewInit();
+	if (GLEW_OK != glewInitResult)
+	{
+		printf("ERROR: %s", glewGetErrorString(glewInitResult));
+		exit(EXIT_FAILURE);
+	}
 
-    glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow* window, int width, int height) {
-        Window::size.x = width;
-        Window::size.y = height;
-        Window::CalculateSpace();
-    });
+	// Todo: move it somewhere..
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glfwSwapInterval(1);
+	glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow *window, int width, int height) {
+		Window::size.x = width;
+		Window::size.y = height;
+		Window::CalculateSpace();
+	});
 
-    int w, h;
-    glfwGetWindowSize(glfwWindow, &w, &h);
-    Window::size = { w, h };
+	glfwSwapInterval(1);
 
-    CalculateSpace();
+	int w, h;
+	glfwGetWindowSize(glfwWindow, &w, &h);
+	Window::size = {w, h};
+
+	CalculateSpace();
 }
 
 bool Window::KeyPressed(int key) {
-    return glfwGetKey(glfwWindow, key);
+	return glfwGetKey(glfwWindow, key);
 }
 
 void Window::Destroy() {
-    glfwDestroyWindow(glfwWindow);
-    glfwTerminate();
+	glfwDestroyWindow(glfwWindow);
+	glfwTerminate();
 }
 
 Size Window::GetSize() {
-    return size;
+	return size;
 }
 
 Mat4 Window::GetSpace() {
-    return space;
+	return space;
 }
 
-Vec2 Window::GetMousePosition() {    
-    double x, y;
-    glfwGetCursorPos(Window::GetGlfwWindow(), &x, &y);
-    return { x, y };
+Vec2 Window::GetMousePosition() {
+	double x, y;
+	glfwGetCursorPos(Window::GetGlfwWindow(), &x, &y);
+	return {x, y};
 }
 
 void Window::CalculateSpace() {
-    space = Math::Ortho(-size.x / 2.0f, size.x / 2.0f, -size.y / 2.0f, size.y / 2.0f);
+	space = Math::Ortho(-size.x / 2.0f, size.x / 2.0f, -size.y / 2.0f, size.y / 2.0f);
 }
 
 bool Window::ShouldClose() {
-    return glfwWindowShouldClose(glfwWindow);
+	return glfwWindowShouldClose(glfwWindow);
 }
 
 void Window::Clear() {
-    glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Window::PollEvents() {
-    glfwPollEvents();
+	glfwPollEvents();
 }
 
 void Window::SwapBuffers() {
-    glfwSwapBuffers(glfwWindow);
+	glfwSwapBuffers(glfwWindow);
 }
