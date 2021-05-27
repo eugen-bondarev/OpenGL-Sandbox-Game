@@ -18,6 +18,8 @@ Engine::Engine() {
 
 void Engine::InitResources() {
     Primitives::Rect::Create();
+
+    map = std::make_shared<Map>(Size{ 12, 12 }, Size{ 42, 42 }); // ~ 500 x 500
 }
 
 bool Engine::IsRunning() const {
@@ -44,7 +46,8 @@ void Engine::Render() {
     delta = currentTime - lastTime;
     lastTime = currentTime;
 
-    ImGui::Begin("Foo");
+    ImGui::Begin("Info");
+
     ImGui::End();
 
     fpsTimer += delta;

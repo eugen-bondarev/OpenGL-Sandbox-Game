@@ -6,6 +6,8 @@
 
 #include "Renderer/Entities/Sprite.h"
 
+#include "Game/Map.h"
+
 #include <memory>
 
 class Engine {
@@ -20,6 +22,8 @@ public:
     ~Engine();
 
 private:
+    std::shared_ptr<Map> map;
+
     Mat4 viewMatrix { Mat4(1) };
     Vec2 viewPos { Vec2(0) };
 
