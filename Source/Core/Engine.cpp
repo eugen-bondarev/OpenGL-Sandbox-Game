@@ -18,12 +18,6 @@ Engine::Engine() {
 
 void Engine::InitResources() {
     Primitives::Rect::Create();
-
-    map = std::make_shared<Map>(Size { 2000, 1000 }, 16);
-
-    colorPass = std::make_shared<ColorPass>();
-    lightPass = std::make_shared<LightPass>();
-    compositionPass = std::make_unique<CompositionPass>();
 }
 
 bool Engine::IsRunning() const {
@@ -50,47 +44,14 @@ void Engine::Render() {
     delta = currentTime - lastTime;
     lastTime = currentTime;
 
+    ImGui::Begin("Foo");
+    ImGui::End();
+
     fpsTimer += delta;
     if (fpsTimer >= 1.0f) {
         fps = 1.0f / delta;
         fpsTimer = 0;
     }
-
-    Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), viewMatrix);
-
-    if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
-        map->blocks[block.x][block.y] = Block(BlockType::Empty, Vec2());
-        // map->CalculateEmptyNeighbours(block.x, block.y);
-        redrawMap = true;
-    }
-
-    if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT)) {
-        map->blocks[block.x][block.y] = Block(BlockType::Dirt);
-        // map->CalculateEmptyNeighbours(block.x, block.y);
-        redrawMap = true;
-    }
-
-    if (lastViewPos != viewPos) {
-        lastViewPos = viewPos;
-        redrawMap = true;
-    }
-
-    ImGui::Begin("Debug");
-        ImGui::Text(("Fps: " + std::to_string(fps)).c_str());
-        ImGui::Text(("Delta: " + std::to_string(delta)).c_str());
-        ImGui::Text(("Blocks rendered: " + std::to_string(map->debug.blocksRendered)).c_str());
-    ImGui::End();
-
-    if (redrawMap) {
-        LightData lightData;
-        map->RecalculateLight();
-        colorPass->Execute(lightData, viewMatrix, viewPos, map);
-        lightPass->Execute(lightData, viewMatrix);
-    }
-
-    compositionPass->Execute(colorPass, lightPass);
-    
-    redrawMap = false;
 }
 
 void Engine::EndFrame() {
