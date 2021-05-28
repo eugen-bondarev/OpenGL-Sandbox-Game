@@ -12,7 +12,7 @@
 
 class Chunk {
 public:
-  Chunk(Pos chunkPos, Size chunkSize, ChunkFbo* fbo, Shader* shader, Vao* vao, Texture* tileMap, chunk_t chunk, blocks_t* blocks);
+  Chunk(Pos chunkPos, Size chunkSize, ChunkFbo** fbo, Shader* shader, Vao* vao, Texture* tileMap, chunk_t chunk, blocks_t* blocks);
 
   inline std::shared_ptr<Texture>& GetTexture() {
     return texture;
@@ -22,7 +22,7 @@ public:
 
   blocks_t* blocks;
 
-  ChunkFbo* fbo;
+  ChunkFbo** fbo;
   Shader* shader;
   Vao* vao;
   Texture* tileMap;

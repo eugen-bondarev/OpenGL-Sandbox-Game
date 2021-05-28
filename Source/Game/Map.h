@@ -46,7 +46,7 @@ public:
 		return chunkSize;
 	}
 
-	ChunkFbo* chunkFbo;
+	ChunkFbo* chunkFbo { nullptr };
 
 	void InitGraphics();
 	std::shared_ptr<Vao> tileVao;

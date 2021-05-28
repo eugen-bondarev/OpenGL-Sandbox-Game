@@ -2,7 +2,7 @@
 
 #include "Core/Window.h"
 
-Chunk::Chunk(Pos chunkPos, Size chunkSize, ChunkFbo* fbo, Shader* shader, Vao* vao, Texture* tileMap, chunk_t chunk, blocks_t* blocks) {
+Chunk::Chunk(Pos chunkPos, Size chunkSize, ChunkFbo** fbo, Shader* shader, Vao* vao, Texture* tileMap, chunk_t chunk, blocks_t* blocks) {
   this->chunkPos = chunkPos;
   this->chunkSize = chunkSize;
   this->fbo = fbo;
@@ -26,8 +26,7 @@ Chunk::Chunk(Pos chunkPos, Size chunkSize, ChunkFbo* fbo, Shader* shader, Vao* v
 }
 
 void Chunk::Prepare() {
-  // delete fbo;
-  fbo = new ChunkFbo(texture);
+  *fbo = new ChunkFbo(texture);
 
 	viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
@@ -41,8 +40,8 @@ void Chunk::Rerender() {
 	// };
 	glViewport(0.0f, 0.0f, 192, 192);
 
-  fbo->Bind();
-  fbo->Clear();
+  (*fbo)->Bind();
+  (*fbo)->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
     	vao->Bind();
@@ -64,7 +63,9 @@ void Chunk::Rerender() {
     		tileMap->Unbind();
     	vao->Unbind();
     shader->Unbind();
-  fbo->Unbind();
+  (*fbo)->Unbind();
+  
+  delete *fbo;
 
 	glViewport(0.0f, 0.0f, Window::GetSize().x, Window::GetSize().y);
 }
