@@ -71,8 +71,6 @@ public:
 		return block;
 	}
 
-	ChunkFbo* chunkFbo { nullptr };
-
 	void InitGraphics();
 	std::shared_ptr<Vao> tileVao;
 	std::shared_ptr<Texture> tileMap;

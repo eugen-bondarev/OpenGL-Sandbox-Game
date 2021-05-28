@@ -2,15 +2,21 @@
 
 #include "Core/Window.h"
 
-Chunk::Chunk(Pos chunkPos, Size chunkSize, ChunkFbo** fbo, Shader* shader, Vao* vao, Texture* tileMap, chunk_t chunk, blocks_t* blocks) {
+Chunk::Chunk(
+  Pos chunkPos, 
+  Size chunkSize, 
+  std::shared_ptr<Shader> shader, 
+  std::shared_ptr<Vao> vao, 
+  std::shared_ptr<Texture> tileMap, 
+  bounds_t bounds, 
+  blocks_t& bl
+) : blocks { bl } {
   this->chunkPos = chunkPos;
   this->chunkSize = chunkSize;
-  this->fbo = fbo;
   this->shader = shader;
   this->vao = vao;
   this->tileMap = tileMap;
-  this->chunk = chunk;
-  this->blocks = blocks;
+  this->bounds = bounds;
 
   texture = std::make_unique<Texture>(
     chunkSize * BLOCK_SIZE,
@@ -25,25 +31,23 @@ Chunk::Chunk(Pos chunkPos, Size chunkSize, ChunkFbo** fbo, Shader* shader, Vao* 
   );
 }
 
-void Chunk::Prepare() {
-  *fbo = new ChunkFbo(texture);
-
-	viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
-	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
-}
-
 void Chunk::Rerender() {
+  ChunkFbo fbo(texture);
+
+	Vec2 viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
+	Mat4 viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
+
 	glViewport(0.0f, 0.0f, chunkSize.x * BLOCK_SIZE, chunkSize.y * BLOCK_SIZE);
 
-  (*fbo)->Bind();
-  (*fbo)->Clear();
+  fbo.Bind();
+  fbo.Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
     	vao->Bind();
     		tileMap->Bind();
-          for (int x = chunk.x.start; x < chunk.x.end; x++) {
-            for (int y = chunk.y.start; y < chunk.y.end; y++) {
-              BlockType type = (*blocks)[x][y];
+          for (int x = bounds.x.start; x < bounds.x.end; x++) {
+            for (int y = bounds.y.start; y < bounds.y.end; y++) {
+              BlockType type = blocks[x][y];
 
               if (type == BlockType::Empty) continue;
 
@@ -69,9 +73,7 @@ void Chunk::Rerender() {
     		tileMap->Unbind();
     	vao->Unbind();
     shader->Unbind();
-  (*fbo)->Unbind();
-
-  delete *fbo;
+  fbo.Unbind();
 
 	glViewport(0.0f, 0.0f, Window::GetSize().x, Window::GetSize().y);
 }

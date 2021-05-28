@@ -57,7 +57,7 @@ Map::Map(Size chunkSize, Size amountOfChunks) {
 	for (int x = 0; x < amountOfChunks.x; x++) {
 		for (int y = 0; y < amountOfChunks.y; y++) {
 			auto chunk = WhatBlocks({ x, y });
-			chunks[x].emplace_back(Pos {x, y}, Size {chunkSize}, &chunkFbo, shader.get(), tileVao.get(), tileMap.get(), chunk, &blocks);
+			chunks[x].emplace_back(Pos {x, y}, Size {chunkSize}, shader, tileVao, tileMap, chunk, blocks);
 		}
 		// chunks[x].resize(amountOfChunks.y);
 	}

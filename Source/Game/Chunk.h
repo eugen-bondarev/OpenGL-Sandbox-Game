@@ -12,29 +12,33 @@
 
 class Chunk {
 public:
-  Chunk(Pos chunkPos, Size chunkSize, ChunkFbo** fbo, Shader* shader, Vao* vao, Texture* tileMap, chunk_t chunk, blocks_t* blocks);
+  Chunk(
+    Pos chunkPos, 
+    Size chunkSize,
+    std::shared_ptr<Shader> shader, 
+    std::shared_ptr<Vao> vao, 
+    std::shared_ptr<Texture> tileMap, 
+    chunk_t chunk, 
+    blocks_t& blocks
+  );
 
   inline std::shared_ptr<Texture>& GetTexture() {
     return texture;
   }
 
-  chunk_t chunk;
-
-  blocks_t* blocks;
-
-  ChunkFbo** fbo;
-  Shader* shader;
-  Vao* vao;
-  Texture* tileMap;
-
-	Vec2 viewPos;
-	Mat4 viewMatrix;
-
-  void Prepare();
   void Rerender();
 
 private:
   std::shared_ptr<Texture> texture;
+
+  bounds_t bounds;
+
+  blocks_t& blocks;
+
+  ChunkFbo** fbo;
+  std::shared_ptr<Shader> shader;
+  std::shared_ptr<Vao> vao;
+  std::shared_ptr<Texture> tileMap;
 
   Pos chunkPos;
   Size chunkSize;

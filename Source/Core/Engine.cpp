@@ -24,10 +24,8 @@ void Engine::InitResources() {
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
 			float currentTime = static_cast<float>(glfwGetTime());
-			map->chunks[x][y].Prepare();
 			map->chunks[x][y].Rerender();
 			float elapsedTime = static_cast<float>(glfwGetTime()) - currentTime;
-			LOG_OUT("Elapsed time: " << 1.0f / elapsedTime);
 		}
 	}
 
@@ -77,7 +75,6 @@ void Engine::Render() {
 		map->blocks[block.x][block.y] = BlockType::Empty;
 
 		Pos chunk = map->WhatChunk(block);
-		map->chunks[chunk.x][chunk.y].Prepare();
 		map->chunks[chunk.x][chunk.y].Rerender();
 	}
 
@@ -85,22 +82,18 @@ void Engine::Render() {
 
 	chunkShader->Bind();
 	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-
 		squareVao->Bind();
-
-			bounds_t bounds;
 			Pos middle = map->WhatChunk(map->GetCenter());
-
-			Vec2 centeredViewPos = viewPos - map->GetCenter() * 16.0f;
-
+			Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
 			Vec2 additionalBlocks = Vec2(2, 2);
-
 			Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
+			Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
 			
-			bounds.x.start = middle.x - (Window::GetSize().x / chunkSizeInPixels.x / 2.0f) + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
-			bounds.x.end   = middle.x + (Window::GetSize().x / chunkSizeInPixels.x / 2.0f) + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
-			bounds.y.start = middle.y - (Window::GetSize().y / chunkSizeInPixels.y / 2.0f) + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
-			bounds.y.end   = middle.y + (Window::GetSize().y / chunkSizeInPixels.y / 2.0f) + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+			bounds_t bounds;
+			bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
+			bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
+			bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
+			bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
 			
 			for (int x = bounds.x.start; x < bounds.x.end; x++) {
 				for (int y = bounds.y.start; y < bounds.y.end; y++) {
