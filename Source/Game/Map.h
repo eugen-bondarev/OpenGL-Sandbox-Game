@@ -76,11 +76,6 @@ public:
 	std::shared_ptr<Texture> tileMap;
 	std::shared_ptr<Shader> shader;
 
-	Mat4 viewMatrix{Mat4(1)};
-	Vec2 viewPos{Vec2(0)};
-
-	Mat4 projMatrix{Mat4(1)};
-
 private:
 	Size chunkSize;
 	Size amountOfChunks;

@@ -28,19 +28,12 @@ void Map::InitGraphics() {
 	TextAsset vsCode("Assets/Shaders/Terrain/Default.vs");
 	TextAsset fsCode("Assets/Shaders/Terrain/Default.fs");
 
-	// viewPos = map->GetCenter() * 16.0f;
-	viewPos = (Vec2(1, 0) * 12.0f) * 16.0f;
-	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
-	// viewMatrix = Mat4(1);
-
-	// float chunkSize = 192.0f;
 	Vec2 halfChunkSize = (chunkSize * BLOCK_SIZE) / 2.0f;
-	projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
+	Mat4 projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
 
 	shader = std::make_shared<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
 	shader->Bind();
 		shader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
-		shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
 		shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));
 	shader->Unbind();
 }
@@ -48,18 +41,14 @@ void Map::InitGraphics() {
 Map::Map(Size chunkSize, Size amountOfChunks) {
 	this->chunkSize = chunkSize;
 	this->amountOfChunks = amountOfChunks;
-
-	// chunkFbo = std::make_shared<ChunkFbo>(Size{ 192, 192 });
-	// chunkFbo = new ChunkFbo({ 192, 192 });
 	InitGraphics();
 
 	chunks.resize(amountOfChunks.x);
 	for (int x = 0; x < amountOfChunks.x; x++) {
 		for (int y = 0; y < amountOfChunks.y; y++) {
-			auto chunk = WhatBlocks({ x, y });
-			chunks[x].emplace_back(Pos {x, y}, Size {chunkSize}, shader, tileVao, tileMap, chunk, blocks);
+			bounds_t bounds = WhatBlocks({ x, y });
+			chunks[x].emplace_back(Pos {x, y}, Size {chunkSize}, shader, tileVao, tileMap, bounds, blocks);
 		}
-		// chunks[x].resize(amountOfChunks.y);
 	}
 
 	amountOfBlocks = chunkSize * amountOfChunks;
@@ -75,7 +64,7 @@ void Map::GenerateMap() {
 		blocks[x].resize(amountOfRows);
 	}
 
-	int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
+	const int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
 
 	for (int x = 0; x < amountOfBlocks.x; x++) {
 		for (int y = 0; y < middle; y++) {

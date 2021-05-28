@@ -18,7 +18,7 @@ public:
     std::shared_ptr<Shader> shader, 
     std::shared_ptr<Vao> vao, 
     std::shared_ptr<Texture> tileMap, 
-    chunk_t chunk, 
+    bounds_t bounds, 
     blocks_t& blocks
   );
 
@@ -31,15 +31,13 @@ public:
 private:
   std::shared_ptr<Texture> texture;
 
-  bounds_t bounds;
-
   blocks_t& blocks;
-
-  ChunkFbo** fbo;
+  
   std::shared_ptr<Shader> shader;
   std::shared_ptr<Vao> vao;
   std::shared_ptr<Texture> tileMap;
 
   Pos chunkPos;
   Size chunkSize;
+  bounds_t bounds;
 };

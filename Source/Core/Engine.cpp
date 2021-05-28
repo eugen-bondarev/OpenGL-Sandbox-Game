@@ -23,9 +23,9 @@ void Engine::InitResources() {
 
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
-			float currentTime = static_cast<float>(glfwGetTime());
+			const float currentTime = static_cast<float>(glfwGetTime());
 			map->chunks[x][y].Rerender();
-			float elapsedTime = static_cast<float>(glfwGetTime()) - currentTime;
+			const float elapsedTime = static_cast<float>(glfwGetTime()) - currentTime;
 		}
 	}
 
@@ -37,7 +37,7 @@ void Engine::InitResources() {
 	viewPos = map->GetCenter() * 16.0f;
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
-	Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
+	const Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
 
 	chunkShader->Bind();
 		chunkShader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
@@ -70,11 +70,11 @@ void Engine::Control() {
 
 void Engine::Render() {
 	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
-		Pos mousePos = Window::GetMousePosition();
-		Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
+		const Pos mousePos = Window::GetMousePosition();
+		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
 		map->blocks[block.x][block.y] = BlockType::Empty;
 
-		Pos chunk = map->WhatChunk(block);
+		const Pos chunk = map->WhatChunk(block);
 		map->chunks[chunk.x][chunk.y].Rerender();
 	}
 
@@ -83,11 +83,11 @@ void Engine::Render() {
 	chunkShader->Bind();
 	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
 		squareVao->Bind();
-			Pos middle = map->WhatChunk(map->GetCenter());
-			Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
-			Vec2 additionalBlocks = Vec2(2, 2);
-			Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
-			Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
+			const Pos middle = map->WhatChunk(map->GetCenter());
+			const Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
+			const Vec2 additionalBlocks = Vec2(2, 2);
+			const Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
+			const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
 			
 			bounds_t bounds;
 			bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
@@ -98,7 +98,7 @@ void Engine::Render() {
 			for (int x = bounds.x.start; x < bounds.x.end; x++) {
 				for (int y = bounds.y.start; y < bounds.y.end; y++) {
 					map->chunks[x][y].GetTexture()->Bind();
-						Vec2 pos = Vec2(x, y) * map->GetChunkSizePixels();
+						const Vec2 pos = Vec2(x, y) * map->GetChunkSizePixels();
 						Mat4 model = Math::Translate(Mat4(1), Vec3(pos, 1.0f));
 						model = Math::Scale(model, Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
 						chunkShader->SetMat4x4("u_Model", Math::ToPtr(model));

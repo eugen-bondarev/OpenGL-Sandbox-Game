@@ -9,8 +9,8 @@ Chunk::Chunk(
   std::shared_ptr<Vao> vao, 
   std::shared_ptr<Texture> tileMap, 
   bounds_t bounds, 
-  blocks_t& bl
-) : blocks { bl } {
+  blocks_t& blocksReference
+) : blocks { blocksReference } {
   this->chunkPos = chunkPos;
   this->chunkSize = chunkSize;
   this->shader = shader;
@@ -34,8 +34,8 @@ Chunk::Chunk(
 void Chunk::Rerender() {
   ChunkFbo fbo(texture);
 
-	Vec2 viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
-	Mat4 viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
+	const Vec2 viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
+	const Mat4 viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
 	glViewport(0.0f, 0.0f, chunkSize.x * BLOCK_SIZE, chunkSize.y * BLOCK_SIZE);
 
