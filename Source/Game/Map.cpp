@@ -33,9 +33,9 @@ void Map::InitGraphics() {
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 	// viewMatrix = Mat4(1);
 
-	float chunkSize = 192.0f;
-	float halfChunkSize = chunkSize / 2.0f;
-	projMatrix = Math::Ortho(-halfChunkSize, halfChunkSize, -halfChunkSize, halfChunkSize);
+	// float chunkSize = 192.0f;
+	Vec2 halfChunkSize = (chunkSize * BLOCK_SIZE) / 2.0f;
+	projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
 
 	shader = std::make_shared<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
 	shader->Bind();

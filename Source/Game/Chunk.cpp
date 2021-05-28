@@ -13,7 +13,7 @@ Chunk::Chunk(Pos chunkPos, Size chunkSize, ChunkFbo** fbo, Shader* shader, Vao* 
   this->blocks = blocks;
 
   texture = std::make_unique<Texture>(
-    Size{192, 192},
+    chunkSize * BLOCK_SIZE,
     nullptr,
     GL_RGBA,
     GL_RGBA,
@@ -33,7 +33,7 @@ void Chunk::Prepare() {
 }
 
 void Chunk::Rerender() {
-	glViewport(0.0f, 0.0f, 192, 192);
+	glViewport(0.0f, 0.0f, chunkSize.x * BLOCK_SIZE, chunkSize.y * BLOCK_SIZE);
 
   (*fbo)->Bind();
   (*fbo)->Clear();

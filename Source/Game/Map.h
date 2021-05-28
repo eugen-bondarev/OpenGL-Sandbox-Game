@@ -48,6 +48,10 @@ public:
 		return chunkSize;
 	}
 
+	inline Size GetChunkSizePixels() const {
+		return chunkSize * BLOCK_SIZE;
+	}
+
 	inline Size GetAmountOfChunks() const {
 		return amountOfChunks;
 	}

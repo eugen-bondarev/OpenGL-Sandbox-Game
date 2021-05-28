@@ -19,7 +19,7 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<Map>(Size{12, 12}, Size{21, 21}); // ~ 500 x 500
+	map = std::make_shared<Map>(Size{16, 16}, Size{21, 21}); // ~ 500 x 500
 
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
@@ -39,7 +39,7 @@ void Engine::InitResources() {
 	viewPos = map->GetCenter() * 16.0f;
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
-	Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(192.0f, -192.0f, 1.0f));
+	Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
 
 	chunkShader->Bind();
 		chunkShader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
@@ -71,24 +71,10 @@ void Engine::Control() {
 }
 
 void Engine::Render() {
-	// ImGui::Begin("Ch - 0");
-	// 	ImGui::Image((void*)(intptr_t)map->chunks[0][0].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
-	// ImGui::End();
-	// ImGui::Begin("Ch - 1");
-	// 	ImGui::Image((void*)(intptr_t)map->chunks[21][21].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
-	// ImGui::End();
-	// ImGui::Begin("Ch - 2");
-	// 	ImGui::Image((void*)(intptr_t)map->chunks[21][20].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
-	// ImGui::End();
 	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
 		Pos mousePos = Window::GetMousePosition();
 		Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
 		map->blocks[block.x][block.y] = BlockType::Empty;
-
-		// LOG_OUT(block.x);
-		// LOG_OUT(block.y);
-
-		// map->blocks[10 * 12][10 * 12] = BlockType::Empty;
 
 		Pos chunk = map->WhatChunk(block);
 		map->chunks[chunk.x][chunk.y].Prepare();
@@ -119,11 +105,9 @@ void Engine::Render() {
 			for (int x = bounds.x.start; x < bounds.x.end; x++) {
 				for (int y = bounds.y.start; y < bounds.y.end; y++) {
 					map->chunks[x][y].GetTexture()->Bind();
-						Vec2 pos = { x * 192, y * 192 };
-						// chunkShader->SetVec2("u_Pos", Math::ToPtr(pos));
-
+						Vec2 pos = Vec2(x, y) * map->GetChunkSizePixels();
 						Mat4 model = Math::Translate(Mat4(1), Vec3(pos, 1.0f));
-						model = Math::Scale(model, Vec3(192.0f, -192.0f, 1.0f));
+						model = Math::Scale(model, Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
 						chunkShader->SetMat4x4("u_Model", Math::ToPtr(model));
 						glDrawElements(GL_TRIANGLES, squareVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
 					map->chunks[x][y].GetTexture()->Unbind();
