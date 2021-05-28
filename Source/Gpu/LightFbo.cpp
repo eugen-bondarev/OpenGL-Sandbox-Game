@@ -4,7 +4,7 @@ LightFbo::LightFbo(Size size) : Framebuffer(size, GL_COLOR_BUFFER_BIT, { GL_COLO
 {
     BeginInit();
 
-    m_Attachments[GL_COLOR_ATTACHMENT0] = std::make_unique<Texture>(
+    m_Attachments[GL_COLOR_ATTACHMENT0] = std::make_shared<Texture>(
         size,
         nullptr,
         GL_RGB,

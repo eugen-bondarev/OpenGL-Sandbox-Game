@@ -24,12 +24,14 @@ public:
 private:
 	std::shared_ptr<Map> map;
 
-	std::shared_ptr<Vao> tileVao;
-	std::shared_ptr<Texture> tileMap;
-	std::shared_ptr<Shader> shader;
+	// std::shared_ptr<Vao> tileVao;
+	// std::shared_ptr<Texture> tileMap;
+	// std::shared_ptr<Shader> shader;
 
-	Mat4 viewMatrix{Mat4(1)};
-	Vec2 viewPos{Vec2(0)};
+	// Mat4 viewMatrix{Mat4(1)};
+	// Vec2 viewPos{Vec2(0)};
+
+	// Mat4 projMatrix{Mat4(1)};
 
 	float currentTime{0};
 	float delta{0};

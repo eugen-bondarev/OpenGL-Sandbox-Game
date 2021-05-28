@@ -4,16 +4,23 @@
 
 #include "Util/Structures.h"
 
+#include "Chunk.h"
+
+#include "Gpu/ChunkFbo.h"
+#include "Gpu/Vao.h"
+#include "Gpu/Texture.h"
+#include "Gpu/Shader.h"
+
+#include "Math/Math.h"
+
+#include "Types.h"
+
 class Map {
 public:
 	Map(Size chunkSize, Size amountOfChunks);
 
-	using row_t = std::vector<BlockType>;
-	using blocks_t = std::vector<row_t>;
-	using chunk_t = struct {
-		Period<> x;
-		Period<> y;
-	};
+	using chunks_row_t = std::vector<Chunk>;
+	using chunks_t = std::vector<chunks_row_t>;
 
 	inline Pos WhatChunk(Pos block) const {
 		int x = static_cast<int>(truncf(block.x / chunkSize.x));
@@ -29,10 +36,27 @@ public:
 	}
 
 	blocks_t blocks;
+	chunks_t chunks;
 
 	inline Pos GetCenter() const {
 		return amountOfBlocks / 2.0f;
 	}
+
+	inline Size GetChunkSize() const {
+		return chunkSize;
+	}
+
+	ChunkFbo* chunkFbo;
+
+	void InitGraphics();
+	std::shared_ptr<Vao> tileVao;
+	std::shared_ptr<Texture> tileMap;
+	std::shared_ptr<Shader> shader;
+
+	Mat4 viewMatrix{Mat4(1)};
+	Vec2 viewPos{Vec2(0)};
+
+	Mat4 projMatrix{Mat4(1)};
 
 private:
 	Size chunkSize;

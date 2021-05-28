@@ -34,7 +34,7 @@ public:
 protected:
     Size m_Size;
 
-    std::map<GLuint, std::unique_ptr<Texture>> m_Attachments;
+    std::map<GLuint, std::shared_ptr<Texture>> m_Attachments;
 
     void BeginInit();
     void EndInit();
