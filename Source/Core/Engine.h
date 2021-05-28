@@ -22,16 +22,15 @@ public:
 	~Engine();
 
 private:
+	std::shared_ptr<Shader> chunkShader;
+	std::shared_ptr<Vao> squareVao;
+
 	std::shared_ptr<Map> map;
 
-	// std::shared_ptr<Vao> tileVao;
-	// std::shared_ptr<Texture> tileMap;
-	// std::shared_ptr<Shader> shader;
+	Vec2 viewPos;
+	Mat4 viewMatrix;
 
-	// Mat4 viewMatrix{Mat4(1)};
-	// Vec2 viewPos{Vec2(0)};
-
-	// Mat4 projMatrix{Mat4(1)};
+	int chunksRendered = 0;
 
 	float currentTime{0};
 	float delta{0};

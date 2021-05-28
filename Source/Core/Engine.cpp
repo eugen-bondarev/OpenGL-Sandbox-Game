@@ -19,13 +19,32 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<Map>(Size{12, 12}, Size{42, 42}); // ~ 500 x 500
+	map = std::make_shared<Map>(Size{12, 12}, Size{21, 21}); // ~ 500 x 500
 
-	map->chunks[2][0].Prepare();
-	map->chunks[2][0].Rerender();
+	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
+		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
+			float currentTime = static_cast<float>(glfwGetTime());
+			map->chunks[x][y].Prepare();
+			map->chunks[x][y].Rerender();
+			float elapsedTime = static_cast<float>(glfwGetTime()) - currentTime;
+			LOG_OUT("Elapsed time: " << 1.0f / elapsedTime);
+		}
+	}
 
-	map->chunks[3][0].Prepare();
-	map->chunks[3][0].Rerender();
+	TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
+	TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
+	chunkShader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos");
+	squareVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
+
+	viewPos = map->GetCenter() * 16.0f;
+	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
+
+	Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(192.0f, -192.0f, 1.0f));
+
+	chunkShader->Bind();
+		chunkShader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
+		chunkShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+	chunkShader->Unbind();
 }
 
 bool Engine::IsRunning() const {
@@ -43,17 +62,82 @@ void Engine::BeginFrame() {
 }
 
 void Engine::Control() {
-	if (Window::KeyPressed(GLFW_KEY_W)) map->viewPos += Vec2( 0,  1) * 4.0f;
-	if (Window::KeyPressed(GLFW_KEY_S)) map->viewPos += Vec2( 0, -1) * 4.0f;
-	if (Window::KeyPressed(GLFW_KEY_A)) map->viewPos += Vec2(-1,  0) * 4.0f;
-	if (Window::KeyPressed(GLFW_KEY_D)) map->viewPos += Vec2( 1,  0) * 4.0f;
+	if (Window::KeyPressed(GLFW_KEY_W)) viewPos += Vec2( 0,  1) * delta * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_S)) viewPos += Vec2( 0, -1) * delta * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_A)) viewPos += Vec2(-1,  0) * delta * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_D)) viewPos += Vec2( 1,  0) * delta * 300.0f;
 
-	map->viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(map->viewPos, 0.0f)));
+	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 }
 
 void Engine::Render() {
+	// ImGui::Begin("Ch - 0");
+	// 	ImGui::Image((void*)(intptr_t)map->chunks[0][0].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
+	// ImGui::End();
+	// ImGui::Begin("Ch - 1");
+	// 	ImGui::Image((void*)(intptr_t)map->chunks[21][21].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
+	// ImGui::End();
+	// ImGui::Begin("Ch - 2");
+	// 	ImGui::Image((void*)(intptr_t)map->chunks[21][20].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
+	// ImGui::End();
+	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
+		Pos mousePos = Window::GetMousePosition();
+		Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
+		map->blocks[block.x][block.y] = BlockType::Empty;
+
+		// LOG_OUT(block.x);
+		// LOG_OUT(block.y);
+
+		// map->blocks[10 * 12][10 * 12] = BlockType::Empty;
+
+		Pos chunk = map->WhatChunk(block);
+		map->chunks[chunk.x][chunk.y].Prepare();
+		map->chunks[chunk.x][chunk.y].Rerender();
+	}
+
+	chunksRendered = 0;
+
+	chunkShader->Bind();
+	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
+
+		squareVao->Bind();
+
+			bounds_t bounds;
+			Pos middle = map->WhatChunk(map->GetCenter());
+
+			Vec2 centeredViewPos = viewPos - map->GetCenter() * 16.0f;
+
+			Vec2 additionalBlocks = Vec2(2, 2);
+
+			Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
+			
+			bounds.x.start = middle.x - (Window::GetSize().x / chunkSizeInPixels.x / 2.0f) + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
+			bounds.x.end   = middle.x + (Window::GetSize().x / chunkSizeInPixels.x / 2.0f) + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
+			bounds.y.start = middle.y - (Window::GetSize().y / chunkSizeInPixels.y / 2.0f) + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
+			bounds.y.end   = middle.y + (Window::GetSize().y / chunkSizeInPixels.y / 2.0f) + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+			
+			for (int x = bounds.x.start; x < bounds.x.end; x++) {
+				for (int y = bounds.y.start; y < bounds.y.end; y++) {
+					map->chunks[x][y].GetTexture()->Bind();
+						Vec2 pos = { x * 192, y * 192 };
+						// chunkShader->SetVec2("u_Pos", Math::ToPtr(pos));
+
+						Mat4 model = Math::Translate(Mat4(1), Vec3(pos, 1.0f));
+						model = Math::Scale(model, Vec3(192.0f, -192.0f, 1.0f));
+						chunkShader->SetMat4x4("u_Model", Math::ToPtr(model));
+						glDrawElements(GL_TRIANGLES, squareVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+					map->chunks[x][y].GetTexture()->Unbind();
+
+					chunksRendered += 1;
+				}
+			}
+			
+		squareVao->Unbind();
+	chunkShader->Unbind();
+
 	ImGui::Begin("Info");
-		ImGui::Image((void*)(intptr_t)map->chunks[3][0].GetTexture()->GetHandle(), ImVec2(192, 192), ImVec2(0, 0), ImVec2(1, -1));
+		ImGui::Text(("Chunks rendered: " + std::to_string(chunksRendered)).c_str());
+		ImGui::Text(("Fps: " + std::to_string(fps)).c_str());
 	ImGui::End();
 }
 

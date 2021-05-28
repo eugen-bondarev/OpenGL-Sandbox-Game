@@ -33,11 +33,6 @@ void Chunk::Prepare() {
 }
 
 void Chunk::Rerender() {
-	// Pos chunkToRender { 2, 0 };
-	
-	// std::vector<Map::chunk_t> chunks = { 
-	// 	map->WhatBlocks(chunkToRender),
-	// };
 	glViewport(0.0f, 0.0f, 192, 192);
 
   (*fbo)->Bind();
@@ -46,25 +41,36 @@ void Chunk::Rerender() {
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
     	vao->Bind();
     		tileMap->Bind();
-    // 			for (int i = 0; i < chunks.size(); i++) {
-    				for (int x = chunk.x.start; x < chunk.x.end; x++) {
-    					for (int y = chunk.y.start; y < chunk.y.end; y++) {
-    						BlockType type = (*blocks)[x][y];
-    						Vec2 textureOffset = Vec2(0, 0);
-    						Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
-    						Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
-    						Vec2 shiftedPosition = pos - chunkCenter;
-    						shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
-    						shader->SetVec2("u_Pos", Math::ToPtr(shiftedPosition));
-    						glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    					}
-    				}
-    // 			}
+          for (int x = chunk.x.start; x < chunk.x.end; x++) {
+            for (int y = chunk.y.start; y < chunk.y.end; y++) {
+              BlockType type = (*blocks)[x][y];
+
+              if (type == BlockType::Empty) continue;
+
+              Vec2 textureOffset = Vec2(0, 0);
+
+              switch (type) {
+                case BlockType::Dirt:
+                  textureOffset = Vec2(0, 0);
+                  break;
+                case BlockType::Grass:
+                  textureOffset = Vec2(1, 1);
+                  break;
+              }
+
+              Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
+              Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
+              Vec2 shiftedPosition = pos - chunkCenter;
+              shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
+              shader->SetVec2("u_Pos", Math::ToPtr(shiftedPosition));
+              glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+            }
+          }
     		tileMap->Unbind();
     	vao->Unbind();
     shader->Unbind();
   (*fbo)->Unbind();
-  
+
   delete *fbo;
 
 	glViewport(0.0f, 0.0f, Window::GetSize().x, Window::GetSize().y);

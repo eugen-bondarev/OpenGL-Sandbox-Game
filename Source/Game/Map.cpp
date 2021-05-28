@@ -75,15 +75,15 @@ void Map::GenerateMap() {
 		blocks[x].resize(amountOfRows);
 	}
 
-	int middle = static_cast<int>(amountOfBlocks.x / 2.0f);
+	int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
 
 	for (int x = 0; x < amountOfBlocks.x; x++) {
 		for (int y = 0; y < middle; y++) {
-			blocks[x][y] = BlockType::Empty;
+			blocks[x][y] = BlockType::Dirt;
 		}
 
 		for (int y = middle; y < amountOfBlocks.y; y++) {
-			blocks[x][y] = BlockType::Dirt;
+			blocks[x][y] = BlockType::Empty;
 		}
 	}
 }
