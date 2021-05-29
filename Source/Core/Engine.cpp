@@ -29,8 +29,8 @@ void Engine::InitResources() {
 		}
 	}
 
-	TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
-	TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
+	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
+	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
 	chunkShader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos");
 	squareVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
 
@@ -94,6 +94,8 @@ void Engine::Render() {
 
 	chunksRendered = 0;
 
+	GraphicsContext::ClearColor({ 224 / 255.0f, 236 / 255.0f, 255 / 255.0f, 1.0f });
+
 	chunkShader->Bind();
 	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
 		squareVao->Bind();
@@ -112,10 +114,10 @@ void Engine::Render() {
 			for (int x = bounds.x.start; x < bounds.x.end; x++) {
 				for (int y = bounds.y.start; y < bounds.y.end; y++) {
 					map->chunks[x][y].GetTexture()->Bind();
-						const Vec2 pos = Vec2(x, y) * map->GetChunkSizePixels();
-						Mat4 model = Math::Translate(Mat4(1), Vec3(pos, 1.0f));
-						model = Math::Scale(model, Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
-						chunkShader->SetMat4x4("u_Model", Math::ToPtr(model));
+						const Vec2 chunkPosPixels = Vec2(x, y) * map->GetChunkSizePixels();
+						Mat4 chunkModelMatrix = Math::Translate(Mat4(1), Vec3(chunkPosPixels, 1.0f));
+						chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
+						chunkShader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
 						glDrawElements(GL_TRIANGLES, squareVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
 					map->chunks[x][y].GetTexture()->Unbind();
 

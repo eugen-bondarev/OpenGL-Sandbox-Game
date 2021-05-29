@@ -10,6 +10,11 @@
 #include "Gpu/Shader.h"
 #include "Gpu/Vao.h"
 
+inline static std::map<BlockType, Pos> tileMapDictionary = {
+  { BlockType::Grass, { 0, 1 } },
+  { BlockType::Dirt, { 0, 0 } }
+};
+
 class Chunk {
 public:
   Chunk(

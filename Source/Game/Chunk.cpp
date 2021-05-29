@@ -51,16 +51,9 @@ void Chunk::Rerender() {
 
               if (type == BlockType::Empty) continue;
 
-              Vec2 textureOffset = Vec2(0, 0);
+              Vec2 textureOffset = Vec2(1, 1);
 
-              switch (type) {
-                case BlockType::Dirt:
-                  textureOffset = Vec2(0, 0);
-                  break;
-                case BlockType::Grass:
-                  textureOffset = Vec2(1, 1);
-                  break;
-              }
+              textureOffset += tileMapDictionary[type];
 
               Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
               Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
