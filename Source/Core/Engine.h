@@ -6,7 +6,7 @@
 
 #include "Renderer/Entities/Sprite.h"
 
-#include "Game/Map.h"
+#include "Game/MapRenderer.h"
 
 #include <memory>
 
@@ -22,11 +22,11 @@ public:
 	~Engine();
 
 private:
-	static bounds_t GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos);
+	static bounds_t GetVisibleChunks(std::shared_ptr<MapRenderer>& map, Pos viewPos);
 	std::shared_ptr<Shader> chunkShader;
 	std::shared_ptr<Vao> chunkVao;
 
-	std::shared_ptr<Map> map;
+	std::shared_ptr<MapRenderer> map;
 
 	Vec2 viewPos;
 	Mat4 viewMatrix;

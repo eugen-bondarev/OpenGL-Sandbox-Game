@@ -1,11 +1,11 @@
-#include "Map.h"
+#include "MapRenderer.h"
 
 #include "Assets/ImageAsset.h"
 #include "Assets/TextAsset.h"
 #include "Gpu/Vertex.h"
 #include "Math/Primitive.h"
 
-void Map::InitGraphics() {
+void MapRenderer::InitGraphics() {
 	ImageAsset image("Assets/Images/Map2.png");
 	graphics.tileMapTexture = std::make_shared<Texture>(
 		image.GetSize(),
@@ -38,7 +38,7 @@ void Map::InitGraphics() {
 	graphics.shader->Unbind();
 }
 
-Map::Map(Size chunkSize, Size amountOfChunks) {
+MapRenderer::MapRenderer(Size chunkSize, Size amountOfChunks) {
 	this->chunkSize = chunkSize;
 	this->amountOfChunks = amountOfChunks;
 
@@ -63,7 +63,7 @@ Map::Map(Size chunkSize, Size amountOfChunks) {
 	GenerateMap();
 }
 
-void Map::GenerateMap() {
+void MapRenderer::GenerateMap() {
 	amountOfBlocks = chunkSize * amountOfChunks;
 	const int amountOfColumns = amountOfBlocks.x;
 	const int amountOfRows = amountOfBlocks.y;

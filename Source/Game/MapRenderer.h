@@ -17,9 +17,9 @@
 
 #include "Types.h"
 
-class Map {
+class MapRenderer {
 public:
-	Map(Size chunkSize, Size amountOfChunks);
+	MapRenderer(Size chunkSize, Size amountOfChunks);
 
 	using chunks_row_t = std::vector<Chunk>;
 	using chunks_t = std::vector<chunks_row_t>;

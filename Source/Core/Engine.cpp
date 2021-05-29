@@ -19,7 +19,7 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<Map>(Size{16, 16}, Size{42, 42}); // ~ 500 x 500
+	map = std::make_shared<MapRenderer>(Size{16, 16}, Size{42, 42}); // ~ 500 x 500
 
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
@@ -68,7 +68,7 @@ void Engine::Control() {
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 }
 
-bounds_t Engine::GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos) {
+bounds_t Engine::GetVisibleChunks(std::shared_ptr<MapRenderer>& map, Pos viewPos) {
 	const Pos middle = map->WhatChunk(map->GetCenter());
 	const Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
 	const Vec2 additionalBlocks = Vec2(2, 2);

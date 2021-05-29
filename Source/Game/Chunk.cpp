@@ -47,7 +47,7 @@ void Chunk::Rerender() {
     		tileMapTexture->Bind();
           for (int x = bounds.x.start; x < bounds.x.end; x++) {
             for (int y = bounds.y.start; y < bounds.y.end; y++) {
-              BlockType type = blocks[x][y];
+              const BlockType type = blocks[x][y];
 
               if (type == BlockType::Empty) continue;
 
@@ -55,9 +55,9 @@ void Chunk::Rerender() {
 
               textureOffset += tileMapDictionary[type];
 
-              Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
-              Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
-              Vec2 shiftedPosition = pos - chunkCenter;
+              const Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
+              const Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
+              const Vec2 shiftedPosition = pos - chunkCenter;
               shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
               shader->SetVec2("u_Pos", Math::ToPtr(shiftedPosition));
               glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
