@@ -22,30 +22,12 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<MapRenderer>(Size{16, 16}, Size{42, 42});
+	map = std::make_shared<Map>(Size(16, 16), Size(42, 42));
+	pipeline.color = std::make_shared<ColorPass>(map);
+	pipeline.composition = std::make_shared<CompositionPass>();
 
-	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
-		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
-			const float currentTime = Time::GetTime();
-			map->chunks[x][y].Rerender();
-			const float elapsedTime = Time::GetTime() - currentTime;
-		}
-	}
-
-	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
-	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
-	chunkShader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos");
-	chunkVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
-
-	viewPos = map->GetCenter() * BLOCK_SIZE;
-	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
-
-	const Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
-
-	chunkShader->Bind();
-		chunkShader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
-		chunkShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-	chunkShader->Unbind();
+	view.position = map->GetCenter() * BLOCK_SIZE;
+	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 }
 
 bool Engine::IsRunning() const {
@@ -60,78 +42,58 @@ void Engine::BeginFrame() {
 }
 
 void Engine::Control() {
-	if (Input::KeyDown(KEY_W)) viewPos += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
-	if (Input::KeyDown(KEY_S)) viewPos += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
-	if (Input::KeyDown(KEY_A)) viewPos += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
-	if (Input::KeyDown(KEY_D)) viewPos += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_W)) view.position += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_S)) view.position += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_A)) view.position += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_D)) view.position += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
 
-	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
-}
-
-bounds_t Engine::GetVisibleChunks(std::shared_ptr<MapRenderer>& map, Pos viewPos) {
-	const Pos middle = map->WhatChunk(map->GetCenter());
-	const Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
-	const Vec2 additionalBlocks = Vec2(2, 2);
-	const Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
-	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
-	
-	bounds_t bounds;
-	bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
-	bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
-	bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
-	bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
-
-	return bounds;
+	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 }
 
 void Engine::Render() {
-	if (Input::MouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		const Pos mousePos = Window::GetMousePosition();
-		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
+	if (Input::MouseButtonDown(MOUSE_BUTTON_LEFT)) {
+		const Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), view.matrix);
 
 		if (map->blocks[block.x][block.y] != BlockType::Empty) {
 			map->blocks[block.x][block.y] = BlockType::Empty;
 
 			const Pos chunk = map->WhatChunk(block);
-			map->chunks[chunk.x][chunk.y].Rerender();
+			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
+			rerender = true;
 		}
 	}
 
-	if (Input::MouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
-		const Pos mousePos = Window::GetMousePosition();
-		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
+	if (Input::MouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+		const Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), view.matrix);
 
 		if (map->blocks[block.x][block.y] == BlockType::Empty) {
 			map->blocks[block.x][block.y] = BlockType::Dirt;
 
 			const Pos chunk = map->WhatChunk(block);
-			map->chunks[chunk.x][chunk.y].Rerender();
+			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
+			rerender = true;
 		}
 	}
 
-	chunksRendered = 0;
+	if (view.lastPosition != view.position) {
+		rerender = true;
+		view.lastPosition = view.position;
+	}
 
-	GraphicsContext::ClearColor({ 224 / 255.0f, 236 / 255.0f, 255 / 255.0f, 1.0f });
-	GraphicsContext::Clear();
+	if (rerender) {
+		pipeline.color->Execute(view.matrix, view.position);
+		rerender = false;
+	}
 
-	chunkShader->Bind();
-	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-		chunkVao->Bind();
-			bounds_t bounds = GetVisibleChunks(map, viewPos);
-			
-			for (int x = bounds.x.start; x < bounds.x.end; x++) {
-				for (int y = bounds.y.start; y < bounds.y.end; y++) {
-					map->chunks[x][y].Render(chunkShader);					
-					chunksRendered += 1;
-				}
-			}
-			
-		chunkVao->Unbind();
-	chunkShader->Unbind();
+	pipeline.composition->Execute(pipeline.color);
 
 	ImGui::Begin("Info");
-		ImGui::Text(("Chunks rendered: " + std::to_string(chunksRendered)).c_str());
+		ImGui::Text(("Chunks rendered: " + std::to_string(pipeline.color->info.chunksRendered)).c_str());
 		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
+	ImGui::End();
+
+	ImGui::Begin("Light - 1");
+		ImGui::Image((void*)(intptr_t)pipeline.color->GetMapRenderer()->chunks[21][21].GetTargetLightTexture()->GetHandle(), ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 	ImGui::End();
 }
 

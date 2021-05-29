@@ -35,4 +35,5 @@ public:
     void Bind() const override;
     void Bind(GLuint unit) const;
     void Unbind() const override;
+    void Unbind(GLuint unit) const;
 };

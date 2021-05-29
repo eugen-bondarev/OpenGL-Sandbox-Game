@@ -7,6 +7,7 @@
 #include "Types.h"
 
 #include "Gpu/ChunkFbo.h"
+#include "Gpu/LightFbo.h"
 #include "Gpu/Shader.h"
 #include "Gpu/Vao.h"
 
@@ -21,8 +22,11 @@ public:
     Pos chunkPos, 
     Size chunkSize,
     std::shared_ptr<Shader> shader, 
+    std::shared_ptr<Shader> lightShader, 
     std::shared_ptr<Vao> vao, 
+    std::shared_ptr<Vao> lightVao, 
     std::shared_ptr<Texture> tileMap, 
+    std::shared_ptr<Texture> lightTexture,
     bounds_t bounds, 
     blocks_t& blocks
   );
@@ -31,19 +35,29 @@ public:
     return targetTexture;
   }
 
+  inline std::shared_ptr<Texture>& GetTargetLightTexture() {
+    return targetLightTexture;
+  }
+
   void Rerender();
   void Render(std::shared_ptr<Shader>& shader);
 
 private:
   std::shared_ptr<Texture> targetTexture;
+  std::shared_ptr<Texture> targetLightTexture;
 
   blocks_t& blocks;
   
   std::shared_ptr<Shader> shader;
+  std::shared_ptr<Shader> lightShader;
   std::shared_ptr<Vao> vao;
+  std::shared_ptr<Vao> lightVao;
   std::shared_ptr<Texture> tileMapTexture;
+  std::shared_ptr<Texture> lightTexture;
 
   Pos chunkPos;
   Size chunkSize;
   bounds_t bounds;
+
+  std::vector<Pos> light;
 };

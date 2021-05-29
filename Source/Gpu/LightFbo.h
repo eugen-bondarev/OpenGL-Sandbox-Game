@@ -4,7 +4,7 @@
 
 class LightFbo : public Framebuffer {
 public:
-    LightFbo(Size size);
+    LightFbo(std::shared_ptr<Texture> & texture);
 
     void Resize(Size size) override;
     GLuint GetTextureHandle() const;

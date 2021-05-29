@@ -4,11 +4,11 @@
 #include "Gpu/ColorFbo.h"
 #include "Gpu/LightFbo.h"
 
+#include "Game/Map.h"
+
+#include "Renderer/ColorPass.h"
+#include "Renderer/CompositionPass.h"
 #include "Renderer/Entities/Sprite.h"
-
-#include "Game/MapRenderer.h"
-
-#include <memory>
 
 class Engine {
 public:
@@ -22,14 +22,18 @@ public:
 	~Engine();
 
 private:
-	static bounds_t GetVisibleChunks(std::shared_ptr<MapRenderer>& map, Pos viewPos);
-	std::shared_ptr<Shader> chunkShader;
-	std::shared_ptr<Vao> chunkVao;
+	struct {
+		std::shared_ptr<ColorPass> color;
+		std::shared_ptr<CompositionPass> composition;
+	} pipeline;
 
-	std::shared_ptr<MapRenderer> map;
+	std::shared_ptr<Map> map;
 
-	Vec2 viewPos;
-	Mat4 viewMatrix;
+	struct {
+		Mat4 matrix;
+		Vec2 position;
+		Vec2 lastPosition;
+	} view;
 
-	int chunksRendered{0};
+	bool rerender { true };
 };
