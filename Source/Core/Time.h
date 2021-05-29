@@ -4,8 +4,6 @@
 
 class Time {
 public:
-  Time();
-
   inline static void BeginFrame() {
     currentTime = static_cast<float>(glfwGetTime());
     delta = currentTime - lastTime;
@@ -33,6 +31,8 @@ public:
   }
 
 private:
+  Time();
+
 	inline static float currentTime{0};
 	inline static float delta{0};
 	inline static float lastTime{0};

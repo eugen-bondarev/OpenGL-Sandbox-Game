@@ -15,7 +15,6 @@ public:
 	static void Clear();
 	static void PollEvents();
 	static void SwapBuffers();
-	static bool KeyPressed(int key);
 
 	static Size GetSize();
 	static Mat4 GetSpace();

@@ -3,6 +3,7 @@
 #include "Core/Window.h"
 #include "Core/Time.h"
 #include "Core/Gui.h"
+#include "Core/Input/Input.h"
 
 #include "Assets/TextAsset.h"
 #include "Assets/ImageAsset.h"
@@ -15,6 +16,7 @@
 Engine::Engine() {
 	Window::Create();
 	Gui::Create();
+	Input::Create(Window::GetGlfwWindow());
 }
 
 void Engine::InitResources() {
@@ -54,13 +56,14 @@ void Engine::BeginFrame() {
 	Window::BeginFrame();
 	Gui::BeginFrame();
 	Time::BeginFrame();
+	Input::BeginFrame();
 }
 
 void Engine::Control() {
-	if (Window::KeyPressed(GLFW_KEY_W)) viewPos += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
-	if (Window::KeyPressed(GLFW_KEY_S)) viewPos += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
-	if (Window::KeyPressed(GLFW_KEY_A)) viewPos += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
-	if (Window::KeyPressed(GLFW_KEY_D)) viewPos += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_W)) viewPos += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_S)) viewPos += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_A)) viewPos += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(KEY_D)) viewPos += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
 
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 }
@@ -82,7 +85,7 @@ bounds_t Engine::GetVisibleChunks(std::shared_ptr<MapRenderer>& map, Pos viewPos
 }
 
 void Engine::Render() {
-	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
+	if (Input::MouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		const Pos mousePos = Window::GetMousePosition();
 		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
 
@@ -94,7 +97,7 @@ void Engine::Render() {
 		}
 	}
 
-	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT)) {
+	if (Input::MouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
 		const Pos mousePos = Window::GetMousePosition();
 		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
 
@@ -133,6 +136,7 @@ void Engine::Render() {
 }
 
 void Engine::EndFrame() {
+	Input::EndFrame();
 	Time::EndFrame();
 	Gui::EndFrame();
 	Window::EndFrame();
