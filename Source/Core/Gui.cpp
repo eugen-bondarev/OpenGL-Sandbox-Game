@@ -17,13 +17,13 @@ void Gui::Destroy() {
     ImGui_ImplOpenGL3_Shutdown();
 }
 
-void Gui::Begin() {
+void Gui::BeginFrame() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
 
-void Gui::End() {
+void Gui::EndFrame() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

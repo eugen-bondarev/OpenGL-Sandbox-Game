@@ -86,3 +86,11 @@ void Window::PollEvents() {
 void Window::SwapBuffers() {
 	glfwSwapBuffers(glfwWindow);
 }
+
+void Window::BeginFrame() {
+	PollEvents();
+}
+
+void Window::EndFrame() {
+	SwapBuffers();
+}

@@ -16,9 +16,13 @@ public:
 	static void PollEvents();
 	static void SwapBuffers();
 	static bool KeyPressed(int key);
+
 	static Size GetSize();
 	static Mat4 GetSpace();
 	static Vec2 GetMousePosition();
+
+	static void BeginFrame();
+	static void EndFrame();
 
 	inline static GLFWwindow *GetGlfwWindow() {
 		return glfwWindow;

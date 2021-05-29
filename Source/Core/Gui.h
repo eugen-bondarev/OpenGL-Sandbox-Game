@@ -9,6 +9,6 @@ public:
 	static void Create();
 	static void Destroy();
 
-	static void Begin();
-	static void End();
+	static void BeginFrame();
+	static void EndFrame();
 };

@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #include "Core/Window.h"
+#include "Core/Time.h"
 #include "Core/Gui.h"
 
 #include "Assets/TextAsset.h"
@@ -19,13 +20,13 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<MapRenderer>(Size{16, 16}, Size{42, 42}); // ~ 500 x 500
+	map = std::make_shared<MapRenderer>(Size{16, 16}, Size{42, 42});
 
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
-			const float currentTime = static_cast<float>(glfwGetTime());
+			const float currentTime = Time::GetTime();
 			map->chunks[x][y].Rerender();
-			const float elapsedTime = static_cast<float>(glfwGetTime()) - currentTime;
+			const float elapsedTime = Time::GetTime() - currentTime;
 		}
 	}
 
@@ -50,20 +51,16 @@ bool Engine::IsRunning() const {
 }
 
 void Engine::BeginFrame() {
-	Window::Clear();
-	Window::PollEvents();
-	Gui::Begin();
-
-	currentTime = static_cast<float>(glfwGetTime());
-	delta = currentTime - lastTime;
-	lastTime = currentTime;
+	Window::BeginFrame();
+	Gui::BeginFrame();
+	Time::BeginFrame();
 }
 
 void Engine::Control() {
-	if (Window::KeyPressed(GLFW_KEY_W)) viewPos += Vec2( 0,  1) * delta * 300.0f;
-	if (Window::KeyPressed(GLFW_KEY_S)) viewPos += Vec2( 0, -1) * delta * 300.0f;
-	if (Window::KeyPressed(GLFW_KEY_A)) viewPos += Vec2(-1,  0) * delta * 300.0f;
-	if (Window::KeyPressed(GLFW_KEY_D)) viewPos += Vec2( 1,  0) * delta * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_W)) viewPos += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_S)) viewPos += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_A)) viewPos += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
+	if (Window::KeyPressed(GLFW_KEY_D)) viewPos += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
 
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 }
@@ -112,6 +109,7 @@ void Engine::Render() {
 	chunksRendered = 0;
 
 	GraphicsContext::ClearColor({ 224 / 255.0f, 236 / 255.0f, 255 / 255.0f, 1.0f });
+	GraphicsContext::Clear();
 
 	chunkShader->Bind();
 	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
@@ -130,19 +128,14 @@ void Engine::Render() {
 
 	ImGui::Begin("Info");
 		ImGui::Text(("Chunks rendered: " + std::to_string(chunksRendered)).c_str());
-		ImGui::Text(("Fps: " + std::to_string(fps)).c_str());
+		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();
 }
 
 void Engine::EndFrame() {
-	fpsTimer += delta;
-	if (fpsTimer >= 1.0f) {
-		fps = 1.0f / delta;
-		fpsTimer = 0;
-	}
-
-	Gui::End();
-	Window::SwapBuffers();
+	Time::EndFrame();
+	Gui::EndFrame();
+	Window::EndFrame();
 }
 
 Engine::~Engine() {

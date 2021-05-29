@@ -31,12 +31,5 @@ private:
 	Vec2 viewPos;
 	Mat4 viewMatrix;
 
-	int chunksRendered = 0;
-
-	float currentTime{0};
-	float delta{0};
-	float lastTime{0};
-
-	float fpsTimer{0};
-	float fps{0};
+	int chunksRendered{0};
 };
