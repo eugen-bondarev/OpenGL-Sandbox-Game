@@ -72,10 +72,24 @@ void Engine::Render() {
 	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
 		const Pos mousePos = Window::GetMousePosition();
 		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
-		map->blocks[block.x][block.y] = BlockType::Empty;
 
-		const Pos chunk = map->WhatChunk(block);
-		map->chunks[chunk.x][chunk.y].Rerender();
+		if (map->blocks[block.x][block.y] != BlockType::Empty) {
+			map->blocks[block.x][block.y] = BlockType::Empty;
+
+			const Pos chunk = map->WhatChunk(block);
+			map->chunks[chunk.x][chunk.y].Rerender();
+		}
+	}
+	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT)) {
+		const Pos mousePos = Window::GetMousePosition();
+		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
+
+		if (map->blocks[block.x][block.y] == BlockType::Empty) {
+			map->blocks[block.x][block.y] = BlockType::Dirt;
+
+			const Pos chunk = map->WhatChunk(block);
+			map->chunks[chunk.x][chunk.y].Rerender();
+		}
 	}
 
 	chunksRendered = 0;
