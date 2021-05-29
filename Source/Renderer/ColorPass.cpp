@@ -15,13 +15,12 @@ ColorPass::ColorPass(std::shared_ptr<Map> map) {
 
 	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
-	shader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass", "u_LightPass");
+	shader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass");
 	chunkVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
   
 	const Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(mapRenderer->GetChunkSizePixels().x, -mapRenderer->GetChunkSizePixels().y, 1.0f));
 	shader->Bind();
 		shader->SetInt("u_ColorPass", 0);
-		shader->SetInt("u_LightPass", 1);
 		shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
 		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 	shader->Unbind();
