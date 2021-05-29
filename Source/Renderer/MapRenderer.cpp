@@ -20,11 +20,8 @@ MapRenderer::MapRenderer(std::shared_ptr<Map>& map) {
 				Pos {x, y}, 
 				Size {map->GetChunkSize()}, 
 				shader,
-				lightShader,
 				tileVao, 
-				lightVao, 
 				tileMapTexture, 
-				lightTexture,
 				bounds, 
 				map->blocks
 			);
@@ -58,40 +55,14 @@ void MapRenderer::InitGraphics() {
 		}
 	);
 
-	ImageAsset lightTextureAsset("Assets/Images/LightMask5.png");
-	lightTexture = std::make_shared<Texture>(
-		lightTextureAsset.GetSize(),
-		lightTextureAsset.GetData(),
-		GL_RGBA,
-		lightTextureAsset.GetChannels() == 4 ? GL_RGBA : GL_RGB,
-		GL_UNSIGNED_BYTE,
-		std::vector<Texture::param_t> {
-			{ ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-			{ ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-		}
-	);
-
 	tileVao = std::make_shared<Vao>(
 		Primitives::Quad::vertices,
 		Vertex::GetLayout(),
 		Primitives::Quad::indices
 	);
 
-	lightVao = std::make_shared<Vao>(
-		Primitives::Light::vertices,
-		Vertex::GetLayout(),
-		Primitives::Light::indices
-	);
-
 	Vec2 halfChunkSize = (map->GetChunkSize() * BLOCK_SIZE) / 2.0f;
 	Mat4 projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
-
-	TextAsset vsCodeLight("Assets/Shaders/Terrain/Light.vs");
-	TextAsset fsCodeLight("Assets/Shaders/Terrain/Light.fs");
-	lightShader = std::make_shared<Shader>(vsCodeLight.GetContent(), fsCodeLight.GetContent(), "u_Proj", "u_View", "u_Pos");
-	lightShader->Bind();
-		lightShader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
-	lightShader->Unbind();
 
 	TextAsset vsCode("Assets/Shaders/Terrain/Default.vs");
 	TextAsset fsCode("Assets/Shaders/Terrain/Default.fs");

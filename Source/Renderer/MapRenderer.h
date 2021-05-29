@@ -37,10 +37,6 @@ private:
 	void InitGraphics();
 
 	std::shared_ptr<Vao> tileVao;
-	std::shared_ptr<Vao> lightVao;
 	std::shared_ptr<Texture> tileMapTexture;
 	std::shared_ptr<Shader> shader;
-
-	std::shared_ptr<Shader> lightShader;
-	std::shared_ptr<Texture> lightTexture;
 };

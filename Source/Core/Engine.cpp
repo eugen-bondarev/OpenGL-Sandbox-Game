@@ -91,10 +91,6 @@ void Engine::Render() {
 		ImGui::Text(("Chunks rendered: " + std::to_string(pipeline.color->info.chunksRendered)).c_str());
 		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();
-
-	ImGui::Begin("Light - 1");
-		ImGui::Image((void*)(intptr_t)pipeline.color->GetMapRenderer()->chunks[21][21].GetTargetLightTexture()->GetHandle(), ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
-	ImGui::End();
 }
 
 void Engine::EndFrame() {
