@@ -71,12 +71,14 @@ public:
 		return block;
 	}
 
-	void InitGraphics();
-	std::shared_ptr<Vao> tileVao;
-	std::shared_ptr<Texture> tileMap;
-	std::shared_ptr<Shader> shader;
-
 private:
+	void InitGraphics();
+	struct {
+		std::shared_ptr<Vao> tileVao;
+		std::shared_ptr<Texture> tileMapTexture;
+		std::shared_ptr<Shader> shader;
+	} graphics;
+
 	Size chunkSize;
 	Size amountOfChunks;
 	Size amountOfBlocks;

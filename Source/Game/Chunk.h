@@ -27,20 +27,21 @@ public:
     blocks_t& blocks
   );
 
-  inline std::shared_ptr<Texture>& GetTexture() {
-    return texture;
+  inline std::shared_ptr<Texture>& GetTargetTexture() {
+    return targetTexture;
   }
 
   void Rerender();
+  void Render(std::shared_ptr<Shader>& shader);
 
 private:
-  std::shared_ptr<Texture> texture;
+  std::shared_ptr<Texture> targetTexture;
 
   blocks_t& blocks;
   
   std::shared_ptr<Shader> shader;
   std::shared_ptr<Vao> vao;
-  std::shared_ptr<Texture> tileMap;
+  std::shared_ptr<Texture> tileMapTexture;
 
   Pos chunkPos;
   Size chunkSize;

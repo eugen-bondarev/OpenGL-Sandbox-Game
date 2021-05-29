@@ -22,8 +22,9 @@ public:
 	~Engine();
 
 private:
+	static bounds_t GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos);
 	std::shared_ptr<Shader> chunkShader;
-	std::shared_ptr<Vao> squareVao;
+	std::shared_ptr<Vao> chunkVao;
 
 	std::shared_ptr<Map> map;
 

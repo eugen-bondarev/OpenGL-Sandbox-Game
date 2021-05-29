@@ -19,7 +19,7 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<Map>(Size{16, 16}, Size{21, 21}); // ~ 500 x 500
+	map = std::make_shared<Map>(Size{16, 16}, Size{42, 42}); // ~ 500 x 500
 
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
@@ -32,9 +32,9 @@ void Engine::InitResources() {
 	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
 	chunkShader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos");
-	squareVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
+	chunkVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
 
-	viewPos = map->GetCenter() * 16.0f;
+	viewPos = map->GetCenter() * BLOCK_SIZE;
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
 	const Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
@@ -68,6 +68,22 @@ void Engine::Control() {
 	viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 }
 
+bounds_t Engine::GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos) {
+	const Pos middle = map->WhatChunk(map->GetCenter());
+	const Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
+	const Vec2 additionalBlocks = Vec2(2, 2);
+	const Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
+	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
+	
+	bounds_t bounds;
+	bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
+	bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
+	bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
+	bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+
+	return bounds;
+}
+
 void Engine::Render() {
 	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT)) {
 		const Pos mousePos = Window::GetMousePosition();
@@ -80,6 +96,7 @@ void Engine::Render() {
 			map->chunks[chunk.x][chunk.y].Rerender();
 		}
 	}
+
 	if (glfwGetMouseButton(Window::GetGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT)) {
 		const Pos mousePos = Window::GetMousePosition();
 		const Vec2 block = map->WindowCoordsToBlockCoords(mousePos, Window::GetSpace(), viewMatrix);
@@ -98,34 +115,17 @@ void Engine::Render() {
 
 	chunkShader->Bind();
 	chunkShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-		squareVao->Bind();
-			const Pos middle = map->WhatChunk(map->GetCenter());
-			const Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
-			const Vec2 additionalBlocks = Vec2(2, 2);
-			const Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
-			const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
-			
-			bounds_t bounds;
-			bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
-			bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
-			bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
-			bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+		chunkVao->Bind();
+			bounds_t bounds = GetVisibleChunks(map, viewPos);
 			
 			for (int x = bounds.x.start; x < bounds.x.end; x++) {
 				for (int y = bounds.y.start; y < bounds.y.end; y++) {
-					map->chunks[x][y].GetTexture()->Bind();
-						const Vec2 chunkPosPixels = Vec2(x, y) * map->GetChunkSizePixels();
-						Mat4 chunkModelMatrix = Math::Translate(Mat4(1), Vec3(chunkPosPixels, 1.0f));
-						chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3(map->GetChunkSizePixels().x, -map->GetChunkSizePixels().y, 1.0f));
-						chunkShader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
-						glDrawElements(GL_TRIANGLES, squareVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
-					map->chunks[x][y].GetTexture()->Unbind();
-
+					map->chunks[x][y].Render(chunkShader);					
 					chunksRendered += 1;
 				}
 			}
 			
-		squareVao->Unbind();
+		chunkVao->Unbind();
 	chunkShader->Unbind();
 
 	ImGui::Begin("Info");

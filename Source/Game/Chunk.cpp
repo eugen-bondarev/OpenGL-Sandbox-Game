@@ -15,10 +15,10 @@ Chunk::Chunk(
   this->chunkSize = chunkSize;
   this->shader = shader;
   this->vao = vao;
-  this->tileMap = tileMap;
+  this->tileMapTexture = tileMap;
   this->bounds = bounds;
 
-  texture = std::make_unique<Texture>(
+  targetTexture = std::make_unique<Texture>(
     chunkSize * BLOCK_SIZE,
     nullptr,
     GL_RGBA,
@@ -32,7 +32,7 @@ Chunk::Chunk(
 }
 
 void Chunk::Rerender() {
-  ChunkFbo fbo(texture);
+  ChunkFbo fbo(targetTexture);
 
 	const Vec2 viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
 	const Mat4 viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
@@ -44,7 +44,7 @@ void Chunk::Rerender() {
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
     	vao->Bind();
-    		tileMap->Bind();
+    		tileMapTexture->Bind();
           for (int x = bounds.x.start; x < bounds.x.end; x++) {
             for (int y = bounds.y.start; y < bounds.y.end; y++) {
               BlockType type = blocks[x][y];
@@ -63,10 +63,20 @@ void Chunk::Rerender() {
               glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
             }
           }
-    		tileMap->Unbind();
+    		tileMapTexture->Unbind();
     	vao->Unbind();
     shader->Unbind();
   fbo.Unbind();
 
 	glViewport(0.0f, 0.0f, Window::GetSize().x, Window::GetSize().y);
+}
+
+void Chunk::Render(std::shared_ptr<Shader>& shader) {
+  targetTexture->Bind();
+    const Vec2 chunkPosPixels = chunkPos * chunkSize * BLOCK_SIZE;
+    Mat4 chunkModelMatrix = Math::Translate(Mat4(1), Vec3(chunkPosPixels, 1.0f));
+    chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3((chunkSize * BLOCK_SIZE).x, -(chunkSize * BLOCK_SIZE).y, 1.0f));
+    shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+  targetTexture->Unbind();
 }

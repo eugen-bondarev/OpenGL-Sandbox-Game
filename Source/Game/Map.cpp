@@ -7,7 +7,7 @@
 
 void Map::InitGraphics() {
 	ImageAsset image("Assets/Images/Map2.png");
-	tileMap = std::make_shared<Texture>(
+	graphics.tileMapTexture = std::make_shared<Texture>(
 		image.GetSize(),
 		image.GetData(),
 		GL_RGBA,
@@ -19,7 +19,7 @@ void Map::InitGraphics() {
 		}
 	);
 
-	tileVao = std::make_shared<Vao>(
+	graphics.tileVao = std::make_shared<Vao>(
 		Primitives::Quad::vertices,
 		Vertex::GetLayout(),
 		Primitives::Quad::indices
@@ -31,31 +31,40 @@ void Map::InitGraphics() {
 	Vec2 halfChunkSize = (chunkSize * BLOCK_SIZE) / 2.0f;
 	Mat4 projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
 
-	shader = std::make_shared<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
-	shader->Bind();
-		shader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
-		shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));
-	shader->Unbind();
+	graphics.shader = std::make_shared<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
+	graphics.shader->Bind();
+		graphics.shader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
+		graphics.shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));
+	graphics.shader->Unbind();
 }
 
 Map::Map(Size chunkSize, Size amountOfChunks) {
 	this->chunkSize = chunkSize;
 	this->amountOfChunks = amountOfChunks;
+
 	InitGraphics();
 
 	chunks.resize(amountOfChunks.x);
 	for (int x = 0; x < amountOfChunks.x; x++) {
 		for (int y = 0; y < amountOfChunks.y; y++) {
 			bounds_t bounds = WhatBlocks({ x, y });
-			chunks[x].emplace_back(Pos {x, y}, Size {chunkSize}, shader, tileVao, tileMap, bounds, blocks);
+			chunks[x].emplace_back(
+				Pos {x, y}, 
+				Size {chunkSize}, 
+				graphics.shader, 
+				graphics.tileVao, 
+				graphics.tileMapTexture, 
+				bounds, 
+				blocks
+			);
 		}
 	}
 
-	amountOfBlocks = chunkSize * amountOfChunks;
 	GenerateMap();
 }
 
 void Map::GenerateMap() {
+	amountOfBlocks = chunkSize * amountOfChunks;
 	const int amountOfColumns = amountOfBlocks.x;
 	const int amountOfRows = amountOfBlocks.y;
 
