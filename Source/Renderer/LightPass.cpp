@@ -52,7 +52,7 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 void LightPass::Execute(std::shared_ptr<ColorPass>& colorPass, std::shared_ptr<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos) {
 	GraphicsContext::ClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 	
-	bounds_t bounds = map->GetVisibleChunks(viewPos);
+	const bounds_t& bounds = map->GetVisibleChunks();
 
 	if (!colorPass->light.size()) return;
 

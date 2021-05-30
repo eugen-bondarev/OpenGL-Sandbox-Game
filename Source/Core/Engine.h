@@ -23,13 +23,13 @@ public:
 	~Engine();
 
 private:
+	std::shared_ptr<Map> map;
+
 	struct {
 		std::shared_ptr<ColorPass> color;
 		std::shared_ptr<LightPass> light;
 		std::shared_ptr<CompositionPass> composition;
 	} pipeline;
-
-	std::shared_ptr<Map> map;
 
 	struct {
 		Mat4 matrix;

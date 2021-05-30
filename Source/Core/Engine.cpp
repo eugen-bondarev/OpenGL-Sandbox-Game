@@ -78,6 +78,7 @@ void Engine::Render() {
 
 	if (view.lastPosition != view.position) {
 		rerender = true;
+		map->CalculateVisibleChunks(view.position);
 		view.lastPosition = view.position;
 	}
 

@@ -7,20 +7,23 @@ Map::Map(Size chunkSize, Size amountOfChunks) {
 	GenerateMap();
 }
 
-bounds_t Map::GetVisibleChunks(Pos viewPos) {
+void Map::CalculateVisibleChunks(Pos viewPos) {
 	const Pos middle = WhatChunk(GetCenter());
-	const Vec2 centeredViewPos = viewPos - GetCenter() * BLOCK_SIZE;
-	const Vec2 additionalBlocks = Vec2(2, 2);
+	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * BLOCK_SIZE;
 	const Vec2 chunkSizeInPixels = GetChunkSize() * BLOCK_SIZE;
 	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
+	const Vec2 additionalBlocks = Vec2(1);
 	
-	bounds_t bounds;
-	bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
-	bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
-	bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
-	bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+	visibleChunks.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
+	visibleChunks.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x;
+	visibleChunks.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
+	visibleChunks.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y;
 
-	return bounds;
+	visibleChunks.x.start = std::max(visibleChunks.x.start, 0);
+	visibleChunks.y.start = std::max(visibleChunks.y.start, 0);
+
+	visibleChunks.x.end = std::min(visibleChunks.x.end, static_cast<int>(GetAmountOfChunks().x) - 1);
+	visibleChunks.y.end = std::min(visibleChunks.y.end, static_cast<int>(GetAmountOfChunks().y) - 1);
 }
 
 void Map::GenerateMap() {

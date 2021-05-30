@@ -49,7 +49,11 @@ public:
 		return amountOfBlocks / 2.0f;
 	}
 
-	bounds_t GetVisibleChunks(Pos viewPos);
+	void CalculateVisibleChunks(Pos viewPos);
+	
+	inline const bounds_t& GetVisibleChunks() const {
+		return visibleChunks;
+	}
 
 	blocks_t blocks;
 
@@ -59,4 +63,6 @@ private:
 	Size amountOfBlocks;
 
 	void GenerateMap();
+
+	bounds_t visibleChunks;
 };
