@@ -4,11 +4,11 @@
 
 class LightFbo : public Framebuffer {
 public:
-    LightFbo(std::shared_ptr<Texture> & texture);
+    LightFbo(Size size);
 
     void Resize(Size size) override;
     GLuint GetTextureHandle() const;
 
-    void BindTexture(GLuint slot) const;
-    void UnbindTexture(GLuint slot) const;
+    void BindTexture(GLuint slot = GL_TEXTURE0) const;
+    void UnbindTexture(GLuint slot = GL_TEXTURE0) const;
 };

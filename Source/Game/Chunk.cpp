@@ -41,9 +41,9 @@ void Chunk::Rerender() {
 
 	glViewport(0.0f, 0.0f, chunkSize.x * BLOCK_SIZE, chunkSize.y * BLOCK_SIZE);
 
-  light.clear();
-
 	GraphicsContext::ClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+
+  lightData.clear();
 
   fbo.Bind();
   fbo.Clear();
@@ -56,6 +56,10 @@ void Chunk::Rerender() {
               const BlockType type = blocks[x][y];
 
               if (type == BlockType::Empty) {
+                if (y + 1 < blocks[x].size() && y > 0 && blocks[x][y - 1] != BlockType::Empty) {
+                  lightData.emplace_back(x * BLOCK_SIZE - 120, y * BLOCK_SIZE - 120);
+                }
+
                 continue;
               }
 
@@ -65,9 +69,8 @@ void Chunk::Rerender() {
 
               const Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
               const Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
-              const Vec2 shiftedPosition = pos - chunkCenter;
               shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
-              shader->SetVec2("u_Pos", Math::ToPtr(shiftedPosition));
+              shader->SetVec2("u_Pos", Math::ToPtr(pos - chunkCenter));
               glDrawElements(GL_TRIANGLES, vao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
             }
           }

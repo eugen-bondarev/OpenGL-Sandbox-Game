@@ -31,7 +31,9 @@ ColorPass::ColorPass(std::shared_ptr<Map> map) {
 void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
 	info.chunksRendered = 0;
 
-	GraphicsContext::ClearColor({ 224 / 255.0f, 236 / 255.0f, 255 / 255.0f, 1.0f });
+	GraphicsContext::ClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+
+	light.clear();
 
   fbo->Bind();
   fbo->Clear();
@@ -44,6 +46,10 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
           for (int y = bounds.y.start; y < bounds.y.end; y++) {
             mapRenderer->chunks[x][y].Render(shader);
 						info.chunksRendered += 1;
+						
+						for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
+							light.push_back(mapRenderer->chunks[x][y].lightData[i]);
+						}
           }
         }
         

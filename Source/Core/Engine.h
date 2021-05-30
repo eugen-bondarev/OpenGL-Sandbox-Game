@@ -7,6 +7,7 @@
 #include "Game/Map.h"
 
 #include "Renderer/ColorPass.h"
+#include "Renderer/LightPass.h"
 #include "Renderer/CompositionPass.h"
 #include "Renderer/Entities/Sprite.h"
 
@@ -24,6 +25,7 @@ public:
 private:
 	struct {
 		std::shared_ptr<ColorPass> color;
+		std::shared_ptr<LightPass> light;
 		std::shared_ptr<CompositionPass> composition;
 	} pipeline;
 

@@ -16,3 +16,5 @@ using bounds_t = struct {
 };
 
 using chunk_t = bounds_t;
+
+using light_data_t = std::vector<Pos>;

@@ -5,7 +5,12 @@ in vec2 out_Uv;
 out vec4 out_Color;
 
 uniform sampler2D u_ColorPassResult;
+uniform sampler2D u_LightPassResult;
 
 void main() {
-  out_Color = texture(u_ColorPassResult, out_Uv);
+
+  vec4 pureColor = texture(u_ColorPassResult, out_Uv);
+  float light = texture(u_LightPassResult, out_Uv).r;
+
+  out_Color = vec4(pureColor.xyz * light, pureColor.a);
 }

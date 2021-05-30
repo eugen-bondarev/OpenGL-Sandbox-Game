@@ -6,8 +6,10 @@
 
 class Vao : public GpuEntity {
 public:
+    GLuint posVbo;
+
     template <typename T_Vertex>
-    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices) {
+    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices, bool dynamic = false) {
         m_Attributes.resize(layouts.size());
 
         glGenVertexArrays(1, &m_Handle);
@@ -17,13 +19,22 @@ public:
         unsigned int vbo{ 0 };
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T_Vertex), &vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T_Vertex), &vertices[0], GL_STATIC_DRAW);       
         for (int i = 0; i < layouts.size(); i++) {
             glVertexAttribPointer(i, layouts[i].Size, GL_FLOAT, GL_FALSE, layouts[i].Stride, reinterpret_cast<void *>(layouts[i].Offset));
             m_Attributes[i] = i;
         }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
         m_Buffers.emplace_back(vbo);
+
+        if (dynamic) {
+            glGenBuffers(1, &posVbo);
+            glBindBuffer(GL_ARRAY_BUFFER, posVbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 0, NULL, GL_STREAM_DRAW);    //NULL (empty) buffer
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+            m_Buffers.emplace_back(posVbo);
+        }
 
         glGenBuffers(1, &m_IndexVboHandle);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboHandle);

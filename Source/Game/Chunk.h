@@ -35,6 +35,8 @@ public:
   void Rerender();
   void Render(std::shared_ptr<Shader>& shader);
 
+  light_data_t lightData;
+
 private:
   std::shared_ptr<Texture> targetTexture;
 
@@ -47,6 +49,4 @@ private:
   Pos chunkPos;
   Size chunkSize;
   bounds_t bounds;
-
-  std::vector<Pos> light;
 };

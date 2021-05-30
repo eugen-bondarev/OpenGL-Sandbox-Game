@@ -164,6 +164,10 @@ void Shader::SetVec4(const std::string& name, float const* const vec)
     glUniform4fv(m_UniformLocations.at(name), 1, vec);
 }
 
+void Shader::SetListVec2(const std::string& name, float const* const vec, unsigned int size) {
+    glUniform2fv(m_UniformLocations.at(name), size, vec);
+}
+
 void Shader::SetListMat4x4(const std::string& name, float const* const list, unsigned int size)
 {
 

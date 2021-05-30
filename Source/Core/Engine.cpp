@@ -24,6 +24,7 @@ void Engine::InitResources() {
 
 	map = std::make_shared<Map>(Size(16, 16), Size(42, 42));
 	pipeline.color = std::make_shared<ColorPass>(map);
+	pipeline.light = std::make_shared<LightPass>(pipeline.color->GetMapRenderer());
 	pipeline.composition = std::make_shared<CompositionPass>();
 
 	view.position = map->GetCenter() * BLOCK_SIZE;
@@ -82,14 +83,16 @@ void Engine::Render() {
 
 	if (rerender) {
 		pipeline.color->Execute(view.matrix, view.position);
+		pipeline.light->Execute(pipeline.color, map, view.matrix, view.position);
 		rerender = false;
 	}
 
-	pipeline.composition->Execute(pipeline.color);
+	pipeline.composition->Execute(pipeline.color, pipeline.light);
 
 	ImGui::Begin("Info");
 		ImGui::Text(("Chunks rendered: " + std::to_string(pipeline.color->info.chunksRendered)).c_str());
 		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
+		ImGui::Text(("Lights: " + std::to_string(pipeline.color->light.size())).c_str());
 	ImGui::End();
 }
 

@@ -20,6 +20,8 @@ public:
     unsigned int chunksRendered;
   } info;
 
+  std::vector<Pos> light;
+
 private:
 	static bounds_t GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos);
 	std::shared_ptr<MapRenderer> mapRenderer;

@@ -49,6 +49,8 @@ public:
 		return amountOfBlocks / 2.0f;
 	}
 
+	bounds_t GetVisibleChunks(Pos viewPos);
+
 	blocks_t blocks;
 
 private:
