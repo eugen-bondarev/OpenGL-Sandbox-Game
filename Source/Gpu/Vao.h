@@ -9,7 +9,7 @@ public:
     GLuint posVbo;
 
     template <typename T_Vertex>
-    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices, bool dynamic = false) {
+    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices) {
         m_Attributes.resize(layouts.size());
 
         glGenVertexArrays(1, &m_Handle);
@@ -27,14 +27,6 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         m_Buffers.emplace_back(vbo);
-
-        if (dynamic) {
-            glGenBuffers(1, &posVbo);
-            glBindBuffer(GL_ARRAY_BUFFER, posVbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 0, NULL, GL_STREAM_DRAW);    //NULL (empty) buffer
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-            m_Buffers.emplace_back(posVbo);
-        }
 
         glGenBuffers(1, &m_IndexVboHandle);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboHandle);
@@ -56,6 +48,18 @@ public:
     void Render() const;
 
     GLuint GetVertexCount() const;
+
+    inline void AddVbo(GLuint vbo) {
+        m_Buffers.push_back(vbo);
+    }
+
+    inline void AddAttribute(GLuint attribute) {
+        m_Attributes.push_back(attribute);
+    }
+
+    inline GLuint GetLastAttribute() const {
+        return static_cast<GLuint>(m_Attributes.size());
+    }
 
 private:
     GLuint m_IndexVboHandle{0};

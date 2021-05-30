@@ -17,8 +17,18 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");
 	shader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Pos");
 
-	lightVao = std::make_shared<Vao>(Primitives::Light::vertices, Vertex::GetLayout(), Primitives::Light::indices, true);
-	
+	lightVao = std::make_shared<Vao>(Primitives::Light::vertices, Vertex::GetLayout(), Primitives::Light::indices);
+
+	lightVao->Bind();
+		GLuint attribute = lightVao->GetLastAttribute();
+		glGenBuffers(1, &transformationVbo);
+		glBindBuffer(GL_ARRAY_BUFFER, transformationVbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * 0, NULL, GL_STREAM_DRAW);
+		glVertexAttribPointer(attribute, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+		lightVao->AddAttribute(attribute);
+		lightVao->AddVbo(transformationVbo);
+	lightVao->Unbind();
+
 	shader->Bind();
 		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 	shader->Unbind();
@@ -44,6 +54,8 @@ void LightPass::Execute(std::shared_ptr<ColorPass>& colorPass, std::shared_ptr<M
 	
 	bounds_t bounds = map->GetVisibleChunks(viewPos);
 
+	if (!colorPass->light.size()) return;
+
   fbo->Bind();
   fbo->Clear();
     shader->Bind();
@@ -52,7 +64,7 @@ void LightPass::Execute(std::shared_ptr<ColorPass>& colorPass, std::shared_ptr<M
     
 			glVertexAttribDivisor(2, 1);
 			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, lightVao->posVbo);
+			glBindBuffer(GL_ARRAY_BUFFER, transformationVbo);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * colorPass->light.size(), colorPass->light.data(), GL_STREAM_DRAW);
 
 				lightTexture->Bind();

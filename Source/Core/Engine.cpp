@@ -22,7 +22,7 @@ Engine::Engine() {
 void Engine::InitResources() {
 	Primitives::Rect::Create();
 
-	map = std::make_shared<Map>(Size(16, 16), Size(42, 42));
+	map = std::make_shared<Map>(Size(16, 16), Size(25, 25));
 	pipeline.color = std::make_shared<ColorPass>(map);
 	pipeline.light = std::make_shared<LightPass>(pipeline.color->GetMapRenderer());
 	pipeline.composition = std::make_shared<CompositionPass>();

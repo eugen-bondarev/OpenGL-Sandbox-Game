@@ -16,6 +16,7 @@ public:
   void Execute(std::shared_ptr<ColorPass>& colorPass, std::shared_ptr<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos);
 
 private:
+  GLuint transformationVbo;
   std::shared_ptr<MapRenderer> mapRenderer;
   std::shared_ptr<Vao> lightVao;
   std::shared_ptr<Texture> lightTexture;

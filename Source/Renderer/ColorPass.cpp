@@ -45,11 +45,12 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
         for (int x = bounds.x.start; x < bounds.x.end; x++) {
           for (int y = bounds.y.start; y < bounds.y.end; y++) {
             mapRenderer->chunks[x][y].Render(shader);
-						info.chunksRendered += 1;
 						
 						for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
 							light.push_back(mapRenderer->chunks[x][y].lightData[i]);
 						}
+						
+						info.chunksRendered += 1;
           }
         }
         
@@ -70,6 +71,12 @@ bounds_t ColorPass::GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos) {
 	bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
 	bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
 	bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+
+	bounds.x.start = std::max(bounds.x.start, 0);
+	bounds.y.start = std::max(bounds.y.start, 0);
+
+	bounds.x.end = std::min(bounds.x.end, static_cast<int>(map->GetAmountOfChunks().x) - 1);
+	bounds.y.end = std::min(bounds.y.end, static_cast<int>(map->GetAmountOfChunks().y) - 1);
 
 	return bounds;
 }
