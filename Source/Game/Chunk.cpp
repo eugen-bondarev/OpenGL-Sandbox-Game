@@ -57,7 +57,7 @@ void Chunk::Rerender() {
 
               if (type == BlockType::Empty) {
                 if (y + 1 < blocks[x].size() && y > 0 && blocks[x][y - 1] != BlockType::Empty) {
-                  lightData.emplace_back(x * BLOCK_SIZE - 120, y * BLOCK_SIZE - 120);
+                  lightData.emplace_back((x - chunkSize.x / 2) * BLOCK_SIZE, (y - chunkSize.y / 2) * BLOCK_SIZE);
                 }
 
                 continue;

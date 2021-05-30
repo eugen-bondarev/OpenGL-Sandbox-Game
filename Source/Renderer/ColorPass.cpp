@@ -61,16 +61,16 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
 
 bounds_t ColorPass::GetVisibleChunks(std::shared_ptr<Map>& map, Pos viewPos) {
 	const Pos middle = map->WhatChunk(map->GetCenter());
-	const Vec2 centeredViewPos = viewPos - map->GetCenter() * BLOCK_SIZE;
-	const Vec2 additionalBlocks = Vec2(2, 2);
+	const Vec2 centeredViewPos = viewPos - (map->GetCenter() - map->GetChunkSize() * 2.0f) * BLOCK_SIZE;
 	const Vec2 chunkSizeInPixels = map->GetChunkSize() * BLOCK_SIZE;
 	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
+	const Vec2 additionalBlocks = Vec2(1);
 	
 	bounds_t bounds;
 	bounds.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
-	bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x + additionalBlocks.x;
+	bounds.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x;
 	bounds.y.start = middle.y - shift.y + centeredViewPos.y / chunkSizeInPixels.y - additionalBlocks.y;
-	bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y + additionalBlocks.y;
+	bounds.y.end   = middle.y + shift.y + centeredViewPos.y / chunkSizeInPixels.y;
 
 	bounds.x.start = std::max(bounds.x.start, 0);
 	bounds.y.start = std::max(bounds.y.start, 0);
