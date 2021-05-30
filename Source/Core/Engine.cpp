@@ -17,12 +17,12 @@ Engine::Engine() {
 	Window::Create();
 	Gui::Create();
 	Input::Create(Window::GetGlfwWindow());
+	Primitives::Rect::Create();
 }
 
 void Engine::InitResources() {
-	Primitives::Rect::Create();
-
 	map = std::make_shared<Map>(Size(16, 16), Size(25, 25));
+
 	pipeline.color = std::make_shared<ColorPass>(map);
 	pipeline.light = std::make_shared<LightPass>(pipeline.color->GetMapRenderer());
 	pipeline.composition = std::make_shared<CompositionPass>();
@@ -94,6 +94,13 @@ void Engine::Render() {
 		ImGui::Text(("Chunks rendered: " + std::to_string(pipeline.color->info.chunksRendered)).c_str());
 		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Lights: " + std::to_string(pipeline.color->light.size())).c_str());
+	ImGui::End();
+
+	ImGui::Begin("View");
+		auto visibleChunks = map->GetVisibleChunks();
+		ImGui::Text(("Position: " + std::to_string(view.position.x) + ' ' + std::to_string(view.position.y)).c_str());
+		ImGui::Text(("Chunk x: " + std::to_string(visibleChunks.x.start) + ' ' + std::to_string(visibleChunks.x.end)).c_str());
+		ImGui::Text(("Chunk y: " + std::to_string(visibleChunks.y.start) + ' ' + std::to_string(visibleChunks.y.end)).c_str());
 	ImGui::End();
 }
 
