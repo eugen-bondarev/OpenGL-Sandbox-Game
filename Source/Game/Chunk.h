@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Gpu/Texture.h"
-
-#include <memory>
-
 #include "Types.h"
 
-#include "Gpu/ChunkFbo.h"
-#include "Gpu/LightFbo.h"
+#include "Renderer/ChunkFbo.h"
+#include "Renderer/LightFbo.h"
+
+#include "Gpu/Texture.h"
 #include "Gpu/Shader.h"
 #include "Gpu/Vao.h"
 

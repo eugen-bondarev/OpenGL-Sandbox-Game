@@ -2,7 +2,7 @@
 
 #include "RenderPass.h"
 
-#include "Gpu/ColorFbo.h"
+#include "ColorFbo.h"
 
 #include "MapRenderer.h"
 #include "Game/Map.h"

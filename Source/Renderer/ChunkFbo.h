@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Framebuffer.h"
+#include "Gpu/Framebuffer.h"
 
 class ChunkFbo : public Framebuffer
 {

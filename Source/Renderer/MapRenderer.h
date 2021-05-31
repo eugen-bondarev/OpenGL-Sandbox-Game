@@ -9,7 +9,8 @@
 #include "Game/Chunk.h"
 #include "Game/Map.h"
 
-#include "Gpu/ChunkFbo.h"
+#include "ChunkFbo.h"
+
 #include "Gpu/Vao.h"
 #include "Gpu/Texture.h"
 #include "Gpu/Shader.h"

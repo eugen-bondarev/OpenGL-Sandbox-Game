@@ -2,11 +2,12 @@
 
 #include "RenderPass.h"
 
-#include "Gpu/LightFbo.h"
 #include "Gpu/Texture.h"
 
 #include "MapRenderer.h"
+
 #include "ColorPass.h"
+#include "LightFbo.h"
 
 #include "Game/Map.h"
 

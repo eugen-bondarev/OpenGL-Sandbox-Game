@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Gpu/Shader.h"
-#include "Gpu/ColorFbo.h"
-#include "Gpu/LightFbo.h"
 
 #include "Game/Map.h"
 
+#include "Renderer/ColorFbo.h"
+#include "Renderer/LightFbo.h"
 #include "Renderer/ColorPass.h"
 #include "Renderer/LightPass.h"
 #include "Renderer/CompositionPass.h"
