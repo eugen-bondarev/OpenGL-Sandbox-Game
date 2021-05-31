@@ -2,8 +2,8 @@
 
 #include "Assets/ImageAsset.h"
 
-#include "Gpu/Vao.h"
-#include "Gpu/Texture.h"
+#include "GPU/VAO.h"
+#include "GPU/Texture.h"
 
 enum class Interpolation {
     Linear = GL_LINEAR,

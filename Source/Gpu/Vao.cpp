@@ -1,45 +1,39 @@
-#include "Vao.h"
+#include "VAO.h"
 
-Vao::~Vao()
-{
-    Unbind();
-    glDeleteBuffers(m_Buffers.size(), m_Buffers.data());
-    glDeleteVertexArrays(1, &m_Handle);
+VAO::~VAO() {
+	Unbind();
+	glDeleteBuffers(buffers.size(), buffers.data());
+	glDeleteVertexArrays(1, &handle);
 
-    DEBUG_LOG_OUT("[Call] Vao destructor");
+	DEBUG_LOG_OUT("[Call] Vao destructor");
 }
 
-void Vao::Bind() const
-{
-    glBindVertexArray(m_Handle);
+void VAO::Bind() const {
+	glBindVertexArray(handle);
 
-    for (const auto& attribute : m_Attributes)
-    {
-        glEnableVertexAttribArray(attribute);
-    }
+	for (const auto& attribute : attributes) {
+		glEnableVertexAttribArray(attribute);
+	}
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboHandle);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle);
 }
 
-void Vao::Unbind() const
-{
-    glBindVertexArray(0);
+void VAO::Unbind() const {
+	glBindVertexArray(0);
 
-    for (int i = m_Attributes.size() - 1; i >= 0; --i)
-    {
-        glDisableVertexAttribArray(m_Attributes[i]);
-    }
+	for (int i = attributes.size() - 1; i >= 0; --i) {
+		glDisableVertexAttribArray(attributes[i]);
+	}
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Vao::Render() const {
-    Bind();
-    glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, nullptr);  
-    Unbind();
+void VAO::Render() const {
+	Bind();
+	glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, nullptr);  
+	Unbind();
 }
 
-GLuint Vao::GetVertexCount() const
-{
-    return m_VertexCount;
+GLuint VAO::GetVertexCount() const {
+	return vertexCount;
 }

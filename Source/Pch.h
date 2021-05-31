@@ -8,6 +8,7 @@
 #include <map>
 
 #include "Util/Structures.h"
+#include "Util/Memory.h"
 
 #define FORGIO_ROOT "D:/Dev/Forgio/"
 // #define FORGIO_ROOT ""

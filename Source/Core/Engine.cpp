@@ -11,7 +11,7 @@
 
 #include "Renderer/Entities/RectVao.h"
 
-#include "Gpu/GraphicsContext.h"
+#include "GPU/GraphicsContext.h"
 
 Engine::Engine() {
 	Window::Create();
@@ -21,13 +21,13 @@ Engine::Engine() {
 }
 
 void Engine::InitResources() {
-	map = std::make_shared<Map>(Size(16, 16), Size(25, 25));
+	map = CreateRef<Map>(Size(16, 16), Size(25, 25));
 
-	pipeline.color = std::make_shared<ColorPass>(map);
-	pipeline.light = std::make_shared<LightPass>(pipeline.color->GetMapRenderer());
-	pipeline.composition = std::make_shared<CompositionPass>();
+	pipeline.color = CreateRef<ColorPass>(map);
+	pipeline.light = CreateRef<LightPass>(pipeline.color->GetMapRenderer());
+	pipeline.composition = CreateRef<CompositionPass>();
 
-	view.position = map->GetCenter() * BLOCK_SIZE;
+	view.position = map->GetCenter() * map->GetBlockSize();
 	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 }
 

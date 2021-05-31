@@ -7,7 +7,7 @@
 
 class Map {
 public:
-  Map(Size chunkSize, Size amountOfChunks);
+  Map(Size chunkSize, Size amountOfChunks, float blockSize = 16.0f);
 
 	inline Pos WhatChunk(Pos block) const {
 		int x = static_cast<int>(truncf(block.x / GetChunkSize().x));
@@ -29,10 +29,10 @@ public:
 		const Vec4 projCoords = Math::Inverse(projectionMatrix) * Vec4(screenCoords, 0.0f, 1.0f);
 		const Vec4 projViewCoords = Math::Inverse(viewMatrix) * projCoords;
 
-		const Vec2 cameraPosInMap = Vec2(viewPos / static_cast<float>(BLOCK_SIZE)) + GetChunkSize() * GetAmountOfChunks() / 2.0f;
+		const Vec2 cameraPosInMap = Vec2(viewPos / blockSize) + GetChunkSize() * GetAmountOfChunks() / 2.0f;
 
 		static const Vec2 normalization = Vec2(0.0f);
-		const Vec2 block = (Vec2(projViewCoords) - viewPos) / static_cast<float>(BLOCK_SIZE) + normalization + GetChunkSize() / 2.0f;
+		const Vec2 block = (Vec2(projViewCoords) - viewPos) / blockSize + normalization + GetChunkSize() / 2.0f;
 		
 		return block;
 	}
@@ -55,12 +55,18 @@ public:
 		return visibleChunks;
 	}
 
+	inline float GetBlockSize() const {
+		return blockSize;
+	}
+
 	blocks_t blocks;
 
 private:
   Size chunkSize;
   Size amountOfChunks;
 	Size amountOfBlocks;
+
+	float blockSize;
 
 	void GenerateMap();
 

@@ -1,24 +1,23 @@
 #pragma once
 
-#include "Gpu/Framebuffer.h"
+#include "GPU/FBO.h"
 
-class ChunkFbo : public Framebuffer
-{
+class ChunkFBO : public FBO {
 public:
-  ChunkFbo(std::shared_ptr<Texture> & texture) : Framebuffer(texture->GetSize(), GL_COLOR_BUFFER_BIT, {GL_COLOR_ATTACHMENT0}) {
+  ChunkFBO(std::shared_ptr<Texture> & texture) : FBO(texture->GetSize(), GL_COLOR_BUFFER_BIT, {GL_COLOR_ATTACHMENT0}) {
     BeginInit();
 
-    m_Attachments[GL_COLOR_ATTACHMENT0] = texture;
+    attachments[GL_COLOR_ATTACHMENT0] = texture;
 
     EndInit();
   }
 
   void Resize(Size size) {
-    Framebuffer::Resize(size);
+    FBO::Resize(size);
   }
 
   GLuint GetTextureHandle() const {
-    return m_Attachments.at(GL_COLOR_ATTACHMENT0)->GetHandle();
+    return attachments.at(GL_COLOR_ATTACHMENT0)->GetHandle();
   }
 
   void BindTexture(GLuint slot) const {

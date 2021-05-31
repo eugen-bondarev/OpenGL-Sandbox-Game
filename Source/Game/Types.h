@@ -5,8 +5,6 @@
 
 #include <vector>
 
-inline static float BLOCK_SIZE { 16.0f };
-
 using blocks_row_t = std::vector<BlockType>;
 using blocks_t = std::vector<blocks_row_t>;
 

@@ -13,7 +13,7 @@ public:
 
     virtual void Load(const std::string& path) override;
 
-    unsigned char* GetData();
+    const unsigned char* GetData() const;
     Size GetSize() const;
     int GetChannels() const;
 

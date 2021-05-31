@@ -2,12 +2,9 @@
 
 #include "Types.h"
 
-#include "Renderer/ChunkFbo.h"
-#include "Renderer/LightFbo.h"
-
-#include "Gpu/Texture.h"
-#include "Gpu/Shader.h"
-#include "Gpu/Vao.h"
+#include "GPU/Texture.h"
+#include "GPU/Shader.h"
+#include "GPU/VAO.h"
 
 inline static std::map<BlockType, Pos> tileMapDictionary = {
   { BlockType::Grass, { 0, 1 } },
@@ -19,30 +16,33 @@ public:
   Chunk(
     Pos chunkPos, 
     Size chunkSize,
-    std::shared_ptr<Shader> shader, 
-    std::shared_ptr<Vao> vao, 
-    std::shared_ptr<Texture> tileMap, 
-    bounds_t bounds, 
-    blocks_t& blocks
+    Ref<Shader> shader, 
+    Ref<VAO> vao, 
+    Ref<Texture> tileMap, 
+    bounds_t bounds,
+    blocks_t& blocks,
+    float blockSize
   );
 
-  inline std::shared_ptr<Texture>& GetTargetTexture() {
+  inline Ref<Texture>& GetTargetTexture() {
     return targetTexture;
   }
 
   void Rerender();
-  void Render(std::shared_ptr<Shader>& shader);
+  void Render(Ref<Shader>& shader);
 
   light_data_t lightData;
 
 private:
-  std::shared_ptr<Texture> targetTexture;
+  Ref<Texture> targetTexture;
 
   blocks_t& blocks;
+
+  float blockSize;
   
-  std::shared_ptr<Shader> shader;
-  std::shared_ptr<Vao> vao;
-  std::shared_ptr<Texture> tileMapTexture;
+  Ref<Shader> shader;
+  Ref<VAO> vao;
+  Ref<Texture> tileMapTexture;
 
   Pos chunkPos;
   Size chunkSize;

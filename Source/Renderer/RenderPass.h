@@ -1,22 +1,22 @@
 #pragma once
 
-#include "Gpu/Framebuffer.h"
-#include "Gpu/Shader.h"
+#include "GPU/FBO.h"
+#include "GPU/Shader.h"
 
 template <typename T>
 class RenderPass {
 public:
     RenderPass() = default;
 
-    inline std::shared_ptr<T>& GetFbo() {
+    inline Ref<T>& GetFbo() {
         return fbo;
     }
 
-    inline std::shared_ptr<Shader>& GetShader() {
+    inline Ref<Shader>& GetShader() {
         return shader;
     }
 
 protected:
-    std::shared_ptr<T> fbo;
-    std::shared_ptr<Shader> shader;
+    Ref<T> fbo;
+    Ref<Shader> shader;
 };

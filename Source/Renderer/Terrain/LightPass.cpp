@@ -5,7 +5,7 @@
 #include "Assets/TextAsset.h"
 #include "Assets/ImageAsset.h"
 
-#include "Gpu/GraphicsContext.h"
+#include "GPU/GraphicsContext.h"
 
 #include "Math/Math.h"
 #include "Math/Primitive.h"
@@ -15,9 +15,9 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 
 	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light.vs");
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");
-	shader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Pos");
+	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Pos");
 
-	lightVao = std::make_shared<Vao>(Primitives::Light::vertices, Vertex::GetLayout(), Primitives::Light::indices);
+	lightVao = CreateRef<VAO>(Primitives::Light::vertices, Vertex::GetLayout(), Primitives::Light::indices);
 
 	lightVao->Bind();
 		GLuint attribute = lightVao->GetLastAttribute();
@@ -33,10 +33,10 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 	shader->Unbind();
 
-  fbo = std::make_shared<LightFbo>(Window::GetSize());
+  fbo = CreateRef<LightFBO>(Window::GetSize());
 
-	ImageAsset lightTextureAsset("Assets/Images/LightMask5.png");
-	lightTexture = std::make_shared<Texture>(
+	const ImageAsset lightTextureAsset("Assets/Images/LightMask5.png");
+	lightTexture = CreateRef<Texture>(
 		lightTextureAsset.GetSize(),
 		lightTextureAsset.GetData(),
 		GL_RGBA,
@@ -49,8 +49,8 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 	);
 }
 
-void LightPass::Execute(std::shared_ptr<ColorPass>& colorPass, std::shared_ptr<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos) {
-	GraphicsContext::ClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos) {
+	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	const bounds_t& bounds = map->GetVisibleChunks();
 

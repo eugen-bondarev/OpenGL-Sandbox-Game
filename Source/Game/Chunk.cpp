@@ -2,16 +2,22 @@
 
 #include "Core/Window.h"
 
-#include "Gpu/GraphicsContext.h"
+#include "GPU/GraphicsContext.h"
+
+#include "Renderer/Terrain/Resources/ChunkFBO.h"
+#include "Renderer/Terrain/Resources/LightFBO.h"
 
 Chunk::Chunk(
   Pos chunkPos, 
   Size chunkSize, 
-  std::shared_ptr<Shader> shader, 
-  std::shared_ptr<Vao> vao, 
-  std::shared_ptr<Texture> tileMap, 
+
+  Ref<Shader> shader, 
+  Ref<VAO> vao, 
+  Ref<Texture> tileMap, 
+  
   bounds_t bounds, 
-  blocks_t& blocksReference
+  blocks_t& blocksReference,
+  float blockSize
 ) : blocks { blocksReference } {
   this->chunkPos = chunkPos;
   this->chunkSize = chunkSize;
@@ -19,9 +25,10 @@ Chunk::Chunk(
   this->vao = vao;
   this->tileMapTexture = tileMap;
   this->bounds = bounds;
+  this->blockSize = blockSize;
 
-  targetTexture = std::make_unique<Texture>(
-    chunkSize * BLOCK_SIZE,
+  targetTexture = CreateRef<Texture>(
+    chunkSize * blockSize,
     nullptr,
     GL_RGBA,
     GL_RGBA,
@@ -34,14 +41,13 @@ Chunk::Chunk(
 }
 
 void Chunk::Rerender() {
-  ChunkFbo fbo(targetTexture);
+  const ChunkFBO fbo(targetTexture);
 
-	const Vec2 viewPos = (chunkPos * chunkSize) * BLOCK_SIZE;
+	const Vec2 viewPos = (chunkPos * chunkSize) * blockSize;
 	const Mat4 viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
-	glViewport(0.0f, 0.0f, chunkSize.x * BLOCK_SIZE, chunkSize.y * BLOCK_SIZE);
-
-	GraphicsContext::ClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+  GraphicsContext::Viewport(0, 0, chunkSize.x * blockSize, chunkSize.y * blockSize);
+	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   lightData.clear();
 
@@ -57,7 +63,7 @@ void Chunk::Rerender() {
 
               if (type == BlockType::Empty) {
                 if (y + 1 < blocks[x].size() && y > 0 && blocks[x][y - 1] != BlockType::Empty) {
-                  lightData.emplace_back((x - chunkSize.x / 2) * BLOCK_SIZE, (y - chunkSize.y / 2) * BLOCK_SIZE);
+                  lightData.emplace_back((x - chunkSize.x / 2) * blockSize, (y - chunkSize.y / 2) * blockSize);
                 }
 
                 continue;
@@ -67,8 +73,8 @@ void Chunk::Rerender() {
 
               textureOffset += tileMapDictionary[type];
 
-              const Vec2 pos = Vec2(x * BLOCK_SIZE, y * BLOCK_SIZE);
-              const Vec2 chunkCenter = chunkSize / 2.0f * BLOCK_SIZE - BLOCK_SIZE / 2.0f;
+              const Vec2 pos = Vec2(x * blockSize, y * blockSize);
+              const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
               shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
               shader->SetVec2("u_Pos", Math::ToPtr(pos - chunkCenter));
               glDrawElements(GL_TRIANGLES, vao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
@@ -79,15 +85,15 @@ void Chunk::Rerender() {
     shader->Unbind();
   fbo.Unbind();
 
-	glViewport(0.0f, 0.0f, Window::GetSize().x, Window::GetSize().y);
+	GraphicsContext::Viewport(0, 0, Window::GetSize().x, Window::GetSize().y);
 }
 
 void Chunk::Render(std::shared_ptr<Shader>& shader) {
   targetTexture->Bind();
-    const Vec2 chunkPosPixels = chunkPos * chunkSize * BLOCK_SIZE;
+    const Vec2 chunkPosPixels = chunkPos * chunkSize * blockSize;
     Mat4 chunkModelMatrix = Math::Translate(Mat4(1), Vec3(chunkPosPixels, 1.0f));
-    chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3((chunkSize * BLOCK_SIZE).x, -(chunkSize * BLOCK_SIZE).y, 1.0f));
+    chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3((chunkSize * blockSize).x, -(chunkSize * blockSize).y, 1.0f));
     shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, nullptr);
   targetTexture->Unbind();
 }

@@ -4,36 +4,38 @@
 
 #include <tuple>
 
-enum class ParamType
-{
-    Int,
-    Float
+enum class ParamType {
+	Int = 0,
+	Float
 };
 
 class Texture : public GpuEntity {
-private:
-    Size m_Size;
-
-    GLint m_InternalFormat;
-    GLuint m_Format;
-    GLuint m_Type;
-
 public:
-    using param_t = std::tuple<ParamType, GLuint, GLfloat>;
+	using param_t = std::tuple<ParamType, GLuint, GLfloat>;
 
-    Texture(Size size, unsigned char *data, GLint internalFormat, GLuint format, GLuint type, const std::vector<param_t> parameters);
-    ~Texture() override;
+	Texture(Size size, const unsigned char *data, GLint internalFormat, GLuint format, GLuint type, const std::vector<param_t> parameters);
+	~Texture() override;
 
-    inline Size GetSize() const {
-        return m_Size;
-    }
+	inline Size GetSize() const {
+		return size;
+	}
 
-    void Resize(Size size);
+	void Resize(Size size);
 
-    void SetParamFV(GLuint name, GLfloat *params);
+	void SetParamFV(GLuint name, GLfloat *params);
 
-    void Bind() const override;
-    void Bind(GLuint unit) const;
-    void Unbind() const override;
-    void Unbind(GLuint unit) const;
+	void Bind() const override;
+	void Bind(GLuint unit) const;
+	void Unbind() const override;
+	void Unbind(GLuint unit) const;
+	
+private:
+	Size size;
+
+	GLint internalFormat;
+	GLuint format;
+	GLuint type;
+
+	Texture(const Texture&) = delete;
+	Texture operator=(const Texture&) = delete;
 };

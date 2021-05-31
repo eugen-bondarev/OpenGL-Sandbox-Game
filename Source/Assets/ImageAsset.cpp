@@ -4,7 +4,7 @@
 #include "stb_image/stb_image.h"
 
 ImageAsset::ImageAsset(const std::string& path) {
-    Load(path);
+	Load(path);
 }
 
 void ImageAsset::Load(const std::string& path) {
@@ -17,7 +17,7 @@ ImageAsset::~ImageAsset() {
 	stbi_image_free(data);
 }
 
-unsigned char* ImageAsset::GetData() {
+const unsigned char* ImageAsset::GetData() const {
 	return data;
 }
 

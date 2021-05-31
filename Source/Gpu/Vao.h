@@ -4,69 +4,64 @@
 
 #include "VertexBufferLayout.h"
 
-class Vao : public GpuEntity {
+class VAO : public GpuEntity {
 public:
-    GLuint posVbo;
+	template <typename T_Vertex>
+	VAO(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices) {
+		attributes.resize(layouts.size());
 
-    template <typename T_Vertex>
-    Vao(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices) {
-        m_Attributes.resize(layouts.size());
+		glGenVertexArrays(1, &handle);
+		glBindVertexArray(handle);
 
-        glGenVertexArrays(1, &m_Handle);
+			GLuint vbo{ 0 };
+			glGenBuffers(1, &vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T_Vertex), &vertices[0], GL_STATIC_DRAW);       
+				for (int i = 0; i < layouts.size(); i++) {
+					glVertexAttribPointer(i, layouts[i].Size, GL_FLOAT, GL_FALSE, layouts[i].Stride, reinterpret_cast<void *>(layouts[i].Offset));
+					attributes[i] = i;
+				}
+				buffers.emplace_back(vbo);
 
-        glBindVertexArray(m_Handle);
+			glGenBuffers(1, &indexVboHandle);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), &indices[0], GL_STATIC_DRAW);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+				buffers.emplace_back(indexVboHandle);
 
-        unsigned int vbo{ 0 };
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T_Vertex), &vertices[0], GL_STATIC_DRAW);       
-        for (int i = 0; i < layouts.size(); i++) {
-            glVertexAttribPointer(i, layouts[i].Size, GL_FLOAT, GL_FALSE, layouts[i].Stride, reinterpret_cast<void *>(layouts[i].Offset));
-            m_Attributes[i] = i;
-        }
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+			vertexCount = static_cast<GLuint>(indices.size());
 
-        m_Buffers.emplace_back(vbo);
+		glBindVertexArray(0);
 
-        glGenBuffers(1, &m_IndexVboHandle);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexVboHandle);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), &indices[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        m_Buffers.emplace_back(m_IndexVboHandle);
+		DEBUG_LOG_OUT("[Call] Vao constructor");
+	}
+	~VAO() override;
 
-        m_VertexCount = static_cast<unsigned int>(indices.size());
+	void Bind() const override;
+	void Unbind() const override;
 
-        glBindVertexArray(0);
+	void Render() const;
 
-        DEBUG_LOG_OUT("[Call] Vao constructor");
-    }
-    ~Vao() override;
+	GLuint GetVertexCount() const;
 
-    void Bind() const override;
-    void Unbind() const override;
+	inline void AddVbo(GLuint vbo) {
+		buffers.push_back(vbo);
+	}
 
-    void Render() const;
+	inline void AddAttribute(GLuint attribute) {
+		attributes.push_back(attribute);
+	}
 
-    GLuint GetVertexCount() const;
-
-    inline void AddVbo(GLuint vbo) {
-        m_Buffers.push_back(vbo);
-    }
-
-    inline void AddAttribute(GLuint attribute) {
-        m_Attributes.push_back(attribute);
-    }
-
-    inline GLuint GetLastAttribute() const {
-        return static_cast<GLuint>(m_Attributes.size());
-    }
+	inline GLuint GetLastAttribute() const {
+		return static_cast<GLuint>(attributes.size());
+	}
 
 private:
-    GLuint m_IndexVboHandle{0};
-    GLuint m_VertexCount{0};
-    std::vector<GLuint> m_Attributes;
-    std::vector<GLuint> m_Buffers;
+	GLuint indexVboHandle{0};
+	GLuint vertexCount{0};
+	std::vector<GLuint> attributes;
+	std::vector<GLuint> buffers;
 
-    Vao(const Vao &) = delete;
-    Vao &operator=(const Vao &) = delete;
+	VAO(const VAO &) = delete;
+	VAO &operator=(const VAO &) = delete;
 };

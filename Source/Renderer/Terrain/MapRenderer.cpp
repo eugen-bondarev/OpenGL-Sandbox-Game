@@ -4,10 +4,10 @@
 
 #include "Assets/ImageAsset.h"
 #include "Assets/TextAsset.h"
-#include "Gpu/Vertex.h"
+#include "GPU/Vertex.h"
 #include "Math/Primitive.h"
 
-MapRenderer::MapRenderer(std::shared_ptr<Map>& map) {
+MapRenderer::MapRenderer(Ref<Map>& map) {
 	this->map = map;
 
 	InitGraphics();
@@ -23,7 +23,8 @@ MapRenderer::MapRenderer(std::shared_ptr<Map>& map) {
 				tileVao, 
 				tileMapTexture, 
 				bounds, 
-				map->blocks
+				map->blocks,
+				map->GetBlockSize()
 			);
 		}
 	}
@@ -42,8 +43,8 @@ void MapRenderer::Prerender() {
 }
 
 void MapRenderer::InitGraphics() {
-	ImageAsset image("Assets/Images/Map2.png");
-	tileMapTexture = std::make_shared<Texture>(
+	const ImageAsset image("Assets/Images/Map2.png");
+	tileMapTexture = CreateRef<Texture>(
 		image.GetSize(),
 		image.GetData(),
 		GL_RGBA,
@@ -55,18 +56,18 @@ void MapRenderer::InitGraphics() {
 		}
 	);
 
-	tileVao = std::make_shared<Vao>(
-		Primitives::Quad::vertices,
+	tileVao = CreateRef<VAO>(
+		Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize()),
 		Vertex::GetLayout(),
-		Primitives::Quad::indices
+		Primitives::Block::indices
 	);
 
-	Vec2 halfChunkSize = (map->GetChunkSize() * BLOCK_SIZE) / 2.0f;
-	Mat4 projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
+	const Vec2 halfChunkSize = (map->GetChunkSize() * map->GetBlockSize()) / 2.0f;
+	const Mat4 projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);
 
-	TextAsset vsCode("Assets/Shaders/Terrain/Default.vs");
-	TextAsset fsCode("Assets/Shaders/Terrain/Default.fs");
-	shader = std::make_shared<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
+	const TextAsset vsCode("Assets/Shaders/Terrain/Default.vs");
+	const TextAsset fsCode("Assets/Shaders/Terrain/Default.fs");
+	shader = CreateRef<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
 	shader->Bind();
 		shader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
 		shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));

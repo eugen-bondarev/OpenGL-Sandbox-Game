@@ -1,22 +1,24 @@
 #include "CompositionPass.h"
 
-#include "Gpu/GraphicsContext.h"
+#include "GPU/GraphicsContext.h"
 
 #include "Assets/TextAsset.h"
 
 CompositionPass::CompositionPass() {
   TextAsset vsCode("Assets/Shaders/Composition/Composition.vs");
   TextAsset fsCode("Assets/Shaders/Composition/Composition.fs");
-  shader = std::make_shared<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ColorPassResult", "u_LightPassResult");
+  shader = CreateRef<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ColorPassResult", "u_LightPassResult");
   shader->Bind();
     shader->SetInt("u_ColorPassResult", 0);
     shader->SetInt("u_LightPassResult", 1);
   shader->Unbind();
-  canvas = std::make_shared<Vao>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
+  canvas = CreateRef<VAO>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
 }
 
-void CompositionPass::Execute(std::shared_ptr<ColorPass>& colorPass, std::shared_ptr<LightPass>& lightPass) {
-	GraphicsContext::ClearColor(Color (227.0f, 251.0f, 255.0f, 255.0f) / 255.0f);
+void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPass) {
+  Color sky = Color(227.0f, 251.0f, 255.0f, 255.0f) / 255.0f;
+
+	GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
   GraphicsContext::Clear();
   shader->Bind();
     canvas->Bind();

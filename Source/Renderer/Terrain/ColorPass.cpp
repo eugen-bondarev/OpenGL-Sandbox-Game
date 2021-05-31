@@ -4,19 +4,19 @@
 
 #include "Assets/TextAsset.h"
 
-#include "Gpu/GraphicsContext.h"
+#include "GPU/GraphicsContext.h"
 
 #include "Math/Math.h"
 #include "Math/Primitive.h"
 
-ColorPass::ColorPass(std::shared_ptr<Map> map) {
+ColorPass::ColorPass(Ref<Map>& map) {
   this->map = map;
-	mapRenderer = std::make_shared<MapRenderer>(map);
+	mapRenderer = CreateRef<MapRenderer>(map);
 
 	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
-	shader = std::make_shared<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass");
-	chunkVao = std::make_shared<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
+	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass");
+	chunkVao = CreateRef<VAO>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
   
 	const Mat4 chunkModelMatrix = Math::Scale(Mat4(1), Vec3(mapRenderer->GetChunkSizePixels().x, -mapRenderer->GetChunkSizePixels().y, 1.0f));
 	shader->Bind();
@@ -25,13 +25,13 @@ ColorPass::ColorPass(std::shared_ptr<Map> map) {
 		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 	shader->Unbind();
 
-  fbo = std::make_shared<ColorFbo>(Window::GetSize());
+  fbo = CreateRef<ColorFBO>(Window::GetSize());
 }
 
 void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
 	info.chunksRendered = 0;
 
-	GraphicsContext::ClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	light.clear();
 

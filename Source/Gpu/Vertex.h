@@ -5,13 +5,13 @@
 #include "VertexBufferLayout.h"
 
 struct Vertex {
-    Vec2 Position;
-    Vec2 UV;
+	Vec2 position;
+	Vec2 uv;
 
-    inline static std::vector<VertexBufferLayout> GetLayout() {
-        return {
-            { 2, sizeof(Vertex), offsetof(Vertex, Position) },
-            { 2, sizeof(Vertex), offsetof(Vertex, UV) }
-        };
-    }
+	inline static VertexBufferLayouts GetLayout() {
+		return {
+			{ 2, sizeof(Vertex), offsetof(Vertex, position) },
+			{ 2, sizeof(Vertex), offsetof(Vertex, uv) }
+		};
+	}
 };

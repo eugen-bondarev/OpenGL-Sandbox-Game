@@ -1,16 +1,17 @@
 #include "Map.h"
 
-Map::Map(Size chunkSize, Size amountOfChunks) {
+Map::Map(Size chunkSize, Size amountOfChunks, float blockSize) {
   this->chunkSize = chunkSize;
   this->amountOfChunks = amountOfChunks;
+	this->blockSize = blockSize;
 
 	GenerateMap();
 }
 
 void Map::CalculateVisibleChunks(Pos viewPos) {
 	const Pos middle = WhatChunk(GetCenter());
-	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * BLOCK_SIZE;
-	const Vec2 chunkSizeInPixels = GetChunkSize() * BLOCK_SIZE;
+	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
+	const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
 	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
 	const Vec2 additionalBlocks = Vec2(1);
 	

@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Gpu/Shader.h"
+#include "GPU/Shader.h"
 
 #include "Game/Map.h"
 
-#include "Renderer/ColorFbo.h"
-#include "Renderer/LightFbo.h"
-#include "Renderer/ColorPass.h"
-#include "Renderer/LightPass.h"
-#include "Renderer/CompositionPass.h"
+#include "Renderer/Terrain/ColorPass.h"
+#include "Renderer/Terrain/LightPass.h"
+#include "Renderer/Terrain/CompositionPass.h"
 #include "Renderer/Entities/Sprite.h"
 
 class Engine {
@@ -23,12 +21,12 @@ public:
 	~Engine();
 
 private:
-	std::shared_ptr<Map> map;
+	Ref<Map> map;
 
 	struct {
-		std::shared_ptr<ColorPass> color;
-		std::shared_ptr<LightPass> light;
-		std::shared_ptr<CompositionPass> composition;
+		Ref<ColorPass> color;
+		Ref<LightPass> light;
+		Ref<CompositionPass> composition;
 	} pipeline;
 
 	struct {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gpu/Vao.h"
+#include "GPU/VAO.h"
 #include "Math/Primitive.h"
 
 #include <memory>
@@ -11,10 +11,10 @@ namespace Primitives {
 
 class Rect {
 public:
-    inline static std::unique_ptr<Vao> vao;
+    inline static std::unique_ptr<VAO> vao;
 
     inline static void Create() {
-        vao = std::make_unique<Vao>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
+        vao = std::make_unique<VAO>(Primitives::Block::Vertices(1.0f, 1.0f), Vertex::GetLayout(), Primitives::Block::indices);
     }
 
     inline static void Draw() {
