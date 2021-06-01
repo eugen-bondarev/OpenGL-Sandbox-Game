@@ -91,7 +91,7 @@ void Engine::Render() {
 	pipeline.composition->Execute(pipeline.color, pipeline.light);
 
 	ImGui::Begin("Light pass");
-		ImGui::Image((void*)(intptr_t)pipeline.light->GetFbo()->GetTextureHandle(), ImVec2(800, 600), ImVec2(0, 0), ImVec2(0, -1));
+		ImGui::Image((void*)(intptr_t)pipeline.light->GetFbo()->GetTextureHandle(), ImVec2(800, 600), ImVec2(0, 0), ImVec2(1, -1));
 	ImGui::End();
 
 	ImGui::Begin("Info");

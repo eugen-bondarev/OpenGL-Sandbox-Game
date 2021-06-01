@@ -15,9 +15,10 @@ public:
   LightPass(Ref<MapRenderer>& mapRenderer);
   void Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos);
 
+  Ref<Texture> lightTexture;
+  
 private:
   GLuint transformationVbo;
   Ref<MapRenderer> mapRenderer;
   Ref<VAO> lightVao;
-  Ref<Texture> lightTexture;
 };
