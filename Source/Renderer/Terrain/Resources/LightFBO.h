@@ -10,8 +10,8 @@ public:
 		attachments[GL_COLOR_ATTACHMENT0] = std::make_shared<Texture>(
 			size,
 			nullptr,
-			/*GL_R8*/ GL_RGBA,
-			/*GL_RED*/GL_RGBA,
+			GL_RGBA /*GL_R8*/,
+			GL_RGBA /*GL_RED*/,
 			GL_UNSIGNED_BYTE,
 			std::vector<Texture::param_t> {
 				{ ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
@@ -22,8 +22,7 @@ public:
 		EndInit();
 	}
 
-	inline void Resize(Size size)
-	{
+	inline void Resize(Size size) {
 		FBO::Resize(size);
 	}
 

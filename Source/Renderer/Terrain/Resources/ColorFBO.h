@@ -22,20 +22,20 @@ public:
 		EndInit();
 	}
 
-	inline void ColorFBO::Resize(Size size) {
+	inline void Resize(Size size) {
 		FBO::Resize(size);
 	}
 
-	inline GLuint ColorFBO::GetTextureHandle() const {
+	inline GLuint GetTextureHandle() const {
 		return attachments.at(GL_COLOR_ATTACHMENT0)->GetHandle();
 	}
 
-	inline void ColorFBO::BindTexture(GLuint slot) const {
+	inline void BindTexture(GLuint slot) const {
 		glActiveTexture(slot);
 		glBindTexture(GL_TEXTURE_2D, GetTextureHandle());
 	}
 
-	inline void ColorFBO::UnbindTexture(GLuint slot) const {
+	inline void UnbindTexture(GLuint slot) const {
 		glActiveTexture(slot);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
