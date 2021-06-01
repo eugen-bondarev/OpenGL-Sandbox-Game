@@ -19,13 +19,13 @@ void VAO::Bind() const {
 }
 
 void VAO::Unbind() const {
-	glBindVertexArray(0);
-
 	for (int i = attributes.size() - 1; i >= 0; --i) {
 		glDisableVertexAttribArray(attributes[i]);
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
+	glBindVertexArray(0);
 }
 
 void VAO::Render() const {

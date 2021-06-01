@@ -23,8 +23,12 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 		GLuint attribute = lightVao->GetLastAttribute();
 		glGenBuffers(1, &transformationVbo);
 		glBindBuffer(GL_ARRAY_BUFFER, transformationVbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * 0, NULL, GL_DYNAMIC_DRAW);
-			glVertexAttribPointer(attribute, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+			glEnableVertexAttribArray(attribute);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * 0, NULL, GL_DYNAMIC_DRAW);
+				glVertexAttribPointer(attribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2), (void*)0);    
+				glVertexAttribDivisor(attribute, 1);
+			glDisableVertexAttribArray(attribute);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		lightVao->AddAttribute(attribute);
 		lightVao->AddVbo(transformationVbo);
 	lightVao->Unbind();
@@ -58,12 +62,11 @@ void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& vi
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-      lightVao->Bind();
-    
-			glVertexAttribDivisor(2, 1);
-			glEnableVertexAttribArray(2);
+		
 			glBindBuffer(GL_ARRAY_BUFFER, transformationVbo);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * colorPass->light.size(), colorPass->light.data(), GL_DYNAMIC_DRAW);
+
+      lightVao->Bind();			
 
 				lightTexture->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, colorPass->light.size());
