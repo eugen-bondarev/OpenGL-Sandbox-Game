@@ -13,9 +13,19 @@
 LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {  
 	this->mapRenderer = mapRenderer;
 
-	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light.vs");
+	#ifdef SUPPORT_DYNAMIC_BUFFER
+		const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light.vs");
+	#else
+		const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light1.vs");
+	#endif
+
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");
-	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View");
+
+	#ifdef SUPPORT_DYNAMIC_BUFFER
+		shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View");
+	#else
+		shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Positions");
+	#endif
 
 	const auto& vertices = Primitives::Block::Vertices(256, 256);
 	const auto& indices = Primitives::Block::indices;
@@ -36,12 +46,14 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 			indices.size(), sizeof(int), &indices[0]
 		);
 
-		transformationVBO = lightVao->AddVBO(
-			VBO::Type::Array, 
-			VBO::Usage::Stream, 
-			0, sizeof(Vec2), nullptr, 
-			std::vector<VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
-		);
+		#ifdef SUPPORT_DYNAMIC_BUFFER
+			transformationVBO = lightVao->AddVBO(
+				VBO::Type::Array, 
+				VBO::Usage::Stream, 
+				0, sizeof(Vec2), nullptr, 
+				std::vector<VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
+			);
+		#endif
 	lightVao->Unbind();
 
 	shader->Bind();
@@ -73,7 +85,11 @@ void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& vi
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-			transformationVBO->Store(colorPass->light);
+			#ifdef SUPPORT_DYNAMIC_BUFFER
+				transformationVBO->Store(colorPass->light);
+			#else
+				shader->SetListVec2("u_Positions", colorPass->light);
+			#endif
       lightVao->Bind();			
 			lightVao->GetIndexBuffer()->Bind();
 				lightTexture->Bind();

@@ -21,7 +21,7 @@ Engine::Engine() {
 }
 
 void Engine::InitResources() {
-	map = CreateRef<Map>(Size(16, 16), Size(25, 25));
+	map = CreateRef<Map>(Size(16, 16), Size(25, 25), 16.0f);
 	view.position = map->GetCenter() * map->GetBlockSize();
 	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 	map->CalculateVisibleChunks(view.position);
@@ -46,10 +46,10 @@ void Engine::BeginFrame() {
 }
 
 void Engine::Control() {
-	if (Input::KeyDown(KEY_W)) view.position += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
-	if (Input::KeyDown(KEY_S)) view.position += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
-	if (Input::KeyDown(KEY_A)) view.position += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
-	if (Input::KeyDown(KEY_D)) view.position += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(Key::W)) view.position += Vec2( 0,  1) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(Key::S)) view.position += Vec2( 0, -1) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(Key::A)) view.position += Vec2(-1,  0) * Time::GetDelta() * 300.0f;
+	if (Input::KeyDown(Key::D)) view.position += Vec2( 1,  0) * Time::GetDelta() * 300.0f;
 
 	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 }

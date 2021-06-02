@@ -10,6 +10,12 @@
 #include "Util/Structures.h"
 #include "Util/Memory.h"
 
+/**
+ * For some reason this doesn't work on Diana's PC. 
+ * Need to keep that in mind.
+ */
+#define SUPPORT_DYNAMIC_BUFFER
+
 #define FORGIO_ROOT "D:/Dev/Forgio/"
 // #define FORGIO_ROOT ""
 

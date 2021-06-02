@@ -35,7 +35,12 @@ public:
 	void SetFloat(const std::string& name, GLfloat value);
 	void SetInt(const std::string& name, GLint value);
 	void SetVec2(const std::string& name, float const* const vec);
-	void SetListVec2(const std::string& name, float const* const vec, unsigned int size);
+
+	template <typename T>
+	inline void SetListVec2(const std::string& name, const std::vector<T>& vec) {
+		glUniform2fv(m_UniformLocations.at(name), vec.size(), reinterpret_cast<const float*>(&vec[0]));
+	}
+
 	void SetVec3(const std::string& name, float const* const vec);
 	void SetVec4(const std::string& name, float const* const vec);
 	void SetMat4x4(const std::string& name, float const* const matrix);

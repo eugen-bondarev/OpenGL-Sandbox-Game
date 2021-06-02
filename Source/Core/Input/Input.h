@@ -7,6 +7,13 @@
 #include "Keys.h"
 #include "Buttons.h"
 
+enum class Key {
+	W = KEY_W,
+	A = KEY_A,
+	S = KEY_S,
+	D = KEY_D
+};
+
 class Input {
 public:
   inline static void Create(GLFWwindow* glfwWindow) {
@@ -25,6 +32,10 @@ public:
 	static bool KeyPressed(int button);
 	static bool KeyReleased(int button);
 	static bool KeyDown(int button);
+	
+	static bool KeyPressed(Key button);
+	static bool KeyReleased(Key button);
+	static bool KeyDown(Key button);
 
 	static void BeginFrame();
 	static void EndFrame();
