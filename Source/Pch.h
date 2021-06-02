@@ -13,6 +13,7 @@
 /**
  * For some reason this doesn't work on Diana's PC. 
  * Need to keep that in mind.
+ * Todo: Check STATIC_BUFFER on her PC.
  */
 #define SUPPORT_DYNAMIC_BUFFER
 

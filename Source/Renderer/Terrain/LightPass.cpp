@@ -13,19 +13,26 @@
 LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {  
 	this->mapRenderer = mapRenderer;
 
-	#ifdef SUPPORT_DYNAMIC_BUFFER
-		const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light.vs");
-	#else
-		const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light1.vs");
-	#endif
+	const TextAsset chunkShaderVsCode(
+		"Assets/Shaders/Terrain/Light"
+		#ifdef SUPPORT_DYNAMIC_BUFFER
+			".dyn.vs"
+		#else
+			".vs"
+		#endif
+	);
 
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");
-
-	#ifdef SUPPORT_DYNAMIC_BUFFER
-		shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View");
-	#else
-		shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Positions");
+	
+	shader = CreateRef<Shader>(
+		chunkShaderVsCode.GetContent(), 
+		chunkShaderFsCode.GetContent(), 
+		"u_Proj", 
+		"u_View"
+	#ifndef SUPPORT_DYNAMIC_BUFFER
+		, "u_Positions"
 	#endif
+	);
 
 	const auto& vertices = Primitives::Block::Vertices(256, 256);
 	const auto& indices = Primitives::Block::indices;
