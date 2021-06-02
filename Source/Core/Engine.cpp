@@ -95,15 +95,11 @@ void Engine::Render() {
 
 	if (rerender) {
 		pipeline.color->Execute(view.matrix, view.position);
-		pipeline.light->Execute(pipeline.color, map, view.matrix, view.position, chunksChanged);
+		pipeline.light->Execute(view.matrix, view.position, pipeline.color->light);
 		rerender = false;
 	}
 
 	pipeline.composition->Execute(pipeline.color, pipeline.light);
-
-	// ImGui::Begin("Light pass");
-	// 	ImGui::Image((void*)(intptr_t)pipeline.light->GetFbo()->GetTextureHandle(), ImVec2(800, 600), ImVec2(0, 0), ImVec2(1, -1));
-	// ImGui::End();
 
 	ImGui::Begin("Info");
 		ImGui::Text(("Chunks rendered: " + std::to_string(pipeline.color->info.chunksRendered)).c_str());

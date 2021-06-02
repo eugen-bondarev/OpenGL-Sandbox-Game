@@ -83,24 +83,24 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 	);
 }
 
-void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos, bool chunksChanged) {
+void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light_data_t& lightData) {
 	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	if (!colorPass->light.size()) return;
+	if (!lightData.size()) return;
 
   fbo->Bind();
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
 			#ifdef SUPPORT_DYNAMIC_BUFFER
-				transformationVBO->Store(colorPass->light);
+				transformationVBO->Store(lightData);
 			#else
-				shader->SetListVec2("u_Positions", colorPass->light);
+				shader->SetListVec2("u_Positions", lightData);
 			#endif
       lightVao->Bind();			
 			lightVao->GetIndexBuffer()->Bind();
 				lightTexture->Bind();
-					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, colorPass->light.size());
+					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, lightData.size());
 				lightTexture->Unbind();
       lightVao->Unbind();
     shader->Unbind();
