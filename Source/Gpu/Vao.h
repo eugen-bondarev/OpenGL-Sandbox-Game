@@ -8,12 +8,17 @@
 
 class VAO : public GpuEntity {
 public:
-	VAO() {
+	inline VAO() {
 		glGenVertexArrays(1, &handle);
 		DEBUG_LOG_OUT("[Call] Vao constructor");
 	}
 
-	~VAO() override;
+	inline ~VAO() override {		
+		Unbind();
+		glDeleteVertexArrays(1, &handle);
+
+		DEBUG_LOG_OUT("[Call] Vao destructor");
+	}
 
 	inline void Bind() const override {
 		glBindVertexArray(handle);
@@ -47,9 +52,9 @@ public:
 	inline Ref<VBO> AddVBO(Args... args) {
 		Ref<VBO> vbo = CreateRef<VBO>(GetLastAttribute(), std::forward<Args>(args)...);
 
-		auto attribs = vbo->GetAttribute();
-		for (int i = 0; i < attribs.size(); i++) {
-			attributes.push_back(attribs[i]);
+		auto usedAttributes = vbo->GetUsedAttributes();
+		for (int i = 0; i < usedAttributes.size(); i++) {
+			attributes.push_back(usedAttributes[i]);
 		}
 
 		vbos.push_back(vbo);

@@ -73,16 +73,12 @@ void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& vi
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-
 			transformationVBO->Store(colorPass->light);
-
       lightVao->Bind();			
 			lightVao->GetIndexBuffer()->Bind();
-
 				lightTexture->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, colorPass->light.size());
 				lightTexture->Unbind();
-
       lightVao->Unbind();
     shader->Unbind();
   fbo->Unbind();

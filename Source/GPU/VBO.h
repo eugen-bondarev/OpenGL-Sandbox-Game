@@ -51,6 +51,8 @@ public:
   inline ~VBO() override {
     glBindBuffer(this->type, 0);
     glDeleteBuffers(1, &handle);
+
+		DEBUG_LOG_OUT("[Call] VBO destructor");
   }
 
   inline void Bind() const override {
@@ -85,7 +87,7 @@ public:
     return type;
   }
 
-  inline const std::vector<GLuint>& GetAttribute() const {
+  inline const std::vector<GLuint>& GetUsedAttributes() const {
     return attributes;
   }
 
