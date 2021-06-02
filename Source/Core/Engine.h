@@ -23,6 +23,10 @@ public:
 private:
 	Ref<Map> map;
 
+	bounds_t visibleBlocks;
+	bounds_t lastVisibleBlocks;
+	bool chunksChanged { false };
+
 	struct {
 		Ref<ColorPass> color;
 		Ref<LightPass> light;

@@ -22,13 +22,16 @@ Engine::Engine() {
 
 void Engine::InitResources() {
 	map = CreateRef<Map>(Size(16, 16), Size(25, 25));
+	view.position = map->GetCenter() * map->GetBlockSize();
+	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
+	map->CalculateVisibleChunks(view.position);
+
+	visibleBlocks = map->GetVisibleChunks();
+	lastVisibleBlocks = map->GetVisibleChunks();
 
 	pipeline.color = CreateRef<ColorPass>(map);
 	pipeline.light = CreateRef<LightPass>(pipeline.color->GetMapRenderer());
 	pipeline.composition = CreateRef<CompositionPass>();
-
-	view.position = map->GetCenter() * map->GetBlockSize();
-	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 }
 
 bool Engine::IsRunning() const {
@@ -61,6 +64,7 @@ void Engine::Render() {
 			const Pos chunk = map->WhatChunk(block);
 			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
 			rerender = true;
+		chunksChanged = true;
 		}
 	}
 
@@ -73,18 +77,25 @@ void Engine::Render() {
 			const Pos chunk = map->WhatChunk(block);
 			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
 			rerender = true;
+		chunksChanged = true;
 		}
 	}
 
 	if (view.lastPosition != view.position) {
 		rerender = true;
 		map->CalculateVisibleChunks(view.position);
+		visibleBlocks = map->GetVisibleChunks();
 		view.lastPosition = view.position;
+	}
+
+	if (lastVisibleBlocks != visibleBlocks) {
+		lastVisibleBlocks = visibleBlocks;
+		chunksChanged = true;
 	}
 
 	if (rerender) {
 		pipeline.color->Execute(view.matrix, view.position);
-		pipeline.light->Execute(pipeline.color, map, view.matrix, view.position);
+		pipeline.light->Execute(pipeline.color, map, view.matrix, view.position, chunksChanged);
 		rerender = false;
 	}
 
@@ -106,6 +117,8 @@ void Engine::Render() {
 		ImGui::Text(("Chunk x: " + std::to_string(visibleChunks.x.start) + ' ' + std::to_string(visibleChunks.x.end)).c_str());
 		ImGui::Text(("Chunk y: " + std::to_string(visibleChunks.y.start) + ' ' + std::to_string(visibleChunks.y.end)).c_str());
 	ImGui::End();
+
+	chunksChanged = false;
 }
 
 void Engine::EndFrame() {

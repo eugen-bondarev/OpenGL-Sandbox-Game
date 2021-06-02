@@ -4,45 +4,36 @@
 
 #include "VertexBufferLayout.h"
 
+#include "VBO.h"
+
 class VAO : public GpuEntity {
 public:
-	template <typename T_Vertex>
-	VAO(const std::vector<T_Vertex> &vertices, const std::vector<VertexBufferLayout> &layouts, const std::vector<int> &indices) {
-		attributes.resize(layouts.size());
-
+	VAO() {
 		glGenVertexArrays(1, &handle);
-		glBindVertexArray(handle);
-
-			GLuint vbo{ 0 };
-			glGenBuffers(1, &vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
-				glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(T_Vertex), &vertices[0], GL_STATIC_DRAW);       
-				for (int i = 0; i < layouts.size(); i++) {
-					glVertexAttribPointer(i, layouts[i].Size, GL_FLOAT, GL_FALSE, layouts[i].Stride, reinterpret_cast<void *>(layouts[i].Offset));
-					attributes[i] = i;
-				}
-				buffers.emplace_back(vbo);
-
-			glGenBuffers(1, &indexVboHandle);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboHandle);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), &indices[0], GL_STATIC_DRAW);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-				buffers.emplace_back(indexVboHandle);
-
-			vertexCount = static_cast<GLuint>(indices.size());
-
-		glBindVertexArray(0);
-
 		DEBUG_LOG_OUT("[Call] Vao constructor");
 	}
+
 	~VAO() override;
 
-	void Bind() const override;
-	void Unbind() const override;
+	inline void Bind() const override {
+		glBindVertexArray(handle);
 
-	void Render() const;
+		for (const auto& attribute : attributes) {
+			glEnableVertexAttribArray(attribute);
+		}
+	}
 
-	GLuint GetVertexCount() const;
+	inline void Unbind() const override {
+		for (int i = attributes.size() - 1; i >= 0; --i) {
+			glDisableVertexAttribArray(attributes[i]);
+		}
+		
+		glBindVertexArray(0);
+	}
+
+	inline GLuint GetVertexCount() const {
+		return vertexCount;
+	}
 
 	inline void AddVbo(GLuint vbo) {
 		buffers.push_back(vbo);
@@ -52,13 +43,39 @@ public:
 		attributes.push_back(attribute);
 	}
 
+	template <typename... Args>
+	inline Ref<VBO> AddVBO(Args... args) {
+		Ref<VBO> vbo = CreateRef<VBO>(GetLastAttribute(), std::forward<Args>(args)...);
+
+		auto attribs = vbo->GetAttribute();
+		for (int i = 0; i < attribs.size(); i++) {
+			attributes.push_back(attribs[i]);
+		}
+
+		vbos.push_back(vbo);
+
+		if (vbo->GetType() == GL_ELEMENT_ARRAY_BUFFER) {
+			indexBuffer = vbo;
+			vertexCount = vbo->GetIndexCount();
+		}
+
+		return vbo;
+	}
+
 	inline GLuint GetLastAttribute() const {
 		return static_cast<GLuint>(attributes.size());
 	}
 
+	inline const Ref<VBO>& GetIndexBuffer() const {
+		return indexBuffer;
+	}
+
 private:
-	GLuint indexVboHandle{0};
-	GLuint vertexCount{0};
+	std::vector<Ref<VBO>> vbos;
+	Ref<VBO> indexBuffer;
+
+	GLuint vertexCount { 0 };
+	
 	std::vector<GLuint> attributes;
 	std::vector<GLuint> buffers;
 

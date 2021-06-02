@@ -12,7 +12,16 @@ CompositionPass::CompositionPass() {
     shader->SetInt("u_ColorPassResult", 0);
     shader->SetInt("u_LightPassResult", 1);
   shader->Unbind();
-  canvas = CreateRef<VAO>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
+
+	const auto& vertices = Primitives::Canvas::vertices;
+	const auto& indices = Primitives::Canvas::indices;
+
+  // canvas = CreateRef<VAO>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
+  canvas = CreateRef<VAO>();
+  canvas->Bind();
+		canvas->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex), &vertices[0], Vertex::GetLayout());
+		canvas->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+  canvas->Unbind();
 }
 
 void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPass) {
@@ -22,6 +31,7 @@ void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPa
   GraphicsContext::Clear();
   shader->Bind();
     canvas->Bind();
+    canvas->GetIndexBuffer()->Bind();
       colorPass->GetFbo()->BindTexture(GL_TEXTURE0);
       lightPass->GetFbo()->BindTexture(GL_TEXTURE0 + 1);
         glDrawElements(GL_TRIANGLES, canvas->GetVertexCount(), GL_UNSIGNED_INT, nullptr);

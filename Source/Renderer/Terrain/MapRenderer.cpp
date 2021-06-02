@@ -56,11 +56,20 @@ void MapRenderer::InitGraphics() {
 		}
 	);
 
-	tileVao = CreateRef<VAO>(
-		Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize()),
-		Vertex::GetLayout(),
-		Primitives::Block::indices
-	);
+	const auto& vertices = Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize());
+	const auto& indices = Primitives::Block::indices;
+
+	// tileVao = CreateRef<VAO>(
+	// 	Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize()),
+	// 	Vertex::GetLayout(),
+	// 	Primitives::Block::indices
+	// );
+
+	tileVao = CreateRef<VAO>();
+	tileVao->Bind();		
+		tileVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex), &vertices[0], Vertex::GetLayout());
+		tileVao->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+	tileVao->Unbind();
 
 	const Vec2 halfChunkSize = (map->GetChunkSize() * map->GetBlockSize()) / 2.0f;
 	const Mat4 projMatrix = Math::Ortho(-halfChunkSize.x, halfChunkSize.x, -halfChunkSize.y, halfChunkSize.y);

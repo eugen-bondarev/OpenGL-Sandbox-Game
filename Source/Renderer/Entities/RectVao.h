@@ -14,7 +14,7 @@ public:
     inline static std::unique_ptr<VAO> vao;
 
     inline static void Create() {
-        vao = std::make_unique<VAO>(Primitives::Block::Vertices(1.0f, 1.0f), Vertex::GetLayout(), Primitives::Block::indices);
+        // vao = std::make_unique<VAO>(Primitives::Block::Vertices(1.0f, 1.0f), Vertex::GetLayout(), Primitives::Block::indices);
     }
 
     inline static void Draw() {

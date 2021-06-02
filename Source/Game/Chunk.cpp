@@ -56,6 +56,7 @@ void Chunk::Rerender() {
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
     	vao->Bind();
+      vao->GetIndexBuffer()->Bind();
     		tileMapTexture->Bind();
           for (int x = bounds.x.start; x < bounds.x.end; x++) {
             for (int y = bounds.y.start; y < bounds.y.end; y++) {

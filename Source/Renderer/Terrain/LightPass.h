@@ -13,12 +13,11 @@
 class LightPass : public RenderPass<LightFBO> {
 public:
   LightPass(Ref<MapRenderer>& mapRenderer);
-  void Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos);
+  void Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos, bool chunksChanged);
 
-  Ref<Texture> lightTexture;
-  
 private:
-  GLuint transformationVbo;
+  Ref<VBO> transformationVBO;
+  Ref<Texture> lightTexture;
   Ref<MapRenderer> mapRenderer;
   Ref<VAO> lightVao;
 };

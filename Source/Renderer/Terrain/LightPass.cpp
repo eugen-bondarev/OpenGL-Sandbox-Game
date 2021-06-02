@@ -17,20 +17,31 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");
 	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View");
 
-	lightVao = CreateRef<VAO>(Primitives::Block::Vertices(16 * 16, 16 * 16), Vertex::GetLayout(), Primitives::Block::indices);
+	const auto& vertices = Primitives::Block::Vertices(256, 256);
+	const auto& indices = Primitives::Block::indices;
+
+	lightVao = CreateRef<VAO>();
 
 	lightVao->Bind();
-		GLuint attribute = lightVao->GetLastAttribute();
-		glGenBuffers(1, &transformationVbo);
-		glBindBuffer(GL_ARRAY_BUFFER, transformationVbo);
-			glEnableVertexAttribArray(attribute);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * 0, NULL, GL_DYNAMIC_DRAW);
-				glVertexAttribPointer(attribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vec2), (void*)0);    
-				glVertexAttribDivisor(attribute, 1);
-			glDisableVertexAttribArray(attribute);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		lightVao->AddAttribute(attribute);
-		lightVao->AddVbo(transformationVbo);
+		lightVao->AddVBO(
+			VBO::Type::Array, 
+			VBO::Usage::Static, 
+			vertices.size(), sizeof(Vertex), &vertices[0], 
+			Vertex::GetLayout()
+		);
+
+		lightVao->AddVBO(
+			VBO::Type::Indices, 
+			VBO::Usage::Static, 
+			indices.size(), sizeof(int), &indices[0]
+		);
+
+		transformationVBO = lightVao->AddVBO(
+			VBO::Type::Array, 
+			VBO::Usage::Stream, 
+			0, sizeof(Vec2), nullptr, 
+			std::vector<VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
+		);
 	lightVao->Unbind();
 
 	shader->Bind();
@@ -53,7 +64,7 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 	);
 }
 
-void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos) {
+void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& viewMatrix, const Vec2& viewPos, bool chunksChanged) {
 	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	if (!colorPass->light.size()) return;
@@ -62,11 +73,11 @@ void LightPass::Execute(Ref<ColorPass>& colorPass, Ref<Map>& map, const Mat4& vi
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-		
-			glBindBuffer(GL_ARRAY_BUFFER, transformationVbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vec2) * colorPass->light.size(), colorPass->light.data(), GL_DYNAMIC_DRAW);
+
+			transformationVBO->Store(colorPass->light);
 
       lightVao->Bind();			
+			lightVao->GetIndexBuffer()->Bind();
 
 				lightTexture->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, colorPass->light.size());

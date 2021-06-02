@@ -3,9 +3,10 @@
 #include <vector>
 
 struct VertexBufferLayout {
-	size_t Size   { 0 };
-	size_t Stride { 0 };
-	size_t Offset { 0 };
+	size_t size   { 0 };
+	size_t stride { 0 };
+	size_t offset { 0 };
+	int divisor 	{ 0 };
 };
 
 using VertexBufferLayouts = std::vector<VertexBufferLayout>;
