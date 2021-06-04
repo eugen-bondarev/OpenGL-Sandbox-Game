@@ -48,8 +48,49 @@ void Engine::Control() {
 	view.matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(view.position, 0.0f)));
 }
 
+void Update(MapRenderer::chunks_t& chunks, const Chunk& chunk, const Vec2& block) {
+	const auto& bounds = chunk.GetBoudns();
+
+	bool left { false };
+	bool right { false };
+	bool up { false };
+	bool down { false };
+
+	if (bounds.x.start + 1 >= block.x) {
+		left = true;
+	} else if (bounds.x.end - 1 <= block.x) {
+		right = true;
+	}
+
+	if (bounds.y.start + 1 >= block.y) {
+		up = true;
+	} else if (bounds.y.end - 1 <= block.y) {
+		down = true;
+	}
+
+	if (left) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x - 1][chunk.GetChunkPos().y];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	} else if (right) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x + 1][chunk.GetChunkPos().y];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	}
+
+	if (up) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y - 1];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	} else if (down) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y + 1];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	}
+}
+
 void Engine::Render() {
-	if (Input::MouseButtonDown(MOUSE_BUTTON_LEFT)) {
+	if (Input::MouseButtonDown(Button::Left)) {
 		const Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), view.matrix);
 
 		if (map->blocks[block.x][block.y] != BlockType::Empty) {
@@ -58,13 +99,16 @@ void Engine::Render() {
 			const Pos chunkCoordinates = map->WhatChunk(block);
 			auto& chunk = pipeline.color->GetMapRenderer()->chunks[chunkCoordinates.x][chunkCoordinates.y];
 			chunk.Rerender();
+			chunk.highlight = true;
+
+			Update(pipeline.color->GetMapRenderer()->chunks, chunk, block);
 
 			rerender = true;
 			chunksChanged = true;
 		}
 	}
 
-	if (Input::MouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+	if (Input::MouseButtonDown(Button::Right)) {
 		const Vec2 block = map->WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), view.matrix);
 
 		if (map->blocks[block.x][block.y] == BlockType::Empty) {
@@ -73,10 +117,24 @@ void Engine::Render() {
 			const Pos chunkCoordinates = map->WhatChunk(block);
 			auto& chunk = pipeline.color->GetMapRenderer()->chunks[chunkCoordinates.x][chunkCoordinates.y];
 			chunk.Rerender();
+			chunk.highlight = true;
+
+			Update(pipeline.color->GetMapRenderer()->chunks, chunk, block);
 
 			rerender = true;
 			chunksChanged = true;
 		}
+	}
+
+	if (Input::KeyPressed(Key::Space)) {
+		const auto& bounds = map->GetVisibleChunks();
+		for (int x = bounds.x.start; x < bounds.x.end; x++) {
+			for (int y = bounds.y.start; y < bounds.y.end; y++) {
+				auto& chunk = pipeline.color->GetMapRenderer()->chunks[x][y];
+				chunk.highlight = false;
+			}
+		}
+		rerender = true;
 	}
 
 	if (view.lastPosition != view.position) {

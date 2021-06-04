@@ -15,7 +15,7 @@ ColorPass::ColorPass(Ref<Map>& map) {
 
 	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
-	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass");
+	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass", "u_Highlight");
 
 	const auto& vertices = Primitives::Pixel::vertices;
 	const auto& indices = Primitives::Pixel::indices;
@@ -54,6 +54,13 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
         
         for (int x = bounds.x.start; x < bounds.x.end; x++) {
           for (int y = bounds.y.start; y < bounds.y.end; y++) {
+
+						if (mapRenderer->chunks[x][y].highlight) {
+							shader->SetInt("u_Highlight", 1);
+						} else {
+							shader->SetInt("u_Highlight", 0);
+						}
+						
             mapRenderer->chunks[x][y].Render(shader);
 						
 						for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {

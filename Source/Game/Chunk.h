@@ -38,6 +38,8 @@ public:
   inline const bounds_t& GetBoudns() const {
     return bounds;
   }
+  
+  bool highlight { false };
 
   void Rerender();
   void Render(Ref<Shader>& shader);

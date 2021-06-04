@@ -11,7 +11,13 @@ enum class Key {
 	W = KEY_W,
 	A = KEY_A,
 	S = KEY_S,
-	D = KEY_D
+	D = KEY_D,
+	Space = KEY_SPACE
+};
+
+enum class Button {
+	Left = MOUSE_BUTTON_LEFT,
+	Right = MOUSE_BUTTON_RIGHT
 };
 
 class Input {
@@ -27,6 +33,10 @@ public:
 	static bool MouseButtonPressed(int button);
 	static bool MouseButtonReleased(int button);
 	static bool MouseButtonDown(int button);
+
+	static bool MouseButtonPressed(Button button);
+	static bool MouseButtonReleased(Button button);
+	static bool MouseButtonDown(Button button);
 
 	static void KeyboardKeyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
 	static bool KeyPressed(int button);

@@ -38,6 +38,29 @@ bool Input::MouseButtonDown(int button) {
 	return glfwGetMouseButton(glfwWindow, button);
 }
 
+bool Input::MouseButtonPressed(Button button) {
+	int buttonCode = static_cast<int>(button);
+	if (mouseButtons.find(buttonCode) != mouseButtons.end()) {
+		return mouseButtons.at(buttonCode) == State::Pressed;
+	}
+
+	return false;
+}
+
+bool Input::MouseButtonReleased(Button button) {
+	int buttonCode = static_cast<int>(button);
+	if (mouseButtons.find(buttonCode) != mouseButtons.end()) {
+		return mouseButtons.at(buttonCode) == State::Released;
+	}
+
+	return false;
+}
+
+bool Input::MouseButtonDown(Button button) {
+	int buttonCode = static_cast<int>(button);
+	return glfwGetMouseButton(glfwWindow, buttonCode);
+}
+
 bool Input::KeyPressed(int key) {
 	if (keys.find(key) != keys.end()) {
 		return keys.at(key) == State::Pressed;
