@@ -27,6 +27,18 @@ public:
     return targetTexture;
   }
 
+  inline Pos GetChunkPos() const {
+    return chunkPos;
+  }
+
+  inline Size GetChunkSize() const {
+    return chunkSize;
+  }
+
+  inline const bounds_t& GetBoudns() const {
+    return bounds;
+  }
+
   void Rerender();
   void Render(Ref<Shader>& shader);
 

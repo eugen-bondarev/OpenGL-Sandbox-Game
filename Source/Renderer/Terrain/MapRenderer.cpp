@@ -45,7 +45,7 @@ void MapRenderer::Prerender() {
 }
 
 void MapRenderer::InitGraphics() {
-	const ImageAsset image("Assets/Images/Map4.png");
+	const ImageAsset image("Assets/Images/Map7.png");
 	tileMapTexture = CreateRef<Texture>(
 		image.GetSize(),
 		image.GetData(),

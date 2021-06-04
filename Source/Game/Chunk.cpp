@@ -38,6 +38,81 @@ Chunk::Chunk(
   );
 }
 
+bool TopBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return y < blocks[x].size() - 1 && blocks[x][y + 1] == BlockType::Empty;
+}
+
+bool LeftBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return x > 0 && blocks[x - 1][y] == BlockType::Empty;
+}
+
+bool BottomBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return y > 0 && blocks[x][y - 1] == BlockType::Empty;
+}
+
+bool RightBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return x < blocks.size() - 1 && blocks[x + 1][y] == BlockType::Empty;
+}
+
+Vec2 PickRightAngularTile(const blocks_t& blocks, int x, int y) {
+  #define TOP()     TopBlockIsEmpty(blocks, x, y)
+  #define LEFT()    LeftBlockIsEmpty(blocks, x, y)
+  #define BOTTOM()  BottomBlockIsEmpty(blocks, x, y)
+  #define RIGHT()   RightBlockIsEmpty(blocks, x, y)
+
+  if (TOP() && LEFT() && BOTTOM() && RIGHT())
+    return { 1, 2 };
+
+  if (LEFT() && TOP() && RIGHT())
+    return { -1, 3 };
+
+  if (LEFT() && BOTTOM() && RIGHT())
+    return { -1, 4 };
+
+  if (TOP() && RIGHT() && BOTTOM())
+    return { 0, 3 };
+
+  if (TOP() && LEFT() && BOTTOM())
+    return { 0, 4 };
+
+  if (TOP() && LEFT())
+    return { -1, -1 };
+
+  if (TOP() && RIGHT())
+    return { 1, -1 };
+
+  if (BOTTOM() && LEFT())
+    return { -1, 1 };
+
+  if (BOTTOM() && RIGHT())
+    return { 1, 1 };
+
+  if (TOP() && BOTTOM())
+    return { 0, 2 };
+
+  if (LEFT() && RIGHT())
+    return { -1, 2 };
+
+  if (TOP())
+    return { 0, -1 };
+
+  if (BOTTOM())
+    return { 0, 1 };
+
+  if (LEFT())
+    return { -1, 0 };
+
+  if (RIGHT())
+    return { 1, 0 };
+
+  #undef TOP
+  #undef BOTTOM
+  #undef LEFT
+  #undef RIGHT
+
+  return Vec2(0, 0);
+}
+
 void Chunk::Rerender() {
   const ChunkFBO fbo(targetTexture);
 
@@ -72,13 +147,7 @@ void Chunk::Rerender() {
 
               textureOffset += tileMapDictionary[type];
 
-              Vec2 additionalOffset = Vec2(0, 0);
-
-              {
-                if (blocks[x][y + 1] == BlockType::Empty) {
-                  additionalOffset = Vec2(0, 0);
-                }
-              }
+              Vec2 additionalOffset = PickRightAngularTile(blocks, x, y);              
 
               textureOffset += additionalOffset;
 

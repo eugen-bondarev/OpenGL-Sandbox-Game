@@ -55,8 +55,10 @@ void Engine::Render() {
 		if (map->blocks[block.x][block.y] != BlockType::Empty) {
 			map->blocks[block.x][block.y] = BlockType::Empty;
 
-			const Pos chunk = map->WhatChunk(block);
-			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
+			const Pos chunkCoordinates = map->WhatChunk(block);
+			auto& chunk = pipeline.color->GetMapRenderer()->chunks[chunkCoordinates.x][chunkCoordinates.y];
+			chunk.Rerender();
+
 			rerender = true;
 			chunksChanged = true;
 		}
@@ -68,8 +70,10 @@ void Engine::Render() {
 		if (map->blocks[block.x][block.y] == BlockType::Empty) {
 			map->blocks[block.x][block.y] = BlockType::Dirt;
 
-			const Pos chunk = map->WhatChunk(block);
-			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
+			const Pos chunkCoordinates = map->WhatChunk(block);
+			auto& chunk = pipeline.color->GetMapRenderer()->chunks[chunkCoordinates.x][chunkCoordinates.y];
+			chunk.Rerender();
+
 			rerender = true;
 			chunksChanged = true;
 		}
