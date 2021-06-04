@@ -43,10 +43,8 @@ void Map::GenerateMap() {
 		for (int y = 0; y < middle; y++) {
 			blocks[x][y] = BlockType::Dirt;
 		}
-		
-		blocks[x][middle] = BlockType::Grass;
 
-		for (int y = middle + 1; y < amountOfBlocks.y; y++) {
+		for (int y = middle; y < amountOfBlocks.y; y++) {
 			blocks[x][y] = BlockType::Empty;
 		}
 	}

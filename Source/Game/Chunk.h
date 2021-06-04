@@ -7,8 +7,7 @@
 #include "GPU/VAO.h"
 
 inline static std::map<BlockType, Pos> tileMapDictionary = {
-  { BlockType::Grass, { 0, 1 } },
-  { BlockType::Dirt, { 0, 0 } }
+  { BlockType::Dirt, { 1, 1 } }
 };
 
 class Chunk {

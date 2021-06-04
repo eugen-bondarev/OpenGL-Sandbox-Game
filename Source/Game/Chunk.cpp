@@ -68,9 +68,19 @@ void Chunk::Rerender() {
                 continue;
               }
 
-              Vec2 textureOffset = Vec2(1, 1);
+              Vec2 textureOffset = Vec2(0, 0);
 
               textureOffset += tileMapDictionary[type];
+
+              Vec2 additionalOffset = Vec2(0, 0);
+
+              {
+                if (blocks[x][y + 1] == BlockType::Empty) {
+                  additionalOffset = Vec2(0, 0);
+                }
+              }
+
+              textureOffset += additionalOffset;
 
               const Vec2 pos = Vec2(x * blockSize, y * blockSize);
               const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;

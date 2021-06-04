@@ -9,10 +9,10 @@ namespace Block {
 
 inline static std::vector<Vertex> Vertices(float tileSizeX, float tileSizeY, bool flipUVs = false) {
 	return {
-		{ { -tileSizeX / 2, -tileSizeY / 2 }, { 1, 0 } },
-		{ {  tileSizeX / 2, -tileSizeY / 2 }, { 0, 0 } },
-		{ { -tileSizeX / 2,  tileSizeY / 2 }, { 1, 1 } },
-		{ {  tileSizeX / 2,  tileSizeY / 2 }, { 0, 1 } },
+		{ { tileSizeX / 2, tileSizeY / 2 }, { 1, 0 } },
+		{ { -tileSizeX / 2, tileSizeY / 2 }, { 0, 0 } },
+		{ { tileSizeX / 2,  -tileSizeY / 2 }, { 1, 1 } },
+		{ { -tileSizeX / 2,  -tileSizeY / 2 }, { 0, 1 } },
 	};
 }
 
