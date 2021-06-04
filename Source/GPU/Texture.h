@@ -6,12 +6,12 @@
 
 class Texture : public GpuEntity {
 public:
-	enum class Texture::ParamType {
+	enum class ParamType {
 		Int = 0,
 		Float
 	};
 
-	using param_t = std::tuple<Texture::ParamType, GLuint, GLfloat>;
+	using param_t = std::tuple<ParamType, GLuint, GLfloat>;
 
 	template <typename... Args>
 	Texture(
