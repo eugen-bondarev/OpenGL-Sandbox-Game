@@ -2,16 +2,14 @@
 
 #include "Asset.h"
 
-#include "Util/Structures.h"
-
 class ImageAsset : public Asset {
 public:
-    ImageAsset(const std::string& path);
+    ImageAsset(const Str& path);
     ImageAsset() = default;
 
     ~ImageAsset();
 
-    virtual void Load(const std::string& path) override;
+    virtual void Load(const Str& path) override;
 
     const unsigned char* GetData() const;
     Size GetSize() const;

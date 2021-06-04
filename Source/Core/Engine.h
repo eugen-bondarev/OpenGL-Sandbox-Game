@@ -1,7 +1,5 @@
 #pragma once
 
-#include "GPU/Shader.h"
-
 #include "Game/Map.h"
 
 #include "Renderer/Terrain/ColorPass.h"

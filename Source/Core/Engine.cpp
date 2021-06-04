@@ -5,13 +5,7 @@
 #include "Core/Gui.h"
 #include "Core/Input/Input.h"
 
-#include "Assets/TextAsset.h"
-#include "Assets/ImageAsset.h"
-#include "Math/Primitive.h"
-
 #include "Renderer/Entities/RectVao.h"
-
-#include "GPU/GraphicsContext.h"
 
 Engine::Engine() {
 	Window::Create();
@@ -64,7 +58,7 @@ void Engine::Render() {
 			const Pos chunk = map->WhatChunk(block);
 			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
 			rerender = true;
-		chunksChanged = true;
+			chunksChanged = true;
 		}
 	}
 
@@ -77,7 +71,7 @@ void Engine::Render() {
 			const Pos chunk = map->WhatChunk(block);
 			pipeline.color->GetMapRenderer()->chunks[chunk.x][chunk.y].Rerender();
 			rerender = true;
-		chunksChanged = true;
+			chunksChanged = true;
 		}
 	}
 

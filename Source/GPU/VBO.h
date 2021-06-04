@@ -79,6 +79,14 @@ public:
     glBufferData(type, vec.size() * size, vec.data(), usage);
   }
 
+  template <typename T, bool bind = true>
+  inline void Update(const std::vector<T>& vec, int amount) const {
+    if (bind) {
+      glBindBuffer(type, handle);
+    }
+    glBufferSubData(type, 0, size * amount, vec.data());
+  }
+
   inline GLenum GetUsage() const {
     return usage;
   }

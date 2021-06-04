@@ -9,6 +9,7 @@
 
 #include "Util/Structures.h"
 #include "Util/Memory.h"
+#include "Util/Types.h"
 
 /**
  * For some reason this doesn't work on Diana's PC. 

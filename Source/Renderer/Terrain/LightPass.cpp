@@ -10,7 +10,7 @@
 #include "Math/Math.h"
 #include "Math/Primitive.h"
 
-LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {  
+LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {  
 	this->mapRenderer = mapRenderer;
 
 	const TextAsset chunkShaderVsCode(
@@ -57,7 +57,8 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 			transformationVBO = lightVao->AddVBO(
 				VBO::Type::Array, 
 				VBO::Usage::Stream, 
-				0, sizeof(Vec2), nullptr, 
+				maxAmountOfLights, sizeof(Vec2), nullptr, 
+				// 0, sizeof(Vec2), nullptr, 
 				std::vector<VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
 			);
 		#endif
@@ -76,10 +77,8 @@ LightPass::LightPass(std::shared_ptr<MapRenderer>& mapRenderer) {
 		GL_RGBA,
 		GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		std::vector<Texture::param_t> {
-			{ ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-			{ ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-		}
+		Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+		Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 }
 
@@ -93,7 +92,8 @@ void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
 			#ifdef SUPPORT_DYNAMIC_BUFFER
-				transformationVBO->Store(lightData);
+				transformationVBO->Update(lightData, std::min<int>(lightData.size(), maxAmountOfLights));
+				// transformationVBO->Store(lightData);
 			#else
 				shader->SetListVec2("u_Positions", lightData);
 			#endif

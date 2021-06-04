@@ -15,10 +15,8 @@ public:
 			GL_RGBA,
 			imageAsset.GetChannels() == 4 ? GL_RGBA : GL_RGB,
 			GL_UNSIGNED_BYTE,
-			std::vector<Texture::param_t> {
-				{ ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-				{ ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-			}
+			Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+			Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 		);
 		vao = CreateRef<Vao>(Primitives::Quad::vertices, Vertex::GetLayout(), Primitives::Quad::indices);
 	}

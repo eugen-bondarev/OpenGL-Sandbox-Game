@@ -2,20 +2,20 @@
 
 #include <fstream>
 
-TextAsset::TextAsset(const std::string& path) {
+TextAsset::TextAsset(const Str& path) {
     Load(path);
 }
 
-void TextAsset::Load(const std::string& path) {
+void TextAsset::Load(const Str& path) {
     std::ifstream file;
 #ifdef FORGIO_ROOT
-    file.open(std::string(FORGIO_ROOT) + path);
+    file.open(Str(FORGIO_ROOT) + path);
 #else
     file.open(path);
 #endif
 
     while (!file.eof()) {
-        std::string line;
+        Str line;
         std::getline(file, line);
         content.append(line.empty() ? "\n" : line);
     }
@@ -23,6 +23,6 @@ void TextAsset::Load(const std::string& path) {
     file.close();
 }
 
-std::string TextAsset::GetContent() const {
+Str TextAsset::GetContent() const {
     return content;
 }

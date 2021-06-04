@@ -14,8 +14,8 @@ public:
 			GL_RGBA,
 			GL_UNSIGNED_BYTE,
 			std::vector<Texture::param_t> {
-				{ ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-				{ ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
+				{ Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+				{ Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
 			}
 		);
 

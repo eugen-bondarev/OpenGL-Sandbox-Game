@@ -8,8 +8,8 @@ Sprite::Sprite(ImageAsset& asset, Interpolation interpolation, bool alphaChannel
         alphaChannel ? GL_RGBA : GL_RGB,
         GL_UNSIGNED_BYTE,
         std::vector<Texture::param_t> {
-            { ParamType::Int, GL_TEXTURE_MIN_FILTER, static_cast<int>(interpolation) },
-            { ParamType::Int, GL_TEXTURE_MAG_FILTER, static_cast<int>(interpolation) }
+            { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, static_cast<int>(interpolation) },
+            { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, static_cast<int>(interpolation) }
         }
     );
 

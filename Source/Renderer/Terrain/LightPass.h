@@ -16,6 +16,8 @@ public:
   void Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light_data_t& lightData);
 
 private:
+  int maxAmountOfLights { 1024 };
+
   Ref<VBO> transformationVBO;
   Ref<Texture> lightTexture;
   Ref<MapRenderer> mapRenderer;

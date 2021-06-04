@@ -4,8 +4,10 @@
 
 #include "Assets/ImageAsset.h"
 #include "Assets/TextAsset.h"
-#include "GPU/Vertex.h"
 #include "Math/Primitive.h"
+
+#include "GPU/Vertex.h"
+#include "GPU/Texture.h"
 
 MapRenderer::MapRenderer(Ref<Map>& map) {
 	this->map = map;
@@ -17,8 +19,8 @@ MapRenderer::MapRenderer(Ref<Map>& map) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
 			bounds_t bounds = map->WhatBlocks({ x, y });
 			chunks[x].emplace_back(
-				Pos {x, y}, 
-				Size {map->GetChunkSize()}, 
+				Pos(x, y), 
+				Size(map->GetChunkSize()), 
 				shader,
 				tileVao, 
 				tileMapTexture, 
@@ -50,20 +52,12 @@ void MapRenderer::InitGraphics() {
 		GL_RGBA,
 		image.GetChannels() == 4 ? GL_RGBA : GL_RGB,
 		GL_UNSIGNED_BYTE,
-		std::vector<Texture::param_t> {
-			{ ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-			{ ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-		}
+		Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+		Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 
 	const auto& vertices = Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize());
 	const auto& indices = Primitives::Block::indices;
-
-	// tileVao = CreateRef<VAO>(
-	// 	Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize()),
-	// 	Vertex::GetLayout(),
-	// 	Primitives::Block::indices
-	// );
 
 	tileVao = CreateRef<VAO>();
 	tileVao->Bind();		

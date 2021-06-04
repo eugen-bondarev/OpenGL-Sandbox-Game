@@ -33,10 +33,8 @@ Chunk::Chunk(
     GL_RGBA,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    std::vector<Texture::param_t>{
-      {ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST},
-      {ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST},
-    }
+    Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+    Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
   );
 }
 
@@ -64,7 +62,7 @@ void Chunk::Rerender() {
 
               if (type == BlockType::Empty) {
                 if (y + 1 < blocks[x].size() && y > 0 && blocks[x][y - 1] != BlockType::Empty) {
-                  lightData.emplace_back((x - chunkSize.x / 2) * blockSize, (y - chunkSize.y / 2) * blockSize);
+                  lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
                 }
 
                 continue;

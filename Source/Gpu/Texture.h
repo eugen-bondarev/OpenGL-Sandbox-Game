@@ -4,16 +4,51 @@
 
 #include <tuple>
 
-enum class ParamType {
-	Int = 0,
-	Float
-};
-
 class Texture : public GpuEntity {
 public:
-	using param_t = std::tuple<ParamType, GLuint, GLfloat>;
+	enum class Texture::ParamType {
+		Int = 0,
+		Float
+	};
 
-	Texture(Size size, const unsigned char *data, GLint internalFormat, GLuint format, GLuint type, const std::vector<param_t> parameters);
+	using param_t = std::tuple<Texture::ParamType, GLuint, GLfloat>;
+
+	template <typename... Args>
+	Texture(
+		Size size, 
+		const unsigned char *data, 
+		GLint internalFormat, 
+		GLuint format, 
+		GLuint type, 
+		Args... parameters
+	) : size { size }, 
+	internalFormat { internalFormat }, 
+	format { format }, 
+	type { type } {		
+		glGenTextures(1, &handle);
+		glBindTexture(GL_TEXTURE_2D, handle);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, data);
+
+		std::vector<param_t> params { parameters... };
+
+		for (const auto param : params) {
+			switch (std::get<0>(param)) {
+				case Texture::ParamType::Int: {
+					glTexParameteri(GL_TEXTURE_2D, std::get<1>(param), static_cast<GLint>(std::get<2>(param)));
+					break;
+				}
+
+				case Texture::ParamType::Float: {
+					glTexParameterf(GL_TEXTURE_2D, std::get<1>(param), std::get<2>(param));
+					break;
+				}
+			}
+		}
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
 	~Texture() override;
 
 	inline Size GetSize() const {
