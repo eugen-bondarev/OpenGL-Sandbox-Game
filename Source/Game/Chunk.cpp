@@ -114,6 +114,8 @@ Vec2 PickRightAngularTile(const blocks_t& blocks, int x, int y) {
 }
 
 void Chunk::Rerender() {
+  FORGIO_PROFILER_SCOPE();
+  
   const ChunkFBO fbo(targetTexture);
 
 	const Vec2 viewPos = (chunkPos * chunkSize) * blockSize;
@@ -124,6 +126,8 @@ void Chunk::Rerender() {
 
   lightData.clear();
 
+  containsOnlyEmptyBlocks = true;
+
   fbo.Bind();
   fbo.Clear();
     shader->Bind();
@@ -131,6 +135,8 @@ void Chunk::Rerender() {
     	vao->Bind();
       vao->GetIndexBuffer()->Bind();
     		tileMapTexture->Bind();
+          std::vector<Vec4> data;
+
           for (int x = bounds.x.start; x < bounds.x.end; x++) {
             for (int y = bounds.y.start; y < bounds.y.end; y++) {
               const BlockType type = blocks[x][y];
@@ -153,9 +159,13 @@ void Chunk::Rerender() {
 
               const Vec2 pos = Vec2(x * blockSize, y * blockSize);
               const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
+              const Vec2 finalPos = pos - chunkCenter;
+
               shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
-              shader->SetVec2("u_Pos", Math::ToPtr(pos - chunkCenter));
+              shader->SetVec2("u_Pos", Math::ToPtr(finalPos));
               glDrawElements(GL_TRIANGLES, vao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+
+              containsOnlyEmptyBlocks = false;
             }
           }
     		tileMapTexture->Unbind();
@@ -164,6 +174,8 @@ void Chunk::Rerender() {
   fbo.Unbind();
 
 	GraphicsContext::Viewport(0, 0, Window::GetSize().x, Window::GetSize().y);
+
+  highlight = true;
 }
 
 void Chunk::Render(std::shared_ptr<Shader>& shader) {

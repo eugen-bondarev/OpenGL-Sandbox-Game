@@ -41,6 +41,8 @@ public:
   
   bool highlight { false };
 
+  bool containsOnlyEmptyBlocks { false };
+
   void Rerender();
   void Render(Ref<Shader>& shader);
 

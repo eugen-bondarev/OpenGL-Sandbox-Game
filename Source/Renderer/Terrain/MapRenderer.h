@@ -25,6 +25,20 @@ public:
 		return map->GetChunkSize() * map->GetBlockSize();
 	}
 
+  template <typename... Args>
+  inline Chunk& GetChunk(Args... args) {
+		Vec2 index = { args... };
+    return chunks[index.x][index.y];
+  }
+
+	template <typename... Args>
+	inline void RerenderChunk(Args... args) {
+		auto& chunk = GetChunk(args...);
+		chunk.Rerender();
+	}
+
+	void UpdateNeighborChunks(const Pos& chunk, const Pos& block);
+
 	void Prerender();
 
 	using chunks_row_t = std::vector<Chunk>;

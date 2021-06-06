@@ -7,7 +7,7 @@
 
 class Sprite {
 public:
-	inline Sprite(const std::string& texturePath) : transform { Mat4(1) } {
+	inline Sprite(const Str& texturePath) : transform { Mat4(1) } {
 		const ImageAsset imageAsset(texturePath);
 		texture = CreateRef<Texture>(
 			imageAsset.GetSize(),

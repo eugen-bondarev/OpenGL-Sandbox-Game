@@ -25,6 +25,8 @@ CompositionPass::CompositionPass() {
 }
 
 void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPass) {
+  FORGIO_PROFILER_SCOPE();
+
   Color sky = Color(227.0f, 251.0f, 255.0f, 255.0f) / 255.0f;
 
 	GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);

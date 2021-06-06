@@ -44,6 +44,48 @@ void MapRenderer::Prerender() {
 	}
 }
 
+void MapRenderer::UpdateNeighborChunks(const Pos& chunkPos, const Pos& block) {
+	auto& chunk = GetChunk(chunkPos);
+	const auto& bounds = chunk.GetBoudns();
+
+	bool left { false };
+	bool right { false };
+	bool up { false };
+	bool down { false };
+
+	if (bounds.x.start + 1 >= block.x) {
+		left = true;
+	} else if (bounds.x.end - 1 <= block.x) {
+		right = true;
+	}
+
+	if (bounds.y.start + 1 >= block.y) {
+		up = true;
+	} else if (bounds.y.end - 1 <= block.y) {
+		down = true;
+	}
+
+	if (left) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x - 1][chunk.GetChunkPos().y];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	} else if (right) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x + 1][chunk.GetChunkPos().y];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	}
+
+	if (up) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y - 1];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	} else if (down) {
+		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y + 1];
+		chunkToUpdate.Rerender();
+		chunkToUpdate.highlight = true;
+	}
+}
+
 void MapRenderer::InitGraphics() {
 	const ImageAsset image("Assets/Images/Map7.png");
 	tileMapTexture = CreateRef<Texture>(

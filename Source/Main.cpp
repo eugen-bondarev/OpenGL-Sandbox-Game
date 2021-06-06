@@ -2,16 +2,22 @@
 #include "Core/Engine.h"
 
 int main() {
-    Engine engine;
+	FORGIO_PROFILER_BEGIN();
 
-    engine.InitResources();
+	Engine engine;
 
-    while (engine.IsRunning()) {
-        engine.BeginFrame();
-        engine.Control();
-        engine.Render();
-        engine.EndFrame();
-    }
+	engine.InitResources();
 
-    return 0;
+	while (engine.IsRunning()) {
+		FORGIO_PROFILER_NAMED_SCOPE("New frame");
+
+		engine.BeginFrame();
+		engine.Control();
+		engine.Render();
+		engine.EndFrame();
+	}
+	
+	FORGIO_PROFILER_END();
+
+	return 0;
 }

@@ -15,7 +15,7 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 
 	const TextAsset chunkShaderVsCode(
 		"Assets/Shaders/Terrain/Light"
-		#ifdef SUPPORT_DYNAMIC_BUFFER
+		#ifdef FORGIO_SUPPORT_DYNAMIC_BUFFER
 			".dyn.vs"
 		#else
 			".vs"
@@ -29,7 +29,7 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 		chunkShaderFsCode.GetContent(), 
 		"u_Proj", 
 		"u_View"
-	#ifndef SUPPORT_DYNAMIC_BUFFER
+	#ifndef FORGIO_SUPPORT_DYNAMIC_BUFFER
 		, "u_Positions"
 	#endif
 	);
@@ -53,7 +53,7 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 			indices.size(), sizeof(int), &indices[0]
 		);
 
-		#ifdef SUPPORT_DYNAMIC_BUFFER
+		#ifdef FORGIO_SUPPORT_DYNAMIC_BUFFER
 			transformationVBO = lightVao->AddVBO(
 				VBO::Type::Array, 
 				VBO::Usage::Stream, 
@@ -83,6 +83,8 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 }
 
 void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light_data_t& lightData) {
+  FORGIO_PROFILER_SCOPE();
+
 	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	if (!lightData.size()) return;
@@ -91,7 +93,7 @@ void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-			#ifdef SUPPORT_DYNAMIC_BUFFER
+			#ifdef FORGIO_SUPPORT_DYNAMIC_BUFFER
 				transformationVBO->Update(lightData, std::min<int>(lightData.size(), maxAmountOfLights));
 				// transformationVBO->Store(lightData);
 			#else

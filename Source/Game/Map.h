@@ -5,9 +5,20 @@
 #include "Blocks.h"
 #include "Types.h"
 
+struct BlockSettingData {
+	Pos block { -1, -1 };
+	Pos chunk { -1, -1 };
+
+	inline bool IsSet() const {
+		return chunk != Pos { -1, -1 };
+	}
+};
+
 class Map {
 public:
   Map(Size chunkSize, Size amountOfChunks, float blockSize = 16.0f);
+
+	BlockSettingData SetBlock(const Mat4& viewMatrix, BlockType blockType);
 
 	inline Pos WhatChunk(Pos block) const {
 		int x = static_cast<int>(truncf(block.x / GetChunkSize().x));

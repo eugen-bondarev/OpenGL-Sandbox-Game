@@ -8,12 +8,27 @@ Map::Map(Size chunkSize, Size amountOfChunks, float blockSize) {
 	GenerateMap();
 }
 
+BlockSettingData Map::SetBlock(const Mat4& viewMatrix, BlockType blockType) {
+	const Pos blockPos = WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), viewMatrix);
+	auto& block = blocks[blockPos.x][blockPos.y];
+
+	BlockSettingData result;
+	if ((blockType == BlockType::Empty && blockType != block) || (blockType != BlockType::Empty && block == BlockType::Empty)) {
+		block = blockType;
+
+		result.block = blockPos;
+		result.chunk = WhatChunk(blockPos);
+	}
+
+	return result;
+}
+
 void Map::CalculateVisibleChunks(Pos viewPos) {
 	const Pos middle = WhatChunk(GetCenter());
 	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
 	const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
 	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
-	const Vec2 additionalBlocks = Vec2(1);
+	const Vec2 additionalBlocks = Vec2(1.0f); // when map size is 25x25 chunks.
 	
 	visibleChunks.x.start = middle.x - shift.x + centeredViewPos.x / chunkSizeInPixels.x - additionalBlocks.x;
 	visibleChunks.x.end   = middle.x + shift.x + centeredViewPos.x / chunkSizeInPixels.x;

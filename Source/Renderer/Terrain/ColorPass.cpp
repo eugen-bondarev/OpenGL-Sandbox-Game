@@ -38,6 +38,8 @@ ColorPass::ColorPass(Ref<Map>& map) {
 }
 
 void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
+  FORGIO_PROFILER_SCOPE();
+
 	info.chunksRendered = 0;
 
 	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -54,17 +56,18 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
         
         for (int x = bounds.x.start; x < bounds.x.end; x++) {
           for (int y = bounds.y.start; y < bounds.y.end; y++) {
+						FORGIO_PROFILER_NAMED_SCOPE("foreach chunk (x, y)");
 
-						if (mapRenderer->chunks[x][y].highlight) {
-							shader->SetInt("u_Highlight", 1);
-						} else {
-							shader->SetInt("u_Highlight", 0);
+						auto& chunk = mapRenderer->chunks[x][y];
+						if (!chunk.containsOnlyEmptyBlocks) {
+            	mapRenderer->chunks[x][y].Render(shader);
 						}
 						
-            mapRenderer->chunks[x][y].Render(shader);
-						
-						for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
-							light.push_back(mapRenderer->chunks[x][y].lightData[i]);
+						{
+							FORGIO_PROFILER_NAMED_SCOPE("Filling up light data vector");
+							for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
+								light.push_back(mapRenderer->chunks[x][y].lightData[i]);
+							}
 						}
 						
 						info.chunksRendered += 1;
