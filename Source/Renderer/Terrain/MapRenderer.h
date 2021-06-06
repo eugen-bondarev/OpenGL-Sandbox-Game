@@ -6,7 +6,7 @@
 
 #include "Game/Blocks.h"
 #include "Game/Types.h"
-#include "Game/Chunk.h"
+#include "Chunk.h"
 #include "Game/Map.h"
 
 #include "Resources/ChunkFBO.h"

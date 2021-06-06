@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include "Game/Types.h"
 
 #include "GPU/Texture.h"
 #include "GPU/Shader.h"
