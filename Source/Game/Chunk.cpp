@@ -13,6 +13,7 @@ Chunk::Chunk(
 
   Ref<Shader> shader, 
   Ref<VAO> vao, 
+  Ref<VBO> dynVBO, 
   Ref<Texture> tileMap, 
   
   bounds_t bounds, 
@@ -23,6 +24,7 @@ Chunk::Chunk(
   this->chunkSize = chunkSize;
   this->shader = shader;
   this->vao = vao;
+  this->dynVBO = dynVBO;
   this->tileMapTexture = tileMap;
   this->bounds = bounds;
   this->blockSize = blockSize;
@@ -135,7 +137,7 @@ void Chunk::Rerender() {
     	vao->Bind();
       vao->GetIndexBuffer()->Bind();
     		tileMapTexture->Bind();
-          std::vector<Vec4> data;
+          std::vector<Vec4> blocksData;
 
           for (int x = bounds.x.start; x < bounds.x.end; x++) {
             for (int y = bounds.y.start; y < bounds.y.end; y++) {
@@ -149,25 +151,21 @@ void Chunk::Rerender() {
                 continue;
               }
 
-              Vec2 textureOffset = Vec2(0, 0);
-
-              textureOffset += tileMapDictionary[type];
-
-              Vec2 additionalOffset = PickRightAngularTile(blocks, x, y);              
-
-              textureOffset += additionalOffset;
+              Vec2 textureOffset = tileMapDictionary[type] + PickRightAngularTile(blocks, x, y);
 
               const Vec2 pos = Vec2(x * blockSize, y * blockSize);
               const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
               const Vec2 finalPos = pos - chunkCenter;
 
-              shader->SetVec2("u_Tile", Math::ToPtr(textureOffset));
-              shader->SetVec2("u_Pos", Math::ToPtr(finalPos));
-              glDrawElements(GL_TRIANGLES, vao->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
+              blocksData.emplace_back(finalPos.x, finalPos.y, textureOffset.x, textureOffset.y);
 
               containsOnlyEmptyBlocks = false;
             }
           }
+        
+          dynVBO->Update(blocksData, blocksData.size());          
+					glDrawElementsInstanced(GL_TRIANGLES, vao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
+
     		tileMapTexture->Unbind();
     	vao->Unbind();
     shader->Unbind();

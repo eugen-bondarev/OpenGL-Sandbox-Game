@@ -87,6 +87,18 @@ public:
     glBufferSubData(type, 0, size * amount, vec.data());
   }
 
+  template <bool bind = true>
+  inline void* Map() const {
+    if (bind) {
+      glBindBuffer(type, handle);
+    }
+    return glMapBuffer(type, GL_WRITE_ONLY);
+  }
+
+  inline bool Unmap() const {
+    return glUnmapBuffer(type);
+  }
+
   inline GLenum GetUsage() const {
     return usage;
   }
@@ -101,6 +113,10 @@ public:
 
   inline GLuint GetIndexCount() const {
     return indexCount;
+  }
+
+  inline size_t GetSize() const {
+    return size;
   }
 
 private:

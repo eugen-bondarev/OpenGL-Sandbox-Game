@@ -15,6 +15,7 @@ MapRenderer::MapRenderer(Ref<Map>& map) {
 	InitGraphics();
 
 	chunks.resize(map->GetAmountOfChunks().x);
+
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
 			bounds_t bounds = map->WhatBlocks({ x, y });
@@ -23,6 +24,7 @@ MapRenderer::MapRenderer(Ref<Map>& map) {
 				Size(map->GetChunkSize()), 
 				shader,
 				tileVao, 
+				dynVBO,
 				tileMapTexture, 
 				bounds, 
 				map->blocks,
@@ -105,6 +107,12 @@ void MapRenderer::InitGraphics() {
 	tileVao->Bind();		
 		tileVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex), &vertices[0], Vertex::GetLayout());
 		tileVao->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+		dynVBO = tileVao->AddVBO(
+			VBO::Type::Array, 
+			VBO::Usage::Stream, 
+			map->GetChunkSize().x * map->GetChunkSize().y, sizeof(Vec4), nullptr, 
+			std::vector<VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } }
+		);
 	tileVao->Unbind();
 
 	const Vec2 halfChunkSize = (map->GetChunkSize() * map->GetBlockSize()) / 2.0f;
@@ -112,9 +120,9 @@ void MapRenderer::InitGraphics() {
 
 	const TextAsset vsCode("Assets/Shaders/Terrain/Default.vs");
 	const TextAsset fsCode("Assets/Shaders/Terrain/Default.fs");
-	shader = CreateRef<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View", "u_Pos", "u_Tile");
+	shader = CreateRef<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View");
 	shader->Bind();
 		shader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
-		shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));
+		// shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));
 	shader->Unbind();
 }

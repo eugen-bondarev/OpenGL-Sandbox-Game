@@ -63,11 +63,8 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
             	mapRenderer->chunks[x][y].Render(shader);
 						}
 						
-						{
-							FORGIO_PROFILER_NAMED_SCOPE("Filling up light data vector");
-							for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
-								light.push_back(mapRenderer->chunks[x][y].lightData[i]);
-							}
+						for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
+							light.push_back(mapRenderer->chunks[x][y].lightData[i]);
 						}
 						
 						info.chunksRendered += 1;

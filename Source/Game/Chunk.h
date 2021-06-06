@@ -17,6 +17,7 @@ public:
     Size chunkSize,
     Ref<Shader> shader, 
     Ref<VAO> vao, 
+    Ref<VBO> dynVBO, 
     Ref<Texture> tileMap, 
     bounds_t bounds,
     blocks_t& blocks,
@@ -57,6 +58,7 @@ private:
   
   Ref<Shader> shader;
   Ref<VAO> vao;
+  Ref<VBO> dynVBO;
   Ref<Texture> tileMapTexture;
 
   Pos chunkPos;

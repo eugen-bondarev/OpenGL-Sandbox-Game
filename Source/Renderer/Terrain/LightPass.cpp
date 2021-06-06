@@ -13,26 +13,9 @@
 LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {  
 	this->mapRenderer = mapRenderer;
 
-	const TextAsset chunkShaderVsCode(
-		"Assets/Shaders/Terrain/Light"
-		#ifdef FORGIO_SUPPORT_DYNAMIC_BUFFER
-			".dyn.vs"
-		#else
-			".vs"
-		#endif
-	);
-
-	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");
-	
-	shader = CreateRef<Shader>(
-		chunkShaderVsCode.GetContent(), 
-		chunkShaderFsCode.GetContent(), 
-		"u_Proj", 
-		"u_View"
-	#ifndef FORGIO_SUPPORT_DYNAMIC_BUFFER
-		, "u_Positions"
-	#endif
-	);
+	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Light.vs");
+	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Light.fs");	
+	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View");
 
 	const auto& vertices = Primitives::Block::Vertices(256, 256);
 	const auto& indices = Primitives::Block::indices;
@@ -53,15 +36,12 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 			indices.size(), sizeof(int), &indices[0]
 		);
 
-		#ifdef FORGIO_SUPPORT_DYNAMIC_BUFFER
-			transformationVBO = lightVao->AddVBO(
-				VBO::Type::Array, 
-				VBO::Usage::Stream, 
-				maxAmountOfLights, sizeof(Vec2), nullptr, 
-				// 0, sizeof(Vec2), nullptr, 
-				std::vector<VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
-			);
-		#endif
+		transformationVBO = lightVao->AddVBO(
+			VBO::Type::Array, 
+			VBO::Usage::Stream, 
+			maxAmountOfLights, sizeof(Vec2), nullptr,
+			std::vector<VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
+		);
 	lightVao->Unbind();
 
 	shader->Bind();
@@ -93,12 +73,7 @@ void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light
   fbo->Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-			#ifdef FORGIO_SUPPORT_DYNAMIC_BUFFER
-				transformationVBO->Update(lightData, std::min<int>(lightData.size(), maxAmountOfLights));
-				// transformationVBO->Store(lightData);
-			#else
-				shader->SetListVec2("u_Positions", lightData);
-			#endif
+			transformationVBO->Update(lightData, std::min<int>(lightData.size(), maxAmountOfLights));
       lightVao->Bind();			
 			lightVao->GetIndexBuffer()->Bind();
 				lightTexture->Bind();

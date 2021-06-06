@@ -51,6 +51,7 @@ private:
 	void InitGraphics();
 
 	Ref<VAO> tileVao;
+	Ref<VBO> dynVBO;
 	Ref<Texture> tileMapTexture;
 	Ref<Shader> shader;
 };
