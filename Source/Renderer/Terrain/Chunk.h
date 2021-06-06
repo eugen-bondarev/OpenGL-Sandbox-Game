@@ -68,4 +68,6 @@ private:
   Size chunkSize;
   bounds_t bounds;
   float blockSize;
+
+  Mat4 chunkModelMatrix;
 };

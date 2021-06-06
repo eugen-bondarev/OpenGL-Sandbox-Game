@@ -29,6 +29,10 @@ Chunk::Chunk(
     Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
     Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
   );
+
+  const Vec2 chunkPosPixels = chunkPos * chunkSize * blockSize;
+  chunkModelMatrix = Math::Translate(Mat4(1), Vec3(chunkPosPixels, 1.0f));
+  chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3((chunkSize * blockSize).x, -(chunkSize * blockSize).y, 1.0f));
 }
 
 bool TopBlockIsEmpty(const blocks_t& blocks, int x, int y) {
@@ -110,9 +114,10 @@ void Chunk::AddWallToRenderingData(std::vector<Vec4>& wallData, WallType wall, c
   const Vec2 textureOffset = wallsTileMapDictionary[wall] + PickRightAngularTile(walls, x, y);
   const Vec2 pos = Vec2(x * blockSize, y * blockSize);
   const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
-  const Vec2 finalPos = pos - chunkCenter;
+  static const Vec2 wallOffset = Vec2(4, -4);
+  const Vec2 finalPos = pos - chunkCenter + wallOffset;
 
-  wallData.emplace_back(finalPos.x + 4, finalPos.y - 4, textureOffset.x, textureOffset.y);
+  wallData.emplace_back(finalPos.x, finalPos.y, textureOffset.x, textureOffset.y);
 }
 
 void Chunk::AddBlockToRenderingData(std::vector<Vec4>& blockData, BlockType block, const blocks_t& blocks, int x, int y) {  
@@ -219,9 +224,6 @@ void Chunk::Rerender(
 
 void Chunk::Render(std::shared_ptr<Shader>& shader) {
   targetTexture->Bind();
-    const Vec2 chunkPosPixels = chunkPos * chunkSize * blockSize;
-    Mat4 chunkModelMatrix = Math::Translate(Mat4(1), Vec3(chunkPosPixels, 1.0f));
-    chunkModelMatrix = Math::Scale(chunkModelMatrix, Vec3((chunkSize * blockSize).x, -(chunkSize * blockSize).y, 1.0f));
     shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
     glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, nullptr);
   targetTexture->Unbind();
