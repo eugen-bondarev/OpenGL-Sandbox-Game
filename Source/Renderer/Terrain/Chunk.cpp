@@ -9,23 +9,12 @@
 
 Chunk::Chunk(
   Pos chunkPos, 
-  Size chunkSize, 
-
-  Ref<Shader> shader, 
-  Ref<VAO> vao, 
-  Ref<VBO> dynVBO, 
-  Ref<Texture> tileMap, 
-  
+  Size chunkSize,  
   bounds_t bounds, 
-  blocks_t& blocksReference,
   float blockSize
-) : blocks { blocksReference } {
+) {
   this->chunkPos = chunkPos;
   this->chunkSize = chunkSize;
-  this->shader = shader;
-  this->vao = vao;
-  this->dynVBO = dynVBO;
-  this->tileMapTexture = tileMap;
   this->bounds = bounds;
   this->blockSize = blockSize;
 
@@ -115,7 +104,13 @@ Vec2 PickRightAngularTile(const blocks_t& blocks, int x, int y) {
   return Vec2(0, 0);
 }
 
-void Chunk::Rerender() {
+void Chunk::Rerender(  
+  Ref<Shader>& shader, 
+  Ref<VAO>& chunkVAO, 
+  Ref<VBO>& positionAndTileVBO, 
+  Ref<Texture>& tileMapTexture,
+  const blocks_t& blocks
+) {
   FORGIO_PROFILER_SCOPE();
   
   const ChunkFBO fbo(targetTexture);
@@ -134,8 +129,8 @@ void Chunk::Rerender() {
   fbo.Clear();
     shader->Bind();
     shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-    	vao->Bind();
-      vao->GetIndexBuffer()->Bind();
+    	chunkVAO->Bind();
+      chunkVAO->GetIndexBuffer()->Bind();
     		tileMapTexture->Bind();
           std::vector<Vec4> blocksData;
 
@@ -147,12 +142,10 @@ void Chunk::Rerender() {
                 if (y + 1 < blocks[x].size() && y > 0 && blocks[x][y - 1] != BlockType::Empty) {
                   lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
                 }
-
                 continue;
               }
 
-              Vec2 textureOffset = tileMapDictionary[type] + PickRightAngularTile(blocks, x, y);
-
+              const Vec2 textureOffset = tileMapDictionary[type] + PickRightAngularTile(blocks, x, y);
               const Vec2 pos = Vec2(x * blockSize, y * blockSize);
               const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
               const Vec2 finalPos = pos - chunkCenter;
@@ -163,17 +156,15 @@ void Chunk::Rerender() {
             }
           }
         
-          dynVBO->Update(blocksData, blocksData.size());          
-					glDrawElementsInstanced(GL_TRIANGLES, vao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
+          positionAndTileVBO->Update(blocksData, blocksData.size());          
+					glDrawElementsInstanced(GL_TRIANGLES, chunkVAO->GetVertexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
 
     		tileMapTexture->Unbind();
-    	vao->Unbind();
+    	chunkVAO->Unbind();
     shader->Unbind();
   fbo.Unbind();
 
 	GraphicsContext::Viewport(0, 0, Window::GetSize().x, Window::GetSize().y);
-
-  highlight = true;
 }
 
 void Chunk::Render(std::shared_ptr<Shader>& shader) {

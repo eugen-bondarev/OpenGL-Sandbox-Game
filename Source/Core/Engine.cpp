@@ -73,18 +73,6 @@ void Engine::Render() {
 		}
 	}
 
-	// For debugging purposes
-	if (Input::KeyPressed(Key::Space)) {
-		const auto& bounds = map->GetVisibleChunks();
-		for (int x = bounds.x.start; x < bounds.x.end; x++) {
-			for (int y = bounds.y.start; y < bounds.y.end; y++) {
-				auto& chunk = pipeline.color->GetMapRenderer()->chunks[x][y];
-				chunk.highlight = false;
-			}
-		}
-		rerender = true;
-	}
-
 	if (view.lastPosition != view.position) {
 		rerender = true;
 		map->CalculateVisibleChunks(view.position);
@@ -99,7 +87,7 @@ void Engine::Render() {
 
 	if (rerender) {
 		pipeline.color->Execute(view.matrix, view.position);
-		pipeline.light->Execute(view.matrix, view.position, pipeline.color->light);
+		pipeline.light->Execute(view.matrix, view.position, pipeline.color->GetLightData());
 		rerender = false;
 	}
 
@@ -108,7 +96,7 @@ void Engine::Render() {
 	ImGui::Begin("Info");
 		ImGui::Text(("Chunks rendered: " + std::to_string(pipeline.color->info.chunksRendered)).c_str());
 		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
-		ImGui::Text(("Lights: " + std::to_string(pipeline.color->light.size())).c_str());
+		ImGui::Text(("Lights: " + std::to_string(pipeline.color->GetLightData().size())).c_str());
 	ImGui::End();
 
 	ImGui::Begin("View");

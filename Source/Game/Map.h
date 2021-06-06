@@ -70,9 +70,13 @@ public:
 		return blockSize;
 	}
 
-	blocks_t blocks;
+	inline const blocks_t& GetBlocks() const {
+		return blocks;
+	}
 
 private:
+	blocks_t blocks;
+
   Size chunkSize;
   Size amountOfChunks;
 	Size amountOfBlocks;

@@ -21,13 +21,9 @@ MapRenderer::MapRenderer(Ref<Map>& map) {
 			bounds_t bounds = map->WhatBlocks({ x, y });
 			chunks[x].emplace_back(
 				Pos(x, y), 
-				Size(map->GetChunkSize()), 
-				shader,
-				tileVao, 
-				dynVBO,
-				tileMapTexture, 
+				Size(map->GetChunkSize()),
 				bounds, 
-				map->blocks,
+				// map->GetBlocks(),
 				map->GetBlockSize()
 			);
 		}
@@ -40,7 +36,7 @@ void MapRenderer::Prerender() {
 	for (int x = 0; x < map->GetAmountOfChunks().x; x++) {
 		for (int y = 0; y < map->GetAmountOfChunks().y; y++) {
 			const float currentTime = Time::GetTime();
-			chunks[x][y].Rerender();
+			RerenderChunk(x, y);
 			const float elapsedTime = Time::GetTime() - currentTime;
 		}
 	}
@@ -68,23 +64,23 @@ void MapRenderer::UpdateNeighborChunks(const Pos& chunkPos, const Pos& block) {
 	}
 
 	if (left) {
-		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x - 1][chunk.GetChunkPos().y];
-		chunkToUpdate.Rerender();
-		chunkToUpdate.highlight = true;
+		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x - 1][chunk.GetChunkPos().y];
+		// chunkToUpdate.Rerender();
+		RerenderChunk(chunk.GetChunkPos().x - 1, chunk.GetChunkPos().y);
 	} else if (right) {
-		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x + 1][chunk.GetChunkPos().y];
-		chunkToUpdate.Rerender();
-		chunkToUpdate.highlight = true;
+		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x + 1][chunk.GetChunkPos().y];
+		// chunkToUpdate.Rerender();
+		RerenderChunk(chunk.GetChunkPos().x + 1, chunk.GetChunkPos().y);
 	}
 
 	if (up) {
-		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y - 1];
-		chunkToUpdate.Rerender();
-		chunkToUpdate.highlight = true;
+		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y - 1];
+		// chunkToUpdate.Rerender();
+		RerenderChunk(chunk.GetChunkPos().x, chunk.GetChunkPos().y - 1);
 	} else if (down) {
-		auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y + 1];
-		chunkToUpdate.Rerender();
-		chunkToUpdate.highlight = true;
+		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y + 1];
+		// chunkToUpdate.Rerender();
+		RerenderChunk(chunk.GetChunkPos().x, chunk.GetChunkPos().y + 1);
 	}
 }
 

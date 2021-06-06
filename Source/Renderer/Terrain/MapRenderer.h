@@ -34,7 +34,13 @@ public:
 	template <typename... Args>
 	inline void RerenderChunk(Args... args) {
 		auto& chunk = GetChunk(args...);
-		chunk.Rerender();
+		chunk.Rerender(
+			shader,
+			tileVao,
+			dynVBO,
+			tileMapTexture,
+			map->GetBlocks()
+		);
 	}
 
 	void UpdateNeighborChunks(const Pos& chunk, const Pos& block);
@@ -50,10 +56,10 @@ private:
 
 	void InitGraphics();
 
+	Ref<Shader> shader;
 	Ref<VAO> tileVao;
 	Ref<VBO> dynVBO;
 	Ref<Texture> tileMapTexture;
-	Ref<Shader> shader;
 
 	MapRenderer(const MapRenderer&) = delete;
 	MapRenderer& operator=(const MapRenderer&) = delete;

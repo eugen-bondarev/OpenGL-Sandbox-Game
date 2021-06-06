@@ -63,8 +63,8 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
             	mapRenderer->chunks[x][y].Render(shader);
 						}
 						
-						for (int i = 0; i < mapRenderer->chunks[x][y].lightData.size(); i++) {
-							light.push_back(mapRenderer->chunks[x][y].lightData[i]);
+						for (int i = 0; i < mapRenderer->chunks[x][y].GetLightData().size(); i++) {
+							light.push_back(mapRenderer->chunks[x][y].GetLightData()[i]);
 						}
 						
 						info.chunksRendered += 1;

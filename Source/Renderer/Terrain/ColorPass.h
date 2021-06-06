@@ -16,13 +16,16 @@ public:
     return mapRenderer;
   }
 
+  inline const light_data_t& GetLightData() const {
+    return light;
+  }
+
   struct {
     unsigned int chunksRendered;
   } info;
 
-  std::vector<Pos> light;
-
 private:
+  light_data_t light;
 	Ref<MapRenderer> mapRenderer;
 	Ref<Map> map;
 	Ref<VAO> chunkVao;

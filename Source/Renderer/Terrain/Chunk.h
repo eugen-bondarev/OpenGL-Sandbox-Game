@@ -14,13 +14,8 @@ class Chunk {
 public:
   Chunk(
     Pos chunkPos, 
-    Size chunkSize,
-    Ref<Shader> shader, 
-    Ref<VAO> vao, 
-    Ref<VBO> dynVBO, 
-    Ref<Texture> tileMap, 
+    Size chunkSize,    
     bounds_t bounds,
-    blocks_t& blocks,
     float blockSize
   );
 
@@ -39,29 +34,30 @@ public:
   inline const bounds_t& GetBoudns() const {
     return bounds;
   }
-  
-  bool highlight { false };
+
+  inline const light_data_t& GetLightData() const {
+    return lightData;
+  }
 
   bool containsOnlyEmptyBlocks { false };
 
-  void Rerender();
-  void Render(Ref<Shader>& shader);
+  void Rerender(
+    Ref<Shader>& shader, 
+    Ref<VAO>& vao, 
+    Ref<VBO>& dynVBO, 
+    Ref<Texture>& tileMap,
+    const blocks_t& blocks
+  );
 
-  light_data_t lightData;
+  void Render(Ref<Shader>& shader);
 
 private:
   Ref<Texture> targetTexture;
 
-  blocks_t& blocks;
-
-  float blockSize;
-  
-  Ref<Shader> shader;
-  Ref<VAO> vao;
-  Ref<VBO> dynVBO;
-  Ref<Texture> tileMapTexture;
+  light_data_t lightData;
 
   Pos chunkPos;
   Size chunkSize;
   bounds_t bounds;
+  float blockSize;
 };
