@@ -54,4 +54,7 @@ private:
 	Ref<VBO> dynVBO;
 	Ref<Texture> tileMapTexture;
 	Ref<Shader> shader;
+
+	MapRenderer(const MapRenderer&) = delete;
+	MapRenderer& operator=(const MapRenderer&) = delete;
 };
