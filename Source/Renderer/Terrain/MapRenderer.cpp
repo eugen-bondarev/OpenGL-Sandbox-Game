@@ -85,7 +85,7 @@ void MapRenderer::UpdateNeighborChunks(const Pos& chunkPos, const Pos& block) {
 }
 
 void MapRenderer::InitGraphics() {
-	const ImageAsset image("Assets/Images/Map7.png");
+	const ImageAsset image("Assets/Images/Map8.png");
 	tileMapTexture = CreateRef<Texture>(
 		image.GetSize(),
 		image.GetData(),
@@ -106,7 +106,7 @@ void MapRenderer::InitGraphics() {
 		dynVBO = tileVao->AddVBO(
 			VBO::Type::Array, 
 			VBO::Usage::Stream, 
-			map->GetChunkSize().x * map->GetChunkSize().y, sizeof(Vec4), nullptr, 
+			map->GetChunkSize().x * map->GetChunkSize().y * 1.5f /* for walls */, sizeof(Vec4), nullptr, 
 			std::vector<VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } }
 		);
 	tileVao->Unbind();

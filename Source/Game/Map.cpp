@@ -63,4 +63,6 @@ void Map::GenerateMap() {
 			blocks[x][y] = BlockType::Empty;
 		}
 	}
+
+	walls = blocks;
 }

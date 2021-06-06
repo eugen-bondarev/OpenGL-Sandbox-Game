@@ -74,8 +74,13 @@ public:
 		return blocks;
 	}
 
+	inline const walls_t& GetWalls() const {
+		return walls;
+	}
+
 private:
 	blocks_t blocks;
+	walls_t walls;
 
   Size chunkSize;
   Size amountOfChunks;

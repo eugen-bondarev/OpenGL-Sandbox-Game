@@ -7,6 +7,8 @@
 #include "Renderer/Terrain/Resources/ChunkFBO.h"
 #include "Renderer/Terrain/Resources/LightFBO.h"
 
+#include "Util/Vector.h"
+
 Chunk::Chunk(
   Pos chunkPos, 
   Size chunkSize,  
@@ -104,12 +106,31 @@ Vec2 PickRightAngularTile(const blocks_t& blocks, int x, int y) {
   return Vec2(0, 0);
 }
 
+void Chunk::AddWallToRenderingData(std::vector<Vec4>& wallData, WallType wall, const walls_t& walls, int x, int y) {
+  const Vec2 textureOffset = wallsTileMapDictionary[wall] + PickRightAngularTile(walls, x, y);
+  const Vec2 pos = Vec2(x * blockSize, y * blockSize);
+  const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
+  const Vec2 finalPos = pos - chunkCenter;
+
+  wallData.emplace_back(finalPos.x + 4, finalPos.y - 4, textureOffset.x, textureOffset.y);
+}
+
+void Chunk::AddBlockToRenderingData(std::vector<Vec4>& blockData, BlockType block, const blocks_t& blocks, int x, int y) {  
+  const Vec2 textureOffset = tileMapDictionary[block] + PickRightAngularTile(blocks, x, y);
+  const Vec2 pos = Vec2(x * blockSize, y * blockSize);
+  const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
+  const Vec2 finalPos = pos - chunkCenter;
+
+  blockData.emplace_back(finalPos.x, finalPos.y, textureOffset.x, textureOffset.y);
+}
+
 void Chunk::Rerender(  
   Ref<Shader>& shader, 
   Ref<VAO>& chunkVAO, 
   Ref<VBO>& positionAndTileVBO, 
   Ref<Texture>& tileMapTexture,
-  const blocks_t& blocks
+  const blocks_t& blocks,
+  const walls_t& walls
 ) {
   FORGIO_PROFILER_SCOPE();
   
@@ -133,31 +154,60 @@ void Chunk::Rerender(
       chunkVAO->GetIndexBuffer()->Bind();
     		tileMapTexture->Bind();
           std::vector<Vec4> blocksData;
+          std::vector<Vec4> wallsData;
 
-          for (int x = bounds.x.start; x < bounds.x.end; x++) {
-            for (int y = bounds.y.start; y < bounds.y.end; y++) {
-              const BlockType type = blocks[x][y];
+          Period<> xAxis = { 
+            std::max<int>(bounds.x.start - 1, 0), 
+            std::min<int>(bounds.x.end + 1, blocks.size() - 1)
+          };
+          
+          Period<> yAxis = { 
+            std::max<int>(bounds.y.start - 1, 0), 
+            std::min<int>(bounds.y.end + 1, blocks[0].size() - 1)
+          };
 
-              if (type == BlockType::Empty) {
-                if (y + 1 < blocks[x].size() && y > 0 && blocks[x][y - 1] != BlockType::Empty) {
+          for (int x = xAxis.start; x < xAxis.end; x++) {
+            for (int y = yAxis.start; y < yAxis.end; y++) {
+              const BlockType blockType = blocks[x][y];
+              const WallType wallType = walls[x][y];
+
+              bool isNormalWall { false };
+
+              if (blockType == BlockType::Empty) {
+                if (blocks[x][y - 1] != BlockType::Empty) {
                   lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
                 }
-                continue;
+                if (wallType == WallType::Empty) {
+                  continue;
+                } else {
+                  isNormalWall = true;
+                }
               }
+              
+              if (!isNormalWall) {
+                AddBlockToRenderingData(blocksData, blockType, blocks, x, y);
+                containsOnlyEmptyBlocks = false;
 
-              const Vec2 textureOffset = tileMapDictionary[type] + PickRightAngularTile(blocks, x, y);
-              const Vec2 pos = Vec2(x * blockSize, y * blockSize);
-              const Vec2 chunkCenter = chunkSize / 2.0f * blockSize - blockSize / 2.0f;
-              const Vec2 finalPos = pos - chunkCenter;
+                bool insideBounds = x > 0 && x < blocks.size() - 1 && y > 0 && y < blocks[x].size() - 1;
 
-              blocksData.emplace_back(finalPos.x, finalPos.y, textureOffset.x, textureOffset.y);
-
-              containsOnlyEmptyBlocks = false;
+                if (insideBounds && wallType != WallType::Empty) {
+                  if (blocks[x + 1][y] == BlockType::Empty || blocks[x - 1][y] == BlockType::Empty || blocks[x][y + 1] == BlockType::Empty || blocks[x][y - 1] == BlockType::Empty || blocks[x + 1][y - 1] == BlockType::Empty) {
+                    AddWallToRenderingData(wallsData, wallType, walls, x, y);
+                    containsOnlyEmptyBlocks = false;
+                  }
+                }
+              } else {
+                AddWallToRenderingData(wallsData, wallType, walls, x, y);
+                containsOnlyEmptyBlocks = false;
+              }
             }
           }
+
+          std::vector<Vec4> joinedRenderingData;
+          JoinVectors(wallsData, blocksData, joinedRenderingData);
         
-          positionAndTileVBO->Update(blocksData, blocksData.size());          
-					glDrawElementsInstanced(GL_TRIANGLES, chunkVAO->GetVertexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
+          positionAndTileVBO->Update(joinedRenderingData, joinedRenderingData.size());          
+					glDrawElementsInstanced(GL_TRIANGLES, chunkVAO->GetVertexCount(), GL_UNSIGNED_INT, nullptr, joinedRenderingData.size());
 
     		tileMapTexture->Unbind();
     	chunkVAO->Unbind();

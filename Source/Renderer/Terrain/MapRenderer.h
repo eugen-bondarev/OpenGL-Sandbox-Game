@@ -39,7 +39,8 @@ public:
 			tileVao,
 			dynVBO,
 			tileMapTexture,
-			map->GetBlocks()
+			map->GetBlocks(),
+			map->GetWalls()
 		);
 	}
 

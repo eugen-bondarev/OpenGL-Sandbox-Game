@@ -8,6 +8,8 @@
 using blocks_row_t = std::vector<BlockType>;
 using blocks_t = std::vector<blocks_row_t>;
 
+using walls_t = blocks_t;
+
 using bounds_t = struct __bounds_t {
   Period<> x;
   Period<> y;

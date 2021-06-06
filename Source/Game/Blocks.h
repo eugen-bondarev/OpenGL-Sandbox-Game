@@ -5,3 +5,5 @@ enum class BlockType {
 	Dirt,
 	Stone
 };
+
+using WallType = BlockType;
