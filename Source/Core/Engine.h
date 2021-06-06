@@ -38,4 +38,7 @@ private:
 	} view;
 
 	bool rerender { true };
+
+	Engine(const Engine&) = delete;
+	Engine& operator=(const Engine&) = delete;
 };
