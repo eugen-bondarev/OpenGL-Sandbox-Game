@@ -12,8 +12,8 @@ public:
 	Shader(const std::string& vsCode, const std::string& fsCode, Args&&... args) {
 		handle = glCreateProgram();
 
-		m_VsHandle = CreateShader(vsCode, GL_VERTEX_SHADER);
-		m_FsHandle = CreateShader(fsCode, GL_FRAGMENT_SHADER);
+		vsHandle = CreateShader(vsCode, GL_VERTEX_SHADER);
+		fsHandle = CreateShader(fsCode, GL_FRAGMENT_SHADER);
 
 		Link();
 
@@ -38,7 +38,7 @@ public:
 
 	template <typename T>
 	inline void SetListVec2(const std::string& name, const std::vector<T>& vec) {
-		glUniform2fv(m_UniformLocations.at(name), vec.size(), reinterpret_cast<const float*>(&vec[0]));
+		glUniform2fv(uniformLocations.at(name), vec.size(), reinterpret_cast<const float*>(&vec[0]));
 	}
 
 	void SetVec3(const std::string& name, float const* const vec);
@@ -47,10 +47,10 @@ public:
 	void SetListMat4x4(const std::string& name, float const* const list, unsigned int size);
 
 private:
-	GLuint m_VsHandle{ 0 };
-	GLuint m_FsHandle{ 0 };
+	GLuint vsHandle { 0 };
+	GLuint fsHandle { 0 };
 
-	std::map<std::string, GLuint> m_UniformLocations;
+	std::map<std::string, GLuint> uniformLocations;
 
 	void Link() const;
 	GLuint CreateShader(const std::string& shaderCode, GLuint shaderType);

@@ -6,30 +6,6 @@ void Texture::Resize(Size size) {
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, nullptr);
 }
 
-// Texture::Texture(Size size, const unsigned char *data, GLint internalFormat, GLuint format, GLuint type, const std::vector<param_t> parameters)
-// 	: size{size}, internalFormat{internalFormat}, format{format}, type{type} {
-// 	glGenTextures(1, &handle);
-// 	glBindTexture(GL_TEXTURE_2D, handle);
-
-// 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, data);
-
-// 	for (const auto param : parameters) {
-// 		switch (std::get<0>(param)) {
-// 			case Texture::ParamType::Int: {
-// 				glTexParameteri(GL_TEXTURE_2D, std::get<1>(param), static_cast<GLint>(std::get<2>(param)));
-// 				break;
-// 			}
-
-// 			case Texture::ParamType::Float: {
-// 				glTexParameterf(GL_TEXTURE_2D, std::get<1>(param), std::get<2>(param));
-// 				break;
-// 			}
-// 		}
-// 	}
-
-// 	glBindTexture(GL_TEXTURE_2D, 0);
-// }
-
 Texture::~Texture() {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, &handle);

@@ -12,22 +12,13 @@ public:
 	};
 
 	using param_t = std::tuple<ParamType, GLuint, GLfloat>;
+	using pixels_t = const unsigned char*;
 
 	template <typename... Args>
-	Texture(
-		Size size, 
-		const unsigned char *data, 
-		GLint internalFormat, 
-		GLuint format, 
-		GLuint type, 
-		Args... parameters
-	) : size { size }, 
-	internalFormat { internalFormat }, 
-	format { format }, 
-	type { type } {		
+	Texture(Size size, pixels_t data, GLint internalFormat, GLuint format, GLuint type, Args... parameters) 
+		: size { size }, internalFormat { internalFormat }, format { format }, type { type } {		
 		glGenTextures(1, &handle);
 		glBindTexture(GL_TEXTURE_2D, handle);
-
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, data);
 
 		std::vector<param_t> params { parameters... };

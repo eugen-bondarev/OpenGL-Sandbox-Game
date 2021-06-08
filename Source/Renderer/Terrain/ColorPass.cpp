@@ -22,7 +22,7 @@ ColorPass::ColorPass(Ref<Map>& map) {
 
 	chunkVao = CreateRef<VAO>();
 	chunkVao->Bind();
-		chunkVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex), &vertices[0], Vertex::GetLayout());
+		chunkVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
 		chunkVao->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 	chunkVao->Unbind();
 	// chunkVao = CreateRef<VAO>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);

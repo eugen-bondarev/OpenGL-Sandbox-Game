@@ -26,8 +26,8 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 		lightVao->AddVBO(
 			VBO::Type::Array, 
 			VBO::Usage::Static, 
-			vertices.size(), sizeof(Vertex), &vertices[0], 
-			Vertex::GetLayout()
+			vertices.size(), sizeof(Vertex2D), &vertices[0], 
+			Vertex2D::GetLayout()
 		);
 
 		lightVao->AddVBO(

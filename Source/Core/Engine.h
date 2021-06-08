@@ -1,11 +1,7 @@
 #pragma once
 
-#include "Game/Map.h"
-
-#include "Renderer/Terrain/ColorPass.h"
-#include "Renderer/Terrain/LightPass.h"
-#include "Renderer/Terrain/CompositionPass.h"
-#include "Renderer/Entities/Sprite.h"
+#include "Game/World.h"
+#include "Renderer/WorldRenderer.h"
 
 class Engine {
 public:
@@ -19,25 +15,9 @@ public:
 	~Engine();
 
 private:
-	Ref<Map> map;
-
-	bounds_t visibleBlocks;
-	bounds_t lastVisibleBlocks;
-	bool chunksChanged { false };
-
-	struct {
-		Ref<ColorPass> color;
-		Ref<LightPass> light;
-		Ref<CompositionPass> composition;
-	} pipeline;
-
-	struct {
-		Mat4 matrix;
-		Vec2 position;
-		Vec2 lastPosition;
-	} view;
-
-	bool rerender { true };
+	Ref<Camera> camera;
+	Ref<World> world;
+	Ref<WorldRenderer> worldRenderer;
 
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;

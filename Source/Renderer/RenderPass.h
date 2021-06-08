@@ -6,17 +6,17 @@
 template <typename T>
 class RenderPass {
 public:
-    RenderPass() = default;
+	RenderPass() = default;
 
-    inline Ref<T>& GetFbo() {
-        return fbo;
-    }
+	inline Ref<T>& GetFbo() {
+		return fbo;
+	}
 
-    inline Ref<Shader>& GetShader() {
-        return shader;
-    }
+	inline Ref<Shader>& GetShader() {
+		return shader;
+	}
 
 protected:
-    Ref<T> fbo;
-    Ref<Shader> shader;
+	Ref<T> fbo;
+	Ref<Shader> shader;
 };

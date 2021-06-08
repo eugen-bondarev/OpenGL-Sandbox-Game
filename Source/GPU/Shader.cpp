@@ -2,10 +2,11 @@
 
 Shader::~Shader() {
 	Unbind();
-	glDetachShader(handle, m_VsHandle);
-	glDetachShader(handle, m_FsHandle);
-	glDeleteShader(m_VsHandle);
-	glDeleteShader(m_FsHandle);
+	
+	glDetachShader(handle, vsHandle);
+	glDetachShader(handle, fsHandle);
+	glDeleteShader(vsHandle);
+	glDeleteShader(fsHandle);
 	glDeleteProgram(handle);
 
 	DEBUG_LOG_OUT("[Call] Shader destructor");
@@ -14,12 +15,12 @@ Shader::~Shader() {
 void Shader::Link() const {
 	glLinkProgram(handle);
 
-	if (m_VsHandle != 0) {
-		glDetachShader(handle, m_VsHandle);
+	if (vsHandle != 0) {
+		glDetachShader(handle, vsHandle);
 	}
 
-	if (m_FsHandle != 0) {
-		glDetachShader(handle, m_FsHandle);
+	if (fsHandle != 0) {
+		glDetachShader(handle, fsHandle);
 	}
 
 	glValidateProgram(handle);
@@ -69,7 +70,7 @@ void Shader::Unbind() const {
 void Shader::CreateUniform(const std::string& name) {
 	int location = glGetUniformLocation(handle, name.c_str());
 
-	m_UniformLocations.insert(
+	uniformLocations.insert(
 		std::pair<std::string, int>(
 			name.c_str(),
 			location
@@ -78,69 +79,27 @@ void Shader::CreateUniform(const std::string& name) {
 }
 
 void Shader::SetFloat(const std::string& name, GLfloat value) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: setMat4x4()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniform1f(m_UniformLocations.at(name), value);
+	glUniform1f(uniformLocations.at(name), value);
 }
 
 void Shader::SetInt(const std::string& name, GLint value) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: setMat4x4()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniform1i(m_UniformLocations.at(name), value);
+	glUniform1i(uniformLocations.at(name), value);
 }
 
 void Shader::SetMat4x4(const std::string& name, float const* const matrix) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: setMat4x4()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniformMatrix4fv(m_UniformLocations.at(name), 1, GL_FALSE, matrix);
+	glUniformMatrix4fv(uniformLocations.at(name), 1, GL_FALSE, matrix);
 }
 
 void Shader::SetVec2(const std::string& name, float const* const vec) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: set_vec3()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniform2fv(m_UniformLocations.at(name), 1, vec);
+	glUniform2fv(uniformLocations.at(name), 1, vec);
 }
 
 void Shader::SetVec3(const std::string& name, float const* const vec) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: set_vec3()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniform3fv(m_UniformLocations.at(name), 1, vec);
+	glUniform3fv(uniformLocations.at(name), 1, vec);
 }
 
 void Shader::SetVec4(const std::string& name, float const* const vec) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: setVec4()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniform4fv(m_UniformLocations.at(name), 1, vec);
+	glUniform4fv(uniformLocations.at(name), 1, vec);
 }
 
 // void Shader::SetListVec2(const std::string& name, const float* vec, unsigned int size) {
@@ -148,12 +107,5 @@ void Shader::SetVec4(const std::string& name, float const* const vec) {
 // }
 
 void Shader::SetListMat4x4(const std::string& name, float const* const list, unsigned int size) {
-#ifdef A_SHADER_DEBUG
-	if (uniformLocations.find(name) == uniformLocations.end()) {
-		LOG_OUT("[DEBUG, File: astrum_GPU/shader.h, Function: setListMat4x4()]: Variable " << name << " doesn't exist.");
-		return;
-	}
-#endif
-
-	glUniformMatrix4fv(m_UniformLocations.at(name), size, GL_FALSE, list);
+	glUniformMatrix4fv(uniformLocations.at(name), size, GL_FALSE, list);
 }

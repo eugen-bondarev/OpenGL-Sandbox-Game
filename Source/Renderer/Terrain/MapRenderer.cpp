@@ -6,7 +6,7 @@
 #include "Assets/TextAsset.h"
 #include "Math/Primitive.h"
 
-#include "GPU/Vertex.h"
+#include "Renderer/Vertex.h"
 #include "GPU/Texture.h"
 
 MapRenderer::MapRenderer(Ref<Map>& map) {
@@ -101,7 +101,7 @@ void MapRenderer::InitGraphics() {
 
 	tileVao = CreateRef<VAO>();
 	tileVao->Bind();		
-		tileVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex), &vertices[0], Vertex::GetLayout());
+		tileVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
 		tileVao->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 		dynVBO = tileVao->AddVBO(
 			VBO::Type::Array, 

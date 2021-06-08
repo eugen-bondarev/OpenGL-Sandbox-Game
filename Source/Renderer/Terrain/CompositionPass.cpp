@@ -19,7 +19,7 @@ CompositionPass::CompositionPass() {
   // canvas = CreateRef<VAO>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
   canvas = CreateRef<VAO>();
   canvas->Bind();
-		canvas->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex), &vertices[0], Vertex::GetLayout());
+		canvas->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
 		canvas->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
   canvas->Unbind();
 }
