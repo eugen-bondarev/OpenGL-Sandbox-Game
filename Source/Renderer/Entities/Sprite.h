@@ -30,7 +30,7 @@ public:
         return transformation;
     }
 
-    inline std::shared_ptr<Texture>& GetTexture() {
+    inline std::shared_ptr<Werwel::Texture>& GetTexture() {
         return texture;
     }
 
@@ -43,5 +43,5 @@ private:
     Mat4 transformation;
     void CalculateTransformation();
 
-    std::shared_ptr<Texture> texture;
+    std::shared_ptr<Werwel::Texture> texture;
 };

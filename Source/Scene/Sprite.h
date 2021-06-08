@@ -7,10 +7,10 @@
 
 class Sprite {
 public:
-	inline Sprite(const Str& texturePath) : transform { Mat4(1) } {
+	inline Sprite(const std::string& texturePath) : transform { Mat4(1) } {
 		const ImageAsset imageAsset(texturePath);
 		texture = CreateRef<Texture>(
-			imageAsset.GetSize(),
+			Werwel::Size { imageAsset.GetSize().x, imageAsset.GetSize().y },
 			imageAsset.GetData(),
 			GL_RGBA,
 			imageAsset.GetChannels() == 4 ? GL_RGBA : GL_RGB,

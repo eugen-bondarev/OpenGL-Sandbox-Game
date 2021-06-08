@@ -14,6 +14,6 @@ public:
   void Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPass);
 
 private:
-  Ref<Shader> shader;
-  Ref<VAO> canvas;
+  Ref<Werwel::Shader> shader;
+  Ref<Werwel::VAO> canvas;
 };

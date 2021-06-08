@@ -64,50 +64,42 @@ void MapRenderer::UpdateNeighborChunks(const Pos& chunkPos, const Pos& block) {
 	}
 
 	if (left) {
-		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x - 1][chunk.GetChunkPos().y];
-		// chunkToUpdate.Rerender();
 		RerenderChunk(chunk.GetChunkPos().x - 1, chunk.GetChunkPos().y);
 	} else if (right) {
-		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x + 1][chunk.GetChunkPos().y];
-		// chunkToUpdate.Rerender();
 		RerenderChunk(chunk.GetChunkPos().x + 1, chunk.GetChunkPos().y);
 	}
 
 	if (up) {
-		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y - 1];
-		// chunkToUpdate.Rerender();
 		RerenderChunk(chunk.GetChunkPos().x, chunk.GetChunkPos().y - 1);
 	} else if (down) {
-		// auto& chunkToUpdate = chunks[chunk.GetChunkPos().x][chunk.GetChunkPos().y + 1];
-		// chunkToUpdate.Rerender();
 		RerenderChunk(chunk.GetChunkPos().x, chunk.GetChunkPos().y + 1);
 	}
 }
 
 void MapRenderer::InitGraphics() {
 	const ImageAsset image("Assets/Images/Map8.png");
-	tileMapTexture = CreateRef<Texture>(
-		image.GetSize(),
+	tileMapTexture = CreateRef<Werwel::Texture>(
+		Werwel::Size(image.GetSize().x, image.GetSize().y),
 		image.GetData(),
 		GL_RGBA,
 		image.GetChannels() == 4 ? GL_RGBA : GL_RGB,
 		GL_UNSIGNED_BYTE,
-		Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 
 	const auto& vertices = Primitives::Block::Vertices(map->GetBlockSize(), map->GetBlockSize());
 	const auto& indices = Primitives::Block::indices;
 
-	tileVao = CreateRef<VAO>();
+	tileVao = CreateRef<Werwel::VAO>();
 	tileVao->Bind();		
-		tileVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
-		tileVao->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+		tileVao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+		tileVao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 		dynVBO = tileVao->AddVBO(
-			VBO::Type::Array, 
-			VBO::Usage::Stream, 
+			Werwel::VBO::Type::Array, 
+			Werwel::VBO::Usage::Stream, 
 			map->GetChunkSize().x * map->GetChunkSize().y * 1.5f /* for walls */, sizeof(Vec4), nullptr, 
-			std::vector<VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } }
+			std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } }
 		);
 	tileVao->Unbind();
 
@@ -116,7 +108,7 @@ void MapRenderer::InitGraphics() {
 
 	const TextAsset vsCode("Assets/Shaders/Terrain/Default.vs");
 	const TextAsset fsCode("Assets/Shaders/Terrain/Default.fs");
-	shader = CreateRef<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View");
+	shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View");
 	shader->Bind();
 		shader->SetMat4x4("u_Proj", Math::ToPtr(projMatrix));
 		// shader->SetVec2("u_Tile", Math::ToPtr(Vec2(1, 1)));

@@ -8,7 +8,7 @@
 
 class Window {
 public:
-	static void Create(Size size = {1920, 1080}, const Str& title = "Forgio");
+	static void Create(Size size = {1920, 1080}, const std::string& title = "Forgio");
 	static void Destroy();
 
 	static bool ShouldClose();

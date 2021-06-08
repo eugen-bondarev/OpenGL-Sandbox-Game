@@ -4,6 +4,8 @@
 
 #include "VertexBufferLayout.h"
 
+namespace Werwel {
+
 class VBO : public GpuEntity {
 public:
   enum class Usage {
@@ -52,7 +54,7 @@ public:
     glBindBuffer(this->type, 0);
     glDeleteBuffers(1, &handle);
 
-		DEBUG_LOG_OUT("[Call] VBO destructor");
+		WERWEL_DEBUG_LOG_OUT("[Call] VBO destructor");
   }
 
   inline void Bind() const override {
@@ -154,3 +156,5 @@ private:
   VBO(const VBO&) = delete;
   VBO& operator=(const VBO&) = delete;
 };
+
+}

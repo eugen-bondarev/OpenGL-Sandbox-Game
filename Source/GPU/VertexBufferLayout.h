@@ -2,6 +2,8 @@
 
 #include <vector>
 
+namespace Werwel {
+
 struct VertexBufferLayout {
 	size_t size   { 0 };
 	size_t stride { 0 };
@@ -10,3 +12,5 @@ struct VertexBufferLayout {
 };
 
 using VertexBufferLayouts = std::vector<VertexBufferLayout>;
+
+}

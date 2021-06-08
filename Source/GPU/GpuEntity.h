@@ -2,6 +2,10 @@
 
 #include <GL/glew.h>
 
+#include "Common.h"
+
+namespace Werwel {
+
 class GpuEntity {
 public:
 	GpuEntity() = default;
@@ -21,3 +25,5 @@ private:
 	GpuEntity(const GpuEntity&) = delete;
 	GpuEntity operator=(const GpuEntity&) = delete;
 };
+
+}

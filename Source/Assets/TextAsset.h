@@ -4,13 +4,13 @@
 
 class TextAsset : public Asset {
 public:
-    TextAsset(const Str& path);
+    TextAsset(const std::string& path);
     TextAsset() = default;
 
-    virtual void Load(const Str& path) override;
+    virtual void Load(const std::string& path) override;
 
-    Str GetContent() const;
+    std::string GetContent() const;
 
 private:
-    Str content;
+    std::string content;
 };

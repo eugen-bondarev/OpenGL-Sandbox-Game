@@ -18,8 +18,8 @@ public:
 private:
   int maxAmountOfLights { 1024 };
 
-  Ref<VBO> transformationVBO;
-  Ref<Texture> lightTexture;
+  Ref<Werwel::VBO> transformationVBO;
+  Ref<Werwel::Texture> lightTexture;
   Ref<MapRenderer> mapRenderer;
-  Ref<VAO> lightVao;
+  Ref<Werwel::VAO> lightVao;
 };

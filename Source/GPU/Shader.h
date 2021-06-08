@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-#include <string>
+namespace Werwel {
 
 class Shader : public GpuEntity {
 public:
@@ -17,7 +17,7 @@ public:
 
 		Link();
 
-		std::vector<std::string> uniforms{ args... };
+		std::vector<Str> uniforms{ args... };
 
 		for (int i = 0; i < uniforms.size(); i++) {
 			CreateUniform(uniforms[i]);
@@ -58,3 +58,5 @@ private:
 	Shader(const Shader&) = delete;
 	Shader operator=(const Shader&) = delete;
 };
+
+}

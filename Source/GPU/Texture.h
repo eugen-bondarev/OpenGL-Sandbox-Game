@@ -2,7 +2,7 @@
 
 #include "GpuEntity.h"
 
-#include <tuple>
+namespace Werwel {
 
 class Texture : public GpuEntity {
 public:
@@ -65,3 +65,5 @@ private:
 	Texture(const Texture&) = delete;
 	Texture operator=(const Texture&) = delete;
 };
+
+}

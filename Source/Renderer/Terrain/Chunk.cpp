@@ -20,14 +20,16 @@ Chunk::Chunk(
   this->bounds = bounds;
   this->blockSize = blockSize;
 
-  targetTexture = CreateRef<Texture>(
-    chunkSize * blockSize,
+  Size targetTextureSize = chunkSize * blockSize;
+
+  targetTexture = CreateRef<Werwel::Texture>(
+    Werwel::Size(targetTextureSize.x, targetTextureSize.y),
     nullptr,
     GL_RGBA,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-    Texture::param_t { Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
   );
 
   const Vec2 chunkPosPixels = chunkPos * chunkSize * blockSize;
@@ -130,10 +132,10 @@ void Chunk::AddBlockToRenderingData(std::vector<Vec4>& blockData, BlockType bloc
 }
 
 void Chunk::Rerender(  
-  Ref<Shader>& shader, 
-  Ref<VAO>& chunkVAO, 
-  Ref<VBO>& positionAndTileVBO, 
-  Ref<Texture>& tileMapTexture,
+  Ref<Werwel::Shader>& shader, 
+  Ref<Werwel::VAO>& chunkVAO, 
+  Ref<Werwel::VBO>& positionAndTileVBO, 
+  Ref<Werwel::Texture>& tileMapTexture,
   const blocks_t& blocks,
   const walls_t& walls
 ) {
@@ -144,8 +146,8 @@ void Chunk::Rerender(
 	const Vec2 viewPos = (chunkPos * chunkSize) * blockSize;
 	const Mat4 viewMatrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(viewPos, 0.0f)));
 
-  GraphicsContext::Viewport(0, 0, chunkSize.x * blockSize, chunkSize.y * blockSize);
-	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  Werwel::GraphicsContext::Viewport(0, 0, chunkSize.x * blockSize, chunkSize.y * blockSize);
+	Werwel::GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
   lightData.clear();
 
@@ -219,10 +221,10 @@ void Chunk::Rerender(
     shader->Unbind();
   fbo.Unbind();
 
-	GraphicsContext::Viewport(0, 0, Window::GetSize().x, Window::GetSize().y);
+	Werwel::GraphicsContext::Viewport(0, 0, Window::GetSize().x, Window::GetSize().y);
 }
 
-void Chunk::Render(std::shared_ptr<Shader>& shader) {
+void Chunk::Render(Ref<Werwel::Shader>& shader) {
   targetTexture->Bind();
     shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
     glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, nullptr);

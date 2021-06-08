@@ -1,6 +1,6 @@
 #include "Window.h"
 
-void Window::Create(Size size, const Str &title) {
+void Window::Create(Size size, const std::string &title) {
 	Window::size = size;
 
 	glfwInit();

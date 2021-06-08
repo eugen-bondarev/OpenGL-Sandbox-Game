@@ -28,5 +28,5 @@ private:
   light_data_t light;
 	Ref<MapRenderer> mapRenderer;
 	Ref<Map> map;
-	Ref<VAO> chunkVao;
+	Ref<Werwel::VAO> chunkVao;
 };

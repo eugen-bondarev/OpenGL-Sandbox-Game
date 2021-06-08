@@ -57,10 +57,10 @@ private:
 
 	void InitGraphics();
 
-	Ref<Shader> shader;
-	Ref<VAO> tileVao;
-	Ref<VBO> dynVBO;
-	Ref<Texture> tileMapTexture;
+	Ref<Werwel::Shader> shader;
+	Ref<Werwel::VAO> tileVao;
+	Ref<Werwel::VBO> dynVBO;
+	Ref<Werwel::Texture> tileMapTexture;
 
 	MapRenderer(const MapRenderer&) = delete;
 	MapRenderer& operator=(const MapRenderer&) = delete;

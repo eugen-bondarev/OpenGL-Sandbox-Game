@@ -4,12 +4,12 @@
 
 class ImageAsset : public Asset {
 public:
-    ImageAsset(const Str& path);
+    ImageAsset(const std::string& path);
     ImageAsset() = default;
 
     ~ImageAsset();
 
-    virtual void Load(const Str& path) override;
+    virtual void Load(const std::string& path) override;
 
     const unsigned char* GetData() const;
     Size GetSize() const;

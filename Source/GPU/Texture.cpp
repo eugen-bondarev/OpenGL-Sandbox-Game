@@ -1,5 +1,7 @@
 #include "Texture.h"
 
+namespace Werwel {
+
 void Texture::Resize(Size size) {
 	size = size;
 
@@ -33,4 +35,6 @@ void Texture::Unbind(GLuint unit) const {
 
 void Texture::Unbind() const {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 }

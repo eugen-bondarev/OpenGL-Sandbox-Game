@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+namespace Werwel {
+
 Shader::~Shader() {
 	Unbind();
 	
@@ -40,16 +42,16 @@ GLuint Shader::CreateShader(const std::string& shaderCode, GLuint shaderType) {
 	if (!status) {
 		int length;
 		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length);
-		std::string log;
+		Str log;
 		log.resize(length);
 		glGetShaderInfoLog(shaderID, length, &length, &log[0]);
 
-		std::string errorFunctionName = "--------[ " __FUNCTION__ " ]--------";
-		std::string separator; for (size_t i = 0; i < errorFunctionName.size(); i++) separator += "-";
+		Str errorFunctionName = "--------[ " __FUNCTION__ " ]--------";
+		Str separator; for (size_t i = 0; i < errorFunctionName.size(); i++) separator += "-";
 
-		LOG_OUT(errorFunctionName);
-		LOG_OUT("Error occured while compiling a shader: " << log);
-		LOG_OUT(separator);
+		WERWEL_LOG_OUT(errorFunctionName);
+		WERWEL_LOG_OUT("Error occured while compiling a shader: " << log);
+		WERWEL_LOG_OUT(separator);
 
 		return -1;
 	}
@@ -102,10 +104,8 @@ void Shader::SetVec4(const std::string& name, float const* const vec) {
 	glUniform4fv(uniformLocations.at(name), 1, vec);
 }
 
-// void Shader::SetListVec2(const std::string& name, const float* vec, unsigned int size) {
-// 	glUniform2fv(m_UniformLocations.at(name), size, &vec[0]);
-// }
-
 void Shader::SetListMat4x4(const std::string& name, float const* const list, unsigned int size) {
 	glUniformMatrix4fv(uniformLocations.at(name), size, GL_FALSE, list);
+}
+
 }

@@ -12,11 +12,11 @@ public:
 		return fbo;
 	}
 
-	inline Ref<Shader>& GetShader() {
+	inline Ref<Werwel::Shader>& GetShader() {
 		return shader;
 	}
 
 protected:
 	Ref<T> fbo;
-	Ref<Shader> shader;
+	Ref<Werwel::Shader> shader;
 };

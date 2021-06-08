@@ -1,23 +1,23 @@
 #pragma once
 
 #include "GpuEntity.h"
-
 #include "VertexBufferLayout.h"
-
 #include "VBO.h"
+
+namespace Werwel {
 
 class VAO : public GpuEntity {
 public:
 	inline VAO() {
 		glGenVertexArrays(1, &handle);
-		DEBUG_LOG_OUT("[Call] Vao constructor");
+		WERWEL_DEBUG_LOG_OUT("[Call] Vao constructor");
 	}
 
 	inline ~VAO() override {		
 		Unbind();
 		glDeleteVertexArrays(1, &handle);
 
-		DEBUG_LOG_OUT("[Call] Vao destructor");
+		WERWEL_DEBUG_LOG_OUT("[Call] Vao destructor");
 	}
 
 	inline void Bind() const override {
@@ -49,8 +49,8 @@ public:
 	}
 
 	template <typename... Args>
-	inline Ref<VBO> AddVBO(Args... args) {
-		Ref<VBO> vbo = CreateRef<VBO>(GetLastAttribute(), std::forward<Args>(args)...);
+	inline Mem::Ref<VBO> AddVBO(Args... args) {
+		Mem::Ref<VBO> vbo = Mem::CreateRef<VBO>(GetLastAttribute(), std::forward<Args>(args)...);
 
 		auto usedAttributes = vbo->GetUsedAttributes();
 		for (int i = 0; i < usedAttributes.size(); i++) {
@@ -71,13 +71,13 @@ public:
 		return static_cast<GLuint>(attributes.size());
 	}
 
-	inline const Ref<VBO>& GetIndexBuffer() const {
+	inline const Mem::Ref<VBO>& GetIndexBuffer() const {
 		return indexBuffer;
 	}
 
 private:
-	std::vector<Ref<VBO>> vbos;
-	Ref<VBO> indexBuffer;
+	std::vector<Mem::Ref<VBO>> vbos;
+	Mem::Ref<VBO> indexBuffer;
 
 	GLuint vertexCount { 0 };
 	
@@ -87,3 +87,5 @@ private:
 	VAO(const VAO &) = delete;
 	VAO &operator=(const VAO &) = delete;
 };
+
+}

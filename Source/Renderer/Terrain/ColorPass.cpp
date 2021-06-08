@@ -15,15 +15,15 @@ ColorPass::ColorPass(Ref<Map>& map) {
 
 	const TextAsset chunkShaderVsCode("Assets/Shaders/Terrain/Chunk.vs");
 	const TextAsset chunkShaderFsCode("Assets/Shaders/Terrain/Chunk.fs");
-	shader = CreateRef<Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass", "u_Highlight");
+	shader = CreateRef<Werwel::Shader>(chunkShaderVsCode.GetContent(), chunkShaderFsCode.GetContent(), "u_Proj", "u_View", "u_Model", "u_Pos", "u_ColorPass", "u_Highlight");
 
 	const auto& vertices = Primitives::Pixel::vertices;
 	const auto& indices = Primitives::Pixel::indices;
 
-	chunkVao = CreateRef<VAO>();
+	chunkVao = CreateRef<Werwel::VAO>();
 	chunkVao->Bind();
-		chunkVao->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
-		chunkVao->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+		chunkVao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+		chunkVao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 	chunkVao->Unbind();
 	// chunkVao = CreateRef<VAO>(Primitives::Pixel::vertices, Vertex::GetLayout(), Primitives::Pixel::indices);
   
@@ -42,7 +42,7 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
 
 	info.chunksRendered = 0;
 
-	GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	Werwel::GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	light.clear();
 

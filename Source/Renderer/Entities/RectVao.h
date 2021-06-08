@@ -11,7 +11,7 @@ namespace Primitives {
 
 class Rect {
 public:
-    inline static std::unique_ptr<VAO> vao;
+    inline static Ptr<Werwel::VAO> vao;
 
     inline static void Create() {
         // vao = std::make_unique<VAO>(Primitives::Block::Vertices(1.0f, 1.0f), Vertex::GetLayout(), Primitives::Block::indices);

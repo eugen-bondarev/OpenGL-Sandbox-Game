@@ -4,6 +4,8 @@
 
 #include <GL/glew.h>
 
+namespace Werwel {
+
 namespace GraphicsContext {
 
 inline static void ClearColor(GLclampf r, GLclampf g, GLclampf b, GLclampf a = 1.0f) {
@@ -16,6 +18,8 @@ inline static void Clear(GLbitfield mask = GL_COLOR_BUFFER_BIT) {
 
 inline static void Viewport(GLint x, GLint y, GLsizei width, GLsizei height) {
 	glViewport(x, y, width, height);
+}
+
 }
 
 }

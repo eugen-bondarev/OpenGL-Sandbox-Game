@@ -7,7 +7,7 @@
 CompositionPass::CompositionPass() {
   TextAsset vsCode("Assets/Shaders/Composition/Composition.vs");
   TextAsset fsCode("Assets/Shaders/Composition/Composition.fs");
-  shader = CreateRef<Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ColorPassResult", "u_LightPassResult");
+  shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ColorPassResult", "u_LightPassResult");
   shader->Bind();
     shader->SetInt("u_ColorPassResult", 0);
     shader->SetInt("u_LightPassResult", 1);
@@ -17,10 +17,10 @@ CompositionPass::CompositionPass() {
 	const auto& indices = Primitives::Canvas::indices;
 
   // canvas = CreateRef<VAO>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
-  canvas = CreateRef<VAO>();
+  canvas = CreateRef<Werwel::VAO>();
   canvas->Bind();
-		canvas->AddVBO(VBO::Type::Array, VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
-		canvas->AddVBO(VBO::Type::Indices, VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+		canvas->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+		canvas->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
   canvas->Unbind();
 }
 
@@ -29,8 +29,8 @@ void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPa
 
   Color sky = Color(227.0f, 251.0f, 255.0f, 255.0f) / 255.0f;
 
-	GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
-  GraphicsContext::Clear();
+	Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
+  Werwel::GraphicsContext::Clear();
   shader->Bind();
     canvas->Bind();
     canvas->GetIndexBuffer()->Bind();
