@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GPU/VAO.h"
+#include "Werwel/VAO.h"
 #include "Math/Primitive.h"
 
 #include <memory>

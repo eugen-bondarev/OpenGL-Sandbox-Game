@@ -2,8 +2,8 @@
 
 #include "Math/Primitive.h"
 
-#include "GPU/VAO.h"
-#include "GPU/Shader.h"
+#include "Werwel/VAO.h"
+#include "Werwel/Shader.h"
 
 #include "ColorPass.h"
 #include "LightPass.h"

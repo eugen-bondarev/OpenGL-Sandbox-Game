@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GPU/FBO.h"
-#include "GPU/Shader.h"
+#include "Werwel/FBO.h"
+#include "Werwel/Shader.h"
 
 template <typename T>
 class RenderPass {

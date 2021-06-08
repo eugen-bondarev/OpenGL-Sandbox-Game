@@ -1,6 +1,6 @@
 #include "CompositionPass.h"
 
-#include "GPU/GraphicsContext.h"
+#include "Werwel/GraphicsContext.h"
 
 #include "Assets/TextAsset.h"
 

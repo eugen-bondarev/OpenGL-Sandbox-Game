@@ -27,13 +27,19 @@ add_subdirectory(External/glfw)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glfw/include)
 target_link_libraries(${PROJECTOR_APP_NAME} glfw)
 
+set(GLEW_INCLUDE_DIR External/glew/include)
 add_subdirectory(External/glew/build/cmake)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glew/include)
+target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${GLEW_INCLUDE_DIR})
 target_link_libraries(${PROJECTOR_APP_NAME} glew_s)
 
 add_subdirectory(External/spdlog)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/spdlog/include)
 target_link_libraries(${PROJECTOR_APP_NAME} spdlog)
+
+add_subdirectory(External/Werwel)
+target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/Werwel/Include)
+target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
+target_link_libraries(${PROJECTOR_APP_NAME} Werwel)
 
 add_subdirectory(External/glm)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glm)

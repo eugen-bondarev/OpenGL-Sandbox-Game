@@ -11,7 +11,7 @@ Shader::~Shader() {
 	glDeleteShader(fsHandle);
 	glDeleteProgram(handle);
 
-	DEBUG_LOG_OUT("[Call] Shader destructor");
+	WERWEL_DEBUG_LOG_OUT("[Call] Shader destructor");
 }
 
 void Shader::Link() const {

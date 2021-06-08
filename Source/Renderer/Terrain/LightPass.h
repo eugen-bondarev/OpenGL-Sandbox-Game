@@ -2,7 +2,7 @@
 
 #include "../RenderPass.h"
 
-#include "GPU/Texture.h"
+#include "Werwel/Texture.h"
 
 #include "MapRenderer.h"
 #include "ColorPass.h"

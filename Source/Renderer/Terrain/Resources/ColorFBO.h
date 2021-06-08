@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GPU/FBO.h"
+#include "Werwel/FBO.h"
 
 class ColorFBO : public Werwel::FBO {
 public:

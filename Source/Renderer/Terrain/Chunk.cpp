@@ -2,7 +2,7 @@
 
 #include "Core/Window.h"
 
-#include "GPU/GraphicsContext.h"
+#include "Werwel/GraphicsContext.h"
 
 #include "Renderer/Terrain/Resources/ChunkFBO.h"
 #include "Renderer/Terrain/Resources/LightFBO.h"

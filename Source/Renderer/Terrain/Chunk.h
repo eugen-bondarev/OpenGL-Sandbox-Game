@@ -2,9 +2,9 @@
 
 #include "Game/Types.h"
 
-#include "GPU/Texture.h"
-#include "GPU/Shader.h"
-#include "GPU/VAO.h"
+#include "Werwel/Texture.h"
+#include "Werwel/Shader.h"
+#include "Werwel/VAO.h"
 
 inline static std::map<BlockType, Pos> tileMapDictionary = {
   { BlockType::Dirt, { 1, 1 } }

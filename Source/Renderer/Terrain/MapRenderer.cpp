@@ -7,7 +7,7 @@
 #include "Math/Primitive.h"
 
 #include "Renderer/Vertex.h"
-#include "GPU/Texture.h"
+#include "Werwel/Texture.h"
 
 MapRenderer::MapRenderer(Ref<Map>& map) {
 	this->map = map;

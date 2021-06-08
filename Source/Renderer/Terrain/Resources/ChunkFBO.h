@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GPU/FBO.h"
+#include "Werwel/FBO.h"
 
 class ChunkFBO : public Werwel::FBO {
 public:

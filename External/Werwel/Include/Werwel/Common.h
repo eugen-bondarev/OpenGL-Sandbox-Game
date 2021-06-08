@@ -19,7 +19,7 @@
 #define WERWEL_VOID_ASSEMBLY ((void)0)
 
 #ifdef WERWEL_DEBUG
-# define WERWEL_DEBUG_LOG_OUT(x) LOG_OUT(x)
+# define WERWEL_DEBUG_LOG_OUT(x) WERWEL_LOG_OUT(x)
 #else
 # define WERWEL_DEBUG_LOG_OUT(x) VOID_ASSEMBLY
 #endif
@@ -48,14 +48,17 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 
 using Str = std::string;
 
-struct Size {
+struct Vec2 {
   float x;
   float y;
 
-  Size(float x, float y) {
+  Vec2(float x, float y) {
     this->x = x;
     this->y = y;
   }
 };
+
+using Size = Vec2;
+using Pos  = Vec2;
 
 }

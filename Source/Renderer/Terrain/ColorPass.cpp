@@ -4,7 +4,7 @@
 
 #include "Assets/TextAsset.h"
 
-#include "GPU/GraphicsContext.h"
+#include "Werwel/GraphicsContext.h"
 
 #include "Math/Math.h"
 #include "Math/Primitive.h"
