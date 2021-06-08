@@ -21,7 +21,7 @@
 #ifdef WERWEL_DEBUG
 # define WERWEL_DEBUG_LOG_OUT(x) WERWEL_LOG_OUT(x)
 #else
-# define WERWEL_DEBUG_LOG_OUT(x) VOID_ASSEMBLY
+# define WERWEL_DEBUG_LOG_OUT(x) WERWEL_VOID_ASSEMBLY
 #endif
 
 namespace Werwel {

@@ -8,9 +8,6 @@ file(GLOB src
   Source/*.cpp
   Source/**/*.cpp
   Source/**/**/*.cpp
-  Source/**/**/**/*.cpp
-  Source/**/**/**/**/*.cpp
-  Source/**/**/**/**/**/*.cpp
 )
 
 add_library(Werwel STATIC ${src})

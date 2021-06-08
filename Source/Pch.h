@@ -11,6 +11,8 @@
 #include "Util/Memory.h"
 #include "Util/Types.h"
 
+#define VOID_ASSEMBLY ((void)0)
+
 #define FORGIO_ENABLE_PROFILING
 
 #ifdef FORGIO_ENABLE_PROFILING
@@ -44,8 +46,6 @@
 #endif
 
 #define LOG_OUT(x) std::cout << x << '\n'
-
-#define VOID_ASSEMBLY ((void)0)
 
 #ifdef FORGIO_DEBUG
 # define DEBUG_LOG_OUT(x) LOG_OUT(x)
