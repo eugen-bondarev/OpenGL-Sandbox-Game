@@ -88,8 +88,17 @@ void Shader::SetInt(const std::string& name, GLint value) {
 	glUniform1i(uniformLocations.at(name), value);
 }
 
+void Shader::SetMat2x4(const std::string& name, float const* const matrix) {
+	glUniformMatrix2x4fv(uniformLocations.at(name), 1, GL_FALSE, matrix);
+}
+
 void Shader::SetMat4x4(const std::string& name, float const* const matrix) {
 	glUniformMatrix4fv(uniformLocations.at(name), 1, GL_FALSE, matrix);
+}
+
+
+void Shader::SetMat3x3(const std::string& name, float const* const matrix) {
+	glUniformMatrix3fv(uniformLocations.at(name), 1, GL_FALSE, matrix);
 }
 
 void Shader::SetVec2(const std::string& name, float const* const vec) {

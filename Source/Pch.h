@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <array>
 #include <map>
 
 #include "Util/Structures.h"

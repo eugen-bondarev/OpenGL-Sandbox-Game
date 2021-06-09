@@ -11,6 +11,7 @@ using Vec4 = glm::vec4;
 using Vec2i = glm::ivec2;
 
 using Mat4 = glm::mat4x4;
+using Mat2x4 = glm::mat2x4;
 
 using Color = Vec4;
 

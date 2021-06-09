@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Game/World.h"
-#include "Renderer/WorldRenderer.h"
 #include "Game/Character.h"
+
+#include "Renderer/WorldRenderer.h"
 #include "Renderer/Characters/CharacterRenderer.h"
+
+#include "Renderer/DebugRenderer.h"
 
 class Engine {
 public:
@@ -17,6 +20,8 @@ public:
 	~Engine();
 
 private:
+	Ref<DebugRenderer> debugRenderer;
+
 	Ref<Character> character;
 	Ref<CharacterRenderer> characterRenderer;
 

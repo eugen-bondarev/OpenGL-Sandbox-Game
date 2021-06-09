@@ -43,6 +43,8 @@ public:
 
 	void SetVec3(const std::string& name, float const* const vec);
 	void SetVec4(const std::string& name, float const* const vec);
+	void SetMat2x4(const std::string& name, float const* const matrix);
+	void SetMat3x3(const std::string& name, float const* const matrix);
 	void SetMat4x4(const std::string& name, float const* const matrix);
 	void SetListMat4x4(const std::string& name, float const* const list, unsigned int size);
 

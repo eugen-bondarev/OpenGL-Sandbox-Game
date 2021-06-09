@@ -15,6 +15,8 @@ Engine::Engine() {
 	Gui::Create();
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
+
+	debugRenderer = CreateRef<DebugRenderer>();
 }
 
 void Engine::InitResources() {
@@ -112,6 +114,8 @@ void Engine::Render() {
 	worldRenderer->Render([&]() {
 		characterRenderer->Render({ character }, camera);
 	}, additionalLightData);
+
+	debugRenderer->Render(camera->GetViewMatrix());
 
 	ImGui::Begin("Info");
 		ImGui::Text(("Chunks rendered: " + std::to_string(worldRenderer->mapPipeline.color->info.chunksRendered)).c_str());
