@@ -181,10 +181,10 @@ void Chunk::Rerender(
               bool isNormalWall { false };
 
               if (blockType == BlockType::Empty) {
-                if (blocks[x][y - 1] != BlockType::Empty) {
-                  lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
-                }
                 if (wallType == WallType::Empty) {
+                  if (blocks[x][y - 1] != BlockType::Empty || walls[x][y - 1] != BlockType::Empty) {
+                    lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
+                  }
                   continue;
                 } else {
                   isNormalWall = true;

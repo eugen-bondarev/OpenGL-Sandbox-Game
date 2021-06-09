@@ -98,7 +98,7 @@ void MapRenderer::InitGraphics() {
 		dynVBO = tileVao->AddVBO(
 			Werwel::VBO::Type::Array, 
 			Werwel::VBO::Usage::Stream, 
-			map->GetChunkSize().x * map->GetChunkSize().y * 1.5f /* for walls */, sizeof(Vec4), nullptr, 
+			map->GetChunkSize().x * map->GetChunkSize().y * 2.0f /* for walls */, sizeof(Vec4), nullptr, 
 			std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } }
 		);
 	tileVao->Unbind();

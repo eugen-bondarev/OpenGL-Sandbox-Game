@@ -28,8 +28,8 @@ public:
 	}
 
 	inline chunk_t WhatBlocks(Pos chunk) const {
-		Period<> x{ static_cast<int>(chunk.x * GetChunkSize().x), static_cast<int>((chunk.x + 1.0f) * GetChunkSize().x) };
-		Period<> y{ static_cast<int>(chunk.y * GetChunkSize().y), static_cast<int>((chunk.y + 1.0f) * GetChunkSize().y) };
+		Period<> x { static_cast<int>(chunk.x * GetChunkSize().x), static_cast<int>((chunk.x + 1.0f) * GetChunkSize().x) };
+		Period<> y { static_cast<int>(chunk.y * GetChunkSize().y), static_cast<int>((chunk.y + 1.0f) * GetChunkSize().y) };
 		return { x, y };
 	}
 
@@ -39,8 +39,6 @@ public:
 		const Vec2 screenCoords = (windowCoords / Window::GetSize() - Vec2(0.5f, 0.5f)) * Vec2(1.0f, -1.0f) * 2.0f;
 		const Vec4 projCoords = Math::Inverse(projectionMatrix) * Vec4(screenCoords, 0.0f, 1.0f);
 		const Vec4 projViewCoords = Math::Inverse(viewMatrix) * projCoords;
-
-		const Vec2 cameraPosInMap = Vec2(viewPos / blockSize) + GetChunkSize() * GetAmountOfChunks() / 2.0f;
 
 		static const Vec2 normalization = Vec2(0.0f);
 		const Vec2 block = (Vec2(projViewCoords) - viewPos) / blockSize + normalization + GetChunkSize() / 2.0f;

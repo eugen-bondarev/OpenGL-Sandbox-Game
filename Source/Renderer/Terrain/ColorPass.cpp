@@ -37,7 +37,7 @@ ColorPass::ColorPass(Ref<Map>& map) {
   fbo = CreateRef<ColorFBO>(Window::GetSize());
 }
 
-void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
+void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, std::function<void()> add) {
   FORGIO_PROFILER_SCOPE();
 
 	info.chunksRendered = 0;
@@ -73,5 +73,7 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos) {
         
       chunkVao->Unbind();
     shader->Unbind();
+
+		add();
   fbo->Unbind();
 }

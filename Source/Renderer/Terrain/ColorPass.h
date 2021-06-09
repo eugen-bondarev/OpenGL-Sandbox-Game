@@ -7,16 +7,18 @@
 #include "MapRenderer.h"
 #include "Game/Map.h"
 
+#include <functional>
+
 class ColorPass : public RenderPass<ColorFBO> {
 public:
   ColorPass(Ref<Map>& map);
-  void Execute(const Mat4& viewMatrix, const Vec2& viewPos);
+  void Execute(const Mat4& viewMatrix, const Vec2& viewPos, std::function<void()> add);
 
   inline Ref<MapRenderer>& GetMapRenderer() {
     return mapRenderer;
   }
 
-  inline const light_data_t& GetLightData() const {
+  inline light_data_t& GetLightData() {
     return light;
   }
 
