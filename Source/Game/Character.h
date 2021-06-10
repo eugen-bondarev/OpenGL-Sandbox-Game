@@ -32,6 +32,11 @@ public:
   }
 
   inline void Update(float deltaTime) {
+    if (ceiling) {
+      acceleration = 0;
+      ceiling = false;
+    }
+
     if (!onGround) {
       SetPosition(position + Vec2(0.0f, deltaTime) * acceleration);
       acceleration += -9.81f;
@@ -45,6 +50,7 @@ public:
     onGround = false;
   }
 
+  bool ceiling = false;
   bool onGround = true;
   bool canMoveRight = true;
   bool canMoveLeft = true;
