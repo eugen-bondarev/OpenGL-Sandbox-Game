@@ -15,6 +15,14 @@ using Mat2x4 = glm::mat2x4;
 
 using Color = Vec4;
 
+inline static Color RED_COLOR = Color(1, 0, 0, 1);
+inline static Color GREEN_COLOR = Color(0, 1, 0, 1);
+inline static Color BLUE_COLOR = Color(0, 0, 1, 1);
+inline static Color YELLOW_COLOR = Color(1, 1, 0, 1);
+inline static Color PURPLE_COLOR = Color(1, 0, 1, 1);
+inline static Color WHITE_COLOR = Color(1, 1, 1, 1);
+inline static Color BLACK_COLOR = Color(0, 0, 0, 1);
+
 #define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF) \
 template<typename... Args> \
 inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(args)...)) { \

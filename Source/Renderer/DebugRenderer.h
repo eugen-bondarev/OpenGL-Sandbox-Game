@@ -29,6 +29,18 @@ public:
     lines.emplace_back(std::forward<Args>(args)...);
   }
 
+  inline void AddQuad(Vec2 start, Vec2 end) {
+    Line left(start, Vec2(start.x, end.y));
+    Line right(Vec2(end.x, start.y), end);
+    Line top(start, Vec2(end.x, start.y));
+    Line bottom(Vec2(start.x, end.y), end);
+
+    AddLine(left);
+    AddLine(right);
+    AddLine(top);
+    AddLine(bottom);
+  }
+
 private:
   std::vector<Line> lines;
   Ptr<Werwel::Shader> lineShader;
