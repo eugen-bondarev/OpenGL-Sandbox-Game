@@ -29,8 +29,6 @@ private:
 	Ref<World> world;
 	Ref<WorldRenderer> worldRenderer;
 
-	Pos lastDestroyedBlock;
-
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;
 };

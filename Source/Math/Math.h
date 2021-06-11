@@ -26,7 +26,7 @@ inline static Color BLACK_COLOR = Color(0, 0, 0, 1);
 #define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF) \
 template<typename... Args> \
 inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(args)...)) { \
-    return lowLevelF(std::forward<Args>(args)...); \
+	return lowLevelF(std::forward<Args>(args)...); \
 }
 
 namespace Math {
@@ -42,4 +42,10 @@ ALIAS_TEMPLATE_FUNCTION(Translate, glm::translate)
 ALIAS_TEMPLATE_FUNCTION(Rotate, glm::rotate)
 ALIAS_TEMPLATE_FUNCTION(Scale, glm::scale)
 
+}
+
+namespace Physics {
+
+inline static constexpr float g = 9.81f;
+	
 }

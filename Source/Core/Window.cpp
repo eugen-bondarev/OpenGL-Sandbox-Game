@@ -1,21 +1,34 @@
 #include "Window.h"
 
-void Window::Create(Size size, const std::string &title) {
+void Window::Create(Size size, Mode mode, bool maximize, const std::string &title) {
 	Window::size = size;
 
 	glfwInit();
 	glfwDefaultWindowHints();
 
-	const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	const GLFWvidmode *videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+	if (mode == Mode::Borderless) {
+		glfwWindowHint(GLFW_RED_BITS, videoMode->redBits);
+		glfwWindowHint(GLFW_GREEN_BITS, videoMode->greenBits);
+		glfwWindowHint(GLFW_BLUE_BITS, videoMode->blueBits);
+		glfwWindowHint(GLFW_REFRESH_RATE, videoMode->refreshRate);
 
-	glfwWindow = glfwCreateWindow(mode->width, mode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
+		glfwWindow = glfwCreateWindow(videoMode->width, videoMode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
+	}
 
-	glfwMaximizeWindow(glfwWindow);
+	if (mode == Mode::Fullscreen) {
+		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
+	}
+
+	if (mode == Mode::Windowed) {
+		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
+	}
+
+	if (maximize) {
+		glfwMaximizeWindow(glfwWindow);
+	}
+
 	glfwMakeContextCurrent(glfwWindow);
 
 	GLint glewInitResult = glewInit();

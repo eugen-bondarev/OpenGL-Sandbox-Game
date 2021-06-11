@@ -36,6 +36,7 @@ void DebugRenderer::Render(const Mat4& viewMatrix) {
 
   lineShader->Bind();
   lineShader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
+  lineShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 
   for (const Line& line : lines) {
     Mat2x4 lineData;

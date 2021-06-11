@@ -8,7 +8,13 @@
 
 class Window {
 public:
-	static void Create(Size size = {1920, 1080}, const std::string& title = "Forgio");
+	enum class Mode {
+		Fullscreen,
+		Borderless,
+		Windowed
+	};
+
+	static void Create(Size size = { 800, 600 }, Mode mode = Mode::Windowed, bool maximize = false, const std::string& title = "Forgio");
 	static void Destroy();
 
 	static bool ShouldClose();

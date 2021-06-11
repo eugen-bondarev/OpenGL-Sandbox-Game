@@ -2,6 +2,8 @@
 
 #include "Math/Math.h"
 
+#include "Core/Window.h"
+
 class Camera {
 public:
   Camera() = default;
@@ -37,6 +39,10 @@ public:
 
   inline void CalculateViewMatrix() {
 	  matrix = Math::Inverse(Math::Translate(Mat4(1), Vec3(position, 0.0f)));
+  }
+
+  inline Vec2 GetPositionOnScreen(Vec2 worldPosition) const {    
+		return Window::GetSize() / 2.0f - (position - worldPosition) * Vec2(1, -1);
   }
 
 private:

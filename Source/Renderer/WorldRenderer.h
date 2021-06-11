@@ -12,7 +12,7 @@ class WorldRenderer {
 public:
   WorldRenderer(Ref<World>& world, Ref<Camera>& camera);
 
-  void Render(std::function<void()> add, const std::vector<Pos>& additionalLightData);
+  void Render(std::function<void()> add);
 
 	bounds_t visibleBlocks;
 	bounds_t lastVisibleBlocks;

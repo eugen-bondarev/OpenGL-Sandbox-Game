@@ -15,7 +15,7 @@ WorldRenderer::WorldRenderer(Ref<World>& world, Ref<Camera>& camera) {
 	world->GetMap()->CalculateVisibleChunks(camera->GetPosition());
 }
 
-void WorldRenderer::Render(std::function<void()> add, const std::vector<Pos>& additionalLightData) {
+void WorldRenderer::Render(std::function<void()> add) {
 	if (camera->GetLastPosition() != camera->GetPosition()) {
 		mapPipeline.rerender = true;
 		world->GetMap()->CalculateVisibleChunks(camera->GetPosition());
@@ -31,11 +31,14 @@ void WorldRenderer::Render(std::function<void()> add, const std::vector<Pos>& ad
 	if (mapPipeline.rerender) {
 		mapPipeline.color->Execute(camera->GetViewMatrix(), camera->GetPosition(), add);
 
-		for (int i = 0; i < additionalLightData.size(); i++) {
-			mapPipeline.color->GetLightData().push_back(additionalLightData[i]);
+		for (int i = 0; i < mapPipeline.color->GetAdditionalLightData().size(); i++) {
+			mapPipeline.color->GetLightData().push_back(mapPipeline.color->GetAdditionalLightData()[i]);
 		}
 
 		mapPipeline.light->Execute(camera->GetViewMatrix(), camera->GetPosition(), mapPipeline.color->GetLightData());
+
+		mapPipeline.color->GetAdditionalLightData().clear();
+
 		mapPipeline.rerender = false;
 	}
 

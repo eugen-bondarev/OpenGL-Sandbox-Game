@@ -22,12 +22,17 @@ public:
     return light;
   }
 
+  inline light_data_t& GetAdditionalLightData() {
+    return additionalLight;
+  }
+
   struct {
     unsigned int chunksRendered;
   } info;
 
 private:
   light_data_t light;
+  light_data_t additionalLight;
 	Ref<MapRenderer> mapRenderer;
 	Ref<Map> map;
 	Ref<Werwel::VAO> chunkVao;

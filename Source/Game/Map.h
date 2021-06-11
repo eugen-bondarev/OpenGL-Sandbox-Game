@@ -76,6 +76,14 @@ public:
 		return walls;
 	}
 
+	inline bool BlockIs(int x, int y, BlockType type) const {
+		return blocks[x][y] == type;
+	}
+
+	inline bool WallIs(int x, int y, WallType type) const {
+		return walls[x][y] == type;
+	}
+
 private:
 	blocks_t blocks;
 	walls_t walls;
