@@ -4,19 +4,19 @@
 
 class ImageAsset : public Asset {
 public:
-    ImageAsset(const std::string& path);
-    ImageAsset() = default;
+	ImageAsset(const std::string& path);
+	ImageAsset() = default;
 
-    ~ImageAsset();
+	~ImageAsset();
 
-    virtual void Load(const std::string& path) override;
+	virtual void Load(const std::string& path) override;
 
-    const unsigned char* GetData() const;
-    Size GetSize() const;
-    int GetChannels() const;
+	const unsigned char* GetData() const;
+	Size GetSize() const;
+	int GetChannels() const;
 
 private:
-    unsigned char* data;
-    Size size;
-    int amountOfChannels;
+	unsigned char* data;
+	Size size;
+	int amountOfChannels;
 };
