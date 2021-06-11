@@ -16,7 +16,6 @@ CompositionPass::CompositionPass() {
 	const auto& vertices = Primitives::Canvas::vertices;
 	const auto& indices = Primitives::Canvas::indices;
 
-  // canvas = CreateRef<VAO>(Primitives::Canvas::vertices, Vertex::GetLayout(), Primitives::Canvas::indices);
   canvas = CreateRef<Werwel::VAO>();
   canvas->Bind();
 		canvas->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
@@ -27,9 +26,12 @@ CompositionPass::CompositionPass() {
 void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPass) {
   FORGIO_PROFILER_SCOPE();
 
-  Color sky = Color(227.0f, 251.0f, 255.0f, 255.0f) / 255.0f;
+  Color sky = Color(209, 247, 255, 255.0f) / 255.0f;
+  Color night = Color(1, 5, 10, 255.0f) / 255.0f;
 
-	Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
+  Color current = sky;
+
+	Werwel::GraphicsContext::ClearColor(current.r, current.g, current.b, sky.a);
   Werwel::GraphicsContext::Clear();
   shader->Bind();
     canvas->Bind();

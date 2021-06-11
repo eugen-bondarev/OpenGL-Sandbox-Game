@@ -1,6 +1,8 @@
 #include "Window.h"
 
-void Window::Create(Size size, Mode mode, bool maximize, const std::string &title) {
+#include "Werwel/GraphicsContext.h"
+
+void Window::Create(Size size, Mode mode, bool maximize, bool vSync, const std::string &title) {
 	Window::size = size;
 
 	glfwInit();
@@ -38,21 +40,21 @@ void Window::Create(Size size, Mode mode, bool maximize, const std::string &titl
 		exit(EXIT_FAILURE);
 	}
 
-	// Todo: move it somewhere..
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Werwel::GraphicsContext::EnableTransparency();
 
 	glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow *window, int width, int height) {
+		if (width == 0 || height == 0) return;
+
 		Window::size.x = width;
-		Window::size.y = height;
+		Window::size.y = height;		
 		Window::CalculateSpace();
 	});
 
-	glfwSwapInterval(1);
+	glfwSwapInterval(vSync);
 
-	int w, h;
-	glfwGetWindowSize(glfwWindow, &w, &h);
-	Window::size = {w, h};
+	int currentWidth, currentHeight;
+	glfwGetWindowSize(glfwWindow, &currentWidth, &currentHeight);
+	Window::size = { currentWidth, currentHeight };
 
 	CalculateSpace();
 }

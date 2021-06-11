@@ -20,6 +20,11 @@ inline static void Viewport(GLint x, GLint y, GLsizei width, GLsizei height) {
 	glViewport(x, y, width, height);
 }
 
+inline static void EnableTransparency() {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
 }
 
 }

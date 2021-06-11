@@ -91,9 +91,9 @@ void Engine::Render() {
 		FORGIO_PROFILER_NAMED_SCOPE("Current \"Physics\"");
 
 		character->Update(Time::GetDelta());
-		character->CheckCollisions(world->GetMap(), camera, debugRenderer);
-
-		debugRenderer->AddQuad(character->GetPosition() + Vec2(8.0f, 0.0f), character->GetPosition() + Vec2(3 * 16.0f, 4 * 16.0f) - Vec2(8.0f, 0.0f));
+		character->CheckCollisions(world->GetMap(), camera);		
+		// character->CheckCollisions(world->GetMap(), camera, debugRenderer);
+		// debugRenderer->AddQuad(character->GetPosition() + Vec2(8.0f, 0.0f), character->GetPosition() + Vec2(3 * 16.0f, 4 * 16.0f) - Vec2(8.0f, 0.0f));
 
 		const Pos blockPos = world->GetMap()->WindowCoordsToBlockCoords(
 			camera->GetPositionOnScreen(character->GetPosition()), 
