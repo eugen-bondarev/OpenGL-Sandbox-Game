@@ -25,7 +25,6 @@ CharacterRenderer::CharacterRenderer() {
 	characterVAO->Bind();		
 		characterVAO->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
 		characterVAO->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
-	characterVAO->Unbind();
 
 	TextAsset vsCode("Assets/Shaders/Characters/Default.vs");
 	TextAsset fsCode("Assets/Shaders/Characters/Default.fs");
@@ -46,10 +45,6 @@ void CharacterRenderer::Render(const std::vector<Ref<Character>>& characters, Re
 
   for (const auto& character : characters) {
     characterShader->SetMat4x4("u_Model", Math::ToPtr(character->GetModelMatrix()));
-      glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
-    characterShader->Unbind();
+		glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
   }
-
-  characterTexture->Unbind();
-  characterVAO->Unbind();
 }

@@ -155,78 +155,75 @@ void Chunk::Rerender(
 
   fbo.Bind();
   fbo.Clear();
-    shader->Bind();
-    shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
-    	chunkVAO->Bind();
-      chunkVAO->GetIndexBuffer()->Bind();
-    		tileMapTexture->Bind();
-          std::vector<Vec4> blocksData;
-          std::vector<Vec4> wallsData;
 
-          Period<> xAxis = { 
-            std::max<int>(bounds.x.start - 1, 0), 
-            std::min<int>(bounds.x.end + 1, blocks.size() - 1)
-          };
-          
-          Period<> yAxis = { 
-            std::max<int>(bounds.y.start - 1, 0), 
-            std::min<int>(bounds.y.end + 1, blocks[0].size() - 1)
-          };
+  shader->Bind();
+  shader->SetMat4x4("u_View", Math::ToPtr(viewMatrix));
 
-          for (int x = xAxis.start; x < xAxis.end; x++) {
-            for (int y = yAxis.start; y < yAxis.end; y++) {
-              const BlockType blockType = blocks[x][y];
-              const WallType wallType = walls[x][y];
+  chunkVAO->Bind();
+  chunkVAO->GetIndexBuffer()->Bind();
+  
+  tileMapTexture->Bind();
+  std::vector<Vec4> blocksData;
+  std::vector<Vec4> wallsData;
 
-              bool isNormalWall { false };
+  Period<> xAxis = { 
+    std::max<int>(bounds.x.start - 1, 0), 
+    std::min<int>(bounds.x.end + 1, blocks.size() - 1)
+  };
+  
+  Period<> yAxis = { 
+    std::max<int>(bounds.y.start - 1, 0), 
+    std::min<int>(bounds.y.end + 1, blocks[0].size() - 1)
+  };
 
-              if (blockType == BlockType::Empty) {
-                if (wallType == WallType::Empty) {
-                  if (blocks[x][y - 1] != BlockType::Empty || walls[x][y - 1] != BlockType::Empty) {
-                    lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
-                  }
-                  continue;
-                } else {
-                  isNormalWall = true;
-                }
-              }
-              
-              if (!isNormalWall) {
-                AddBlockToRenderingData(blocksData, blockType, blocks, x, y);
-                containsOnlyEmptyBlocks = false;
+  for (int x = xAxis.start; x < xAxis.end; x++) {
+    for (int y = yAxis.start; y < yAxis.end; y++) {
+      const BlockType blockType = blocks[x][y];
+      const WallType wallType = walls[x][y];
 
-                bool insideBounds = x > 0 && x < blocks.size() - 1 && y > 0 && y < blocks[x].size() - 1;
+      bool isNormalWall { false };
 
-                if (insideBounds && wallType != WallType::Empty) {
-                  if (blocks[x + 1][y] == BlockType::Empty || blocks[x - 1][y] == BlockType::Empty || blocks[x][y + 1] == BlockType::Empty || blocks[x][y - 1] == BlockType::Empty || blocks[x + 1][y - 1] == BlockType::Empty) {
-                    AddWallToRenderingData(wallsData, wallType, walls, x, y);
-                    containsOnlyEmptyBlocks = false;
-                  }
-                }
-              } else {
-                AddWallToRenderingData(wallsData, wallType, walls, x, y);
-                containsOnlyEmptyBlocks = false;
-              }
-            }
+      if (blockType == BlockType::Empty) {
+        if (wallType == WallType::Empty) {
+          if (blocks[x][y - 1] != BlockType::Empty || walls[x][y - 1] != BlockType::Empty) {
+            lightData.emplace_back((x - chunkSize.x / 2 + 0.5f) * blockSize, (y - chunkSize.y / 2 + 0.5f) * blockSize);
           }
+          continue;
+        } else {
+          isNormalWall = true;
+        }
+      }
+      
+      if (!isNormalWall) {
+        AddBlockToRenderingData(blocksData, blockType, blocks, x, y);
+        containsOnlyEmptyBlocks = false;
 
-          std::vector<Vec4> joinedRenderingData;
-          JoinVectors(wallsData, blocksData, joinedRenderingData);
-        
-          positionAndTileVBO->Update(joinedRenderingData, joinedRenderingData.size());          
-					glDrawElementsInstanced(GL_TRIANGLES, chunkVAO->GetVertexCount(), GL_UNSIGNED_INT, nullptr, joinedRenderingData.size());
+        bool insideBounds = x > 0 && x < blocks.size() - 1 && y > 0 && y < blocks[x].size() - 1;
 
-    		tileMapTexture->Unbind();
-    	chunkVAO->Unbind();
-    shader->Unbind();
-  fbo.Unbind();
+        if (insideBounds && wallType != WallType::Empty) {
+          if (blocks[x + 1][y] == BlockType::Empty || blocks[x - 1][y] == BlockType::Empty || blocks[x][y + 1] == BlockType::Empty || blocks[x][y - 1] == BlockType::Empty || blocks[x + 1][y - 1] == BlockType::Empty) {
+            AddWallToRenderingData(wallsData, wallType, walls, x, y);
+            containsOnlyEmptyBlocks = false;
+          }
+        }
+      } else {
+        AddWallToRenderingData(wallsData, wallType, walls, x, y);
+        containsOnlyEmptyBlocks = false;
+      }
+    }
+  }
+
+  std::vector<Vec4> joinedRenderingData;
+  JoinVectors(wallsData, blocksData, joinedRenderingData);
+
+  positionAndTileVBO->Update(joinedRenderingData, joinedRenderingData.size());          
+  glDrawElementsInstanced(GL_TRIANGLES, chunkVAO->GetVertexCount(), GL_UNSIGNED_INT, nullptr, joinedRenderingData.size());
 
 	Werwel::GraphicsContext::Viewport(0, 0, Window::GetSize().x, Window::GetSize().y);
 }
 
 void Chunk::Render(Ref<Werwel::Shader>& shader) {
   targetTexture->Bind();
-    shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
-    glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, nullptr);
-  targetTexture->Unbind();
+  shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
+  glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, nullptr);
 }

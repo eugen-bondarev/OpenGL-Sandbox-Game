@@ -11,7 +11,6 @@ CompositionPass::CompositionPass() {
   shader->Bind();
     shader->SetInt("u_ColorPassResult", 0);
     shader->SetInt("u_LightPassResult", 1);
-  shader->Unbind();
 
 	const auto& vertices = Primitives::Canvas::vertices;
 	const auto& indices = Primitives::Canvas::indices;
@@ -20,7 +19,6 @@ CompositionPass::CompositionPass() {
   canvas->Bind();
 		canvas->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
 		canvas->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
-  canvas->Unbind();
 }
 
 void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPass) {
@@ -30,6 +28,8 @@ void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPa
   Color night = Color(1, 5, 10, 255.0f) / 255.0f;
 
   Color current = sky;
+  
+  Werwel::FBO::UnbindStatic();
 
 	Werwel::GraphicsContext::ClearColor(current.r, current.g, current.b, sky.a);
   Werwel::GraphicsContext::Clear();
@@ -39,8 +39,5 @@ void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPa
       colorPass->GetFbo()->BindTexture(GL_TEXTURE0);
       lightPass->GetFbo()->BindTexture(GL_TEXTURE0 + 1);
         glDrawElements(GL_TRIANGLES, canvas->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
-      lightPass->GetFbo()->UnbindTexture(GL_TEXTURE0 + 1);
-      colorPass->GetFbo()->UnbindTexture(GL_TEXTURE0);
-    canvas->Unbind();
-  shader->Unbind();
+      glActiveTexture(GL_TEXTURE0);
 }

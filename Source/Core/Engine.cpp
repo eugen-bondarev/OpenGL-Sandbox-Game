@@ -55,11 +55,11 @@ void Engine::Control() {
 
 	if (Input::KeyDown(Key::D)) {
 		if (character->CanMoveRight()) {
-			character->AddPosition(Vec2( 1,  0) * Time::GetDelta() * 120.0f);
+			character->AddPosition(Vec2(1,  0) * Time::GetDelta() * 120.0f);
 		} 
 	}
 
-	if (Input::KeyDown(Key::Space)) {
+	if (Input::KeyPressed(Key::Space)) {
 		if (character->OnGround()) {
 			character->Jump();
 		}
@@ -87,13 +87,15 @@ void Engine::Render() {
 		}
 	}
 
+	worldRenderer->Render([&]() {
+		characterRenderer->Render({ character }, camera);
+	});
+
 	{
 		FORGIO_PROFILER_NAMED_SCOPE("Current \"Physics\"");
 
 		character->Update(Time::GetDelta());
-		character->CheckCollisions(world->GetMap(), camera);		
-		// character->CheckCollisions(world->GetMap(), camera, debugRenderer);
-		// debugRenderer->AddQuad(character->GetPosition() + Vec2(8.0f, 0.0f), character->GetPosition() + Vec2(3 * 16.0f, 4 * 16.0f) - Vec2(8.0f, 0.0f));
+		character->CheckCollisions(world->GetMap(), camera);
 
 		const Pos blockPos = world->GetMap()->WindowCoordsToBlockCoords(
 			camera->GetPositionOnScreen(character->GetPosition()), 
@@ -111,10 +113,6 @@ void Engine::Render() {
 			}
 		}
 	}
-
-	worldRenderer->Render([&]() {
-		characterRenderer->Render({ character }, camera);
-	});
 
 	debugRenderer->Render(camera->GetViewMatrix());
 

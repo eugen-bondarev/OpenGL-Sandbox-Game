@@ -15,7 +15,7 @@ WorldRenderer::WorldRenderer(Ref<World>& world, Ref<Camera>& camera) {
 	world->GetMap()->CalculateVisibleChunks(camera->GetPosition());
 }
 
-void WorldRenderer::Render(std::function<void()> add) {
+void WorldRenderer::Render(std::function<void()> add) {	
 	if (camera->GetLastPosition() != camera->GetPosition()) {
 		mapPipeline.rerender = true;
 		world->GetMap()->CalculateVisibleChunks(camera->GetPosition());

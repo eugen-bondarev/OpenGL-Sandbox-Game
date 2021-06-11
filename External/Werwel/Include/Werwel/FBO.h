@@ -13,6 +13,10 @@ public:
 	FBO(Werwel::Size size, GLbitfield buffersToClear, const std::vector<GLuint> &drawBuffers = {});
 	virtual ~FBO();
 
+	inline static void UnbindStatic() {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 	void Bind() const override;
 	void Unbind() const override;
 

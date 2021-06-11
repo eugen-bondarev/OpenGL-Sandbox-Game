@@ -22,13 +22,6 @@ DebugRenderer::DebugRenderer() {
   lineShader = CreatePtr<Werwel::Shader>(lineVS.GetContent(), lineFS.GetContent(), "u_Proj", "u_View", "u_LineData");
   lineShader->Bind();
     lineShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-  lineShader->Unbind();
-
-  // Line line0 = { Vec2 { 3200, 3067 }, Vec2 { 3220, 3067 } };
-  // Line line1 = { Vec2 { 3200, 3067 }, Vec2 { 3200, 3087 } };
-
-  // AddLine(line0);
-  // AddLine(Vec2(3200, 3067), Vec2(3200, 3087), Color(0, 1, 0, 1));
 }
 
 void DebugRenderer::Render(const Mat4& viewMatrix) {
@@ -47,8 +40,6 @@ void DebugRenderer::Render(const Mat4& viewMatrix) {
     lineShader->SetMat2x4("u_LineData", Math::ToPtr(lineData));
     glDrawArrays(GL_TRIANGLES, 0, 3);
   }
-
-  lineShader->Unbind();
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }

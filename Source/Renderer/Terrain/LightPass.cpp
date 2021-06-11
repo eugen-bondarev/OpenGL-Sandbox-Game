@@ -42,11 +42,9 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 			maxAmountOfLights, sizeof(Vec2), nullptr,
 			std::vector<Werwel::VertexBufferLayout> { { 2, sizeof(Vec2), 0, 1 } }
 		);
-	lightVao->Unbind();
 
 	shader->Bind();
 		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-	shader->Unbind();
 
   fbo = CreateRef<LightFBO>(Window::GetSize());
 
@@ -78,8 +76,4 @@ void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light
 			lightVao->GetIndexBuffer()->Bind();
 				lightTexture->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, lightData.size());
-				lightTexture->Unbind();
-      lightVao->Unbind();
-    shader->Unbind();
-  fbo->Unbind();
 }

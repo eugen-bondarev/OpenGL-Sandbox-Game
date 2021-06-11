@@ -14,7 +14,7 @@ public:
 		Windowed
 	};
 
-	static void Create(Size size = { 800, 600 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = true, const std::string& title = "Forgio");
+	static void Create(Size size = { 1920, 1080 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = true, const std::string& title = "Forgio");
 	static void Destroy();
 
 	static bool ShouldClose();
