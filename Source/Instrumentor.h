@@ -1,3 +1,5 @@
+// Stole this off the Cherno
+
 //
 // Basic instrumentation profiler by Cherno
 
