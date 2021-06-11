@@ -50,7 +50,7 @@ LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {
 
   fbo = CreateRef<LightFBO>(Window::GetSize());
 
-	const ImageAsset lightTextureAsset("Assets/Images/LightMask5.png");
+	const ImageAsset lightTextureAsset("Assets/Images/LightMask.png");
 	lightTexture = CreateRef<Werwel::Texture>(
 		Werwel::Size(lightTextureAsset.GetSize().x, lightTextureAsset.GetSize().y),
 		lightTextureAsset.GetData(),

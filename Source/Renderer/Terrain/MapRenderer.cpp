@@ -21,9 +21,8 @@ MapRenderer::MapRenderer(Ref<Map>& map) {
 			bounds_t bounds = map->WhatBlocks({ x, y });
 			chunks[x].emplace_back(
 				Pos(x, y), 
-				Size(map->GetChunkSize()),
+				map->GetChunkSize(),
 				bounds, 
-				// map->GetBlocks(),
 				map->GetBlockSize()
 			);
 		}
@@ -46,10 +45,10 @@ void MapRenderer::UpdateNeighborChunks(const Pos& chunkPos, const Pos& block) {
 	auto& chunk = GetChunk(chunkPos);
 	const auto& bounds = chunk.GetBoudns();
 
-	bool left { false };
-	bool right { false };
-	bool up { false };
-	bool down { false };
+	bool left 	{ false };
+	bool right 	{ false };
+	bool up 		{ false };
+	bool down 	{ false };
 
 	if (bounds.x.start + 1 >= block.x) {
 		left = true;
@@ -77,7 +76,7 @@ void MapRenderer::UpdateNeighborChunks(const Pos& chunkPos, const Pos& block) {
 }
 
 void MapRenderer::InitGraphics() {
-	const ImageAsset image("Assets/Images/Map8.png");
+	const ImageAsset image("Assets/Images/Map.png");
 	tileMapTexture = CreateRef<Werwel::Texture>(
 		Werwel::Size(image.GetSize().x, image.GetSize().y),
 		image.GetData(),

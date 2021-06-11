@@ -49,13 +49,13 @@ void Engine::BeginFrame() {
 void Engine::Control() {
 	if (Input::KeyDown(Key::A)) {
 		if (character->CanMoveLeft()) {
-			character->AddPosition(Vec2(-1,  0) * Time::GetDelta() * 150.0f);
+			character->AddPosition(Vec2(-1,  0) * Time::GetDelta() * 120.0f);
 		}
 	}
 
 	if (Input::KeyDown(Key::D)) {
 		if (character->CanMoveRight()) {
-			character->AddPosition(Vec2( 1,  0) * Time::GetDelta() * 150.0f);
+			character->AddPosition(Vec2( 1,  0) * Time::GetDelta() * 120.0f);
 		} 
 	}
 

@@ -8,7 +8,7 @@
 #include "Core/Window.h"
 
 CharacterRenderer::CharacterRenderer() {
-	const ImageAsset characterTextureAsset("Assets/Images/Characters/Character8.png");
+	const ImageAsset characterTextureAsset("Assets/Images/Characters/Character.png");
 	characterTexture = CreateRef<Werwel::Texture>(
 		Werwel::Size(characterTextureAsset.GetSize().x, characterTextureAsset.GetSize().y),
 		characterTextureAsset.GetData(),
