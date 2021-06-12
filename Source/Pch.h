@@ -18,7 +18,7 @@
 
 #ifdef FORGIO_ENABLE_PROFILING
 # include "Instrumentor.h"
-# define FORGIO_PROFILER_BEGIN()            Instrumentor::Get().BeginSession("Forgio")
+# define FORGIO_PROFILER_BEGIN(NAME)        Instrumentor::Get().BeginSession(NAME)
 # define FORGIO_PROFILER_END()              Instrumentor::Get().EndSession()
 # define FORGIO_PROFILER_SCOPE()            InstrumentationTimer timer(__FUNCSIG__)
 # define FORGIO_PROFILER_NAMED_SCOPE(NAME)  InstrumentationTimer timer(NAME)

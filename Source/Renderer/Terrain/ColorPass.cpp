@@ -42,7 +42,7 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, std::functi
 	Werwel::GraphicsContext::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	light.clear();
-
+	
   fbo->Bind();
   fbo->Clear();
 
@@ -55,8 +55,6 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, std::functi
 	const bounds_t& bounds = map->GetVisibleChunks();	
 	for (int x = bounds.x.start; x < bounds.x.end; x++) {
 		for (int y = bounds.y.start; y < bounds.y.end; y++) {
-			FORGIO_PROFILER_NAMED_SCOPE("foreach chunk (x, y)");
-
 			auto& chunk = mapRenderer->chunks[x][y];
 			if (!chunk.containsOnlyEmptyBlocks) {
 				mapRenderer->chunks[x][y].Render(shader);
@@ -67,8 +65,12 @@ void ColorPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, std::functi
 			}
 			
 			info.chunksRendered += 1;
+
+			glFinish();
 		}
 	}
 
 	add();
+
+	glFinish();
 }

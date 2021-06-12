@@ -76,4 +76,6 @@ void LightPass::Execute(const Mat4& viewMatrix, const Vec2& viewPos, const light
 			lightVao->GetIndexBuffer()->Bind();
 				lightTexture->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, lightVao->GetVertexCount(), GL_UNSIGNED_INT, nullptr, lightData.size());
+
+	glFinish();
 }

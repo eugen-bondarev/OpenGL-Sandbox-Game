@@ -223,7 +223,25 @@ void Chunk::Rerender(
 }
 
 void Chunk::Render(Ref<Werwel::Shader>& shader) {
-  targetTexture->Bind();
-  shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
-  glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_INT, nullptr);
+  FORGIO_PROFILER_SCOPE();
+
+  {
+    FORGIO_PROFILER_NAMED_SCOPE("Binding texture..");
+
+    targetTexture->Bind();
+    glFinish();
+  }
+
+  {
+    FORGIO_PROFILER_NAMED_SCOPE("Setting shader variable..");
+    shader->SetMat4x4("u_Model", Math::ToPtr(chunkModelMatrix));
+    glFinish();
+  }
+
+  {
+    FORGIO_PROFILER_NAMED_SCOPE("Rendering..");
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    glFinish();
+  }
+
 }

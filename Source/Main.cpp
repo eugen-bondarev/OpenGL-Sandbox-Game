@@ -2,7 +2,7 @@
 #include "Core/Engine.h"
 
 int main() {
-	FORGIO_PROFILER_BEGIN();
+	FORGIO_PROFILER_BEGIN("Forgio");
 
 	Engine engine;
 

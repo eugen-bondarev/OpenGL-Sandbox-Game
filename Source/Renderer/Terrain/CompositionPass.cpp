@@ -40,4 +40,6 @@ void CompositionPass::Execute(Ref<ColorPass>& colorPass, Ref<LightPass>& lightPa
       lightPass->GetFbo()->BindTexture(GL_TEXTURE0 + 1);
         glDrawElements(GL_TRIANGLES, canvas->GetVertexCount(), GL_UNSIGNED_INT, nullptr);
       glActiveTexture(GL_TEXTURE0);
+
+	glFinish();
 }
