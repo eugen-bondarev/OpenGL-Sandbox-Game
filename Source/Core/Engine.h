@@ -22,12 +22,13 @@ public:
 private:
 	Ref<DebugRenderer> debugRenderer;
 
-	Ref<Character> character;
-	Ref<CharacterRenderer> characterRenderer;
+	Ref<Map> map;
+	Ref<Werwel::Texture> tileMap;
+	Ref<Werwel::Shader> shader;
+	Ref<Werwel::VAO> vao;
+	Ref<Werwel::VBO> vbo;
 
 	Ref<Camera> camera;
-	Ref<World> world;
-	Ref<WorldRenderer> worldRenderer;
 
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;

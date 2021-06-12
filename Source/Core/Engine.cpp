@@ -12,6 +12,8 @@
 
 #include "Util/ImGuiHelper.h"
 
+#include "Werwel/GraphicsContext.h"
+
 Engine::Engine() {
 	Window::Create();
 	Gui::Create();
@@ -21,16 +23,62 @@ Engine::Engine() {
 	debugRenderer = CreateRef<DebugRenderer>();
 }
 
+inline static std::vector<Vertex2D> Verts(float tileSizeX, float tileSizeY, bool flipUVs = false) {
+	return {
+		{ {  tileSizeX / 2,  tileSizeY / 2 }, { 1, 1 } },
+		{ { -tileSizeX / 2,  tileSizeY / 2 }, { 0, 1 } },
+		{ {  tileSizeX / 2, -tileSizeY / 2 }, { 1, 0 } },
+		{ { -tileSizeX / 2, -tileSizeY / 2 }, { 0, 0 } },
+	};
+}
+
+inline static std::vector<int> Inds = { 0, 1, 2, 2, 1, 3 };
+
 void Engine::InitResources() {
 	FORGIO_PROFILER_SCOPE();
 
-	camera = CreateRef<Camera>();	
-	world = CreateRef<World>();
-	worldRenderer = CreateRef<WorldRenderer>(world, camera);
+	map = CreateRef<Map>(Size(16, 16), Size(25, 25));
+	camera = CreateRef<Camera>();
+	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 
-	character = CreateRef<Character>();
-	character->SetPosition(camera->GetPosition());
-	characterRenderer = CreateRef<CharacterRenderer>();
+	map->CalculateVisibleChunks(camera->GetPosition());
+
+	TextAsset vsCode("Assets/MapTest.vs");
+	TextAsset fsCode("Assets/MapTest.fs");
+	shader = CreateRef<Werwel::Shader>(
+		vsCode.GetContent(), fsCode.GetContent(),
+		"u_Proj", "u_View", "u_Position", "blockData"
+	);
+
+	shader->Bind();
+		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+
+	const ImageAsset tileMapTexture("Assets/Images/Map.png");
+	tileMap = CreateRef<Werwel::Texture>(
+		Werwel::Size(tileMapTexture.GetSize().x, tileMapTexture.GetSize().y),
+		tileMapTexture.GetData(),
+		GL_RGBA,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+	);
+	
+	const auto& vers = Primitives::Block::Vertices(16, 16);
+	const auto& inds = Primitives::Block::indices;
+
+	vao = CreateRef<Werwel::VAO>();
+	vao->Bind();
+		vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 8192, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
+		
+
+		shader->Bind();
+			shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+				tileMap->Bind();
+					vao->Bind();
+					vao->GetIndexBuffer()->Bind();
 }
 
 bool Engine::IsRunning() const {
@@ -47,86 +95,60 @@ void Engine::BeginFrame() {
 }
 
 void Engine::Control() {
-	if (Input::KeyDown(Key::A)) {
-		if (character->CanMoveLeft()) {
-			character->AddPosition(Vec2(-1,  0) * Time::GetDelta() * 120.0f);
-		}
-	}
-
-	if (Input::KeyDown(Key::D)) {
-		if (character->CanMoveRight()) {
-			character->AddPosition(Vec2(1,  0) * Time::GetDelta() * 120.0f);
-		} 
-	}
-
-	if (Input::KeyPressed(Key::Space)) {
-		if (character->OnGround()) {
-			character->Jump();
-		}
-	}
-
-	camera->SetPosition(character->GetPosition());
 }
 
 void Engine::Render() {
-	if (Input::MouseButtonDown(Button::Left)) {
-		BlockSettingData& settingBlock = world->GetMap()->SetBlock(camera->GetViewMatrix(), BlockType::Empty);
-		if (settingBlock.IsSet()) {
-			worldRenderer->mapPipeline.color->GetMapRenderer()->RerenderChunk(settingBlock.chunk);
-			worldRenderer->mapPipeline.color->GetMapRenderer()->UpdateNeighborChunks(settingBlock.chunk, settingBlock.block);
-			worldRenderer->ForceRerender();
-		}
-	}
+	Werwel::GraphicsContext::Clear();
 
-	if (Input::MouseButtonDown(Button::Right)) {
-		BlockSettingData& settingBlock = world->GetMap()->SetBlock(camera->GetViewMatrix(), BlockType::Dirt);
-		if (settingBlock.IsSet()) {
-			worldRenderer->mapPipeline.color->GetMapRenderer()->RerenderChunk(settingBlock.chunk);
-			worldRenderer->mapPipeline.color->GetMapRenderer()->UpdateNeighborChunks(settingBlock.chunk, settingBlock.block);
-			worldRenderer->ForceRerender();
-		}
-	}
+	std::vector<Vec4> blocksData;
 
-	worldRenderer->Render([&]() {
-		characterRenderer->Render({ character }, camera);
-	});
+	const auto& chunks = map->GetVisibleChunks();
+	const auto& blocks = map->GetBlocks();
+
+	int blocksRendered = 0;
 
 	{
-		FORGIO_PROFILER_NAMED_SCOPE("Current \"Physics\"");
+		FORGIO_PROFILER_NAMED_SCOPE("Building blocks!");
+		for (int x = chunks.x.start; x < chunks.x.end; x++) {
+			for (int y = chunks.y.start; y < chunks.y.end; y++) {
+				int firstBlockX = x * 16.0f;
+				int lastBlockX = (x + 1) * 16.0f;
+				int firstBlockY = y * 16.0f;
+				int lastBlockY = (y + 1) * 16.0f;
 
-		character->Update(Time::GetDelta());
-		character->CheckCollisions(world->GetMap(), camera);
-
-		const Pos blockPos = world->GetMap()->WindowCoordsToBlockCoords(
-			camera->GetPositionOnScreen(character->GetPosition()), 
-			Window::GetSpace(), 
-			camera->GetViewMatrix()
-		);
-
-		for (int x = -1; x < 1; x++) {
-			for (int y = -1; y < 2; y++) {
-				const bool emptyBlock = world->GetMap()->BlockIs(blockPos.x + x, blockPos.y + y, BlockType::Empty);
-				const bool emptyWall = world->GetMap()->WallIs(blockPos.x + x, blockPos.y + y, WallType::Empty);
-				if (emptyBlock && emptyWall) {
-					worldRenderer->mapPipeline.color->GetAdditionalLightData().push_back(character->GetPosition() + Vec2(0, 64));
+				for (int i = firstBlockX; i < lastBlockX; i++) {
+					for (int j = firstBlockY; j < lastBlockY; j++) {
+						if (blocks[i][j] != BlockType::Empty) {
+							blocksData.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
+						}
+					}
 				}
 			}
 		}
 	}
 
-	debugRenderer->Render(camera->GetViewMatrix());
+	{
+		FORGIO_PROFILER_NAMED_SCOPE("Updating buffer");
+		vbo->Update(blocksData, blocksData.size());
+		glFinish();
+	}
+
+	{
+		FORGIO_PROFILER_NAMED_SCOPE("Rendering!");
+		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
+		glFinish();
+	}
+
+
 
 	ImGui::Begin("Info");
-		ImGui::Text(("Chunks rendered: " + std::to_string(worldRenderer->mapPipeline.color->info.chunksRendered)).c_str());
-		ImGui::Text(("Fps: " + std::to_string(Time::GetFps())).c_str());
-		ImGui::Text(("Lights: " + std::to_string(worldRenderer->mapPipeline.color->GetLightData().size())).c_str());
 	ImGui::End();
 
 	ImGui::Begin("View");
-		auto visibleChunks = world->GetMap()->GetVisibleChunks();
-		ImGui::Text(("Position: " + std::to_string(camera->GetPosition().x) + ' ' + std::to_string(camera->GetPosition().y)).c_str());
-		ImGui::Text(("Chunk x: " + std::to_string(visibleChunks.x.start) + ' ' + std::to_string(visibleChunks.x.end)).c_str());
-		ImGui::Text(("Chunk y: " + std::to_string(visibleChunks.y.start) + ' ' + std::to_string(visibleChunks.y.end)).c_str());
+		auto& visibleChunks = map->GetVisibleChunks();
+		ImGui::Text(("x: " + std::to_string(visibleChunks.x.start) + " " + std::to_string(visibleChunks.x.end)).c_str());
+		ImGui::Text(("y: " + std::to_string(visibleChunks.y.start) + " " + std::to_string(visibleChunks.y.end)).c_str());
+		ImGui::Text(("Blocks rendered: " + std::to_string(blocksRendered)).c_str());
 	ImGui::End();
 }
 

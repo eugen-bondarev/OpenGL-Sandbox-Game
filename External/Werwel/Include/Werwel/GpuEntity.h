@@ -18,8 +18,14 @@ public:
 		return handle; 
 	}
 
+	inline bool IsBound() const {
+		return isBound;
+	}
+
 protected:
 	GLuint handle { 0 };
+
+	bool isBound;
 
 private:
 	GpuEntity(const GpuEntity&) = delete;
