@@ -72,13 +72,6 @@ void Engine::InitResources() {
 		vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
 		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 8192, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
-		
-
-		shader->Bind();
-			shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-				tileMap->Bind();
-					vao->Bind();
-					vao->GetIndexBuffer()->Bind();
 }
 
 bool Engine::IsRunning() const {
@@ -128,6 +121,16 @@ void Engine::Render() {
 	}
 
 	{
+		FORGIO_PROFILER_NAMED_SCOPE("Binding");
+		shader->Bind();
+		shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+		tileMap->Bind();
+		vao->Bind();
+		vao->GetIndexBuffer()->Bind();
+		glFinish();
+	}
+
+	{
 		FORGIO_PROFILER_NAMED_SCOPE("Updating buffer");
 		vbo->Update(blocksData, blocksData.size());
 		glFinish();
@@ -138,8 +141,6 @@ void Engine::Render() {
 		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
 		glFinish();
 	}
-
-
 
 	ImGui::Begin("Info");
 	ImGui::End();
