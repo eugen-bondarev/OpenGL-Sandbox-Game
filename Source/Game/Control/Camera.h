@@ -45,6 +45,13 @@ public:
 		return Window::GetSize() / 2.0f - (position - worldPosition) * Vec2(1, -1);
   }
 
+  inline void OnPositionChange(std::function<void()> callback) {
+    if (position != lastPosition) {
+      lastPosition = position;
+      callback();
+    }
+  }
+
 private:
   Mat4 matrix;
   Vec2 position;

@@ -14,8 +14,20 @@ struct BlockSettingData {
 	}
 };
 
+struct MapChunk {
+	Pos index;
+
+	int memPos;
+
+	bool shown { false };
+};
+
 class Map {
 public:
+	std::vector<
+		std::vector<MapChunk>
+	> chunks;
+
   Map(Size chunkSize, Size amountOfChunks, float blockSize = 16.0f);
 
 	BlockSettingData SetBlock(const Mat4& viewMatrix, BlockType blockType);

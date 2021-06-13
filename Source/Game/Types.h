@@ -17,6 +17,10 @@ using bounds_t = struct __bounds_t {
   inline bool operator!=(__bounds_t const& other) const {
     return x.start != other.x.start || x.end != other.x.end || y.start != other.y.start || y.end != other.y.end;
   }
+
+  inline bool operator<(__bounds_t const& other) const {
+    return x < other.x || (x == other.x && y < other.y);
+  }
 };
 
 using chunk_t = bounds_t;

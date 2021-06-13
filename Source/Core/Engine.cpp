@@ -71,7 +71,47 @@ void Engine::InitResources() {
 	vao->Bind();
 		vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
 		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
-		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 8192, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
+		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 12288, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
+
+	PopulateBlockData(true);
+
+	visibleChunks = map->GetVisibleChunks();
+}
+
+void Engine::PopulateBlockData(bool firstTime) {
+	FORGIO_PROFILER_NAMED_SCOPE("Building blocks!");
+
+	const auto& chunks = map->GetVisibleChunks();
+	const auto& blocks = map->GetBlocks();
+
+	for (int x = chunks.x.start; x < chunks.x.end; x++) {
+		for (int y = chunks.y.start; y < chunks.y.end; y++) {			
+
+			map->chunks[x][y].shown = true;
+
+			int firstBlockX = x * 16.0f;
+			int lastBlockX = (x + 1) * 16.0f;
+			int firstBlockY = y * 16.0f;
+			int lastBlockY = (y + 1) * 16.0f;
+
+			int pos = blocksData.size();
+			map->chunks[x][y].memPos = pos;
+
+			for (int i = firstBlockX; i < lastBlockX; i++) {
+				for (int j = firstBlockY; j < lastBlockY; j++) {
+					// if (blocks[i][j] != BlockType::Empty) {
+						blocksData.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
+					// } else {
+					// 	blocksData.emplace_back(0, 0, 0, 0);
+					// 	size += 1;
+					// }
+				}
+			}
+			// we have position and size..
+		}
+	}
+
+	vbo->Update(blocksData, blocksData.size());
 }
 
 bool Engine::IsRunning() const {
@@ -84,41 +124,162 @@ void Engine::BeginFrame() {
 	Time::BeginFrame();
 	Input::BeginFrame();
 
-	debugRenderer->ClearLines();
+	// debugRenderer->ClearLines();
 }
 
 void Engine::Control() {
+	if (Input::KeyDown(Key::W)) {
+		camera->SetPosition(camera->GetPosition() + Vec2(0, 1) * Time::GetDelta() * 300.0f);
+	}
+
+	if (Input::KeyDown(Key::A)) {
+		camera->SetPosition(camera->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 300.0f);
+	}
+
+	if (Input::KeyDown(Key::S)) {
+		camera->SetPosition(camera->GetPosition() + Vec2(0, -1) * Time::GetDelta() * 300.0f);
+	}
+
+	if (Input::KeyDown(Key::D)) {
+		camera->SetPosition(camera->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 300.0f);
+	}
+}
+
+void Engine::OnVisibleChunksChange() {
+	if (lastVisibleChunks.x.start < visibleChunks.x.start); //leftGone = true;
+	if (lastVisibleChunks.x.start > visibleChunks.x.start); //leftNew = true;
+	if (lastVisibleChunks.x.end < visibleChunks.x.end); //rightNew = true;
+	if (lastVisibleChunks.x.end > visibleChunks.x.end); //rightGone = true;
+	if (lastVisibleChunks.y.start < visibleChunks.y.start); //botGone = true;
+
+	const auto& blocks = map->GetBlocks();
+
+	if (lastVisibleChunks.y.start < visibleChunks.y.start) {
+		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
+			int oldChunkIndex = lastVisibleChunks.y.start;
+			int newChunkIndex = visibleChunks.y.end - 1;
+
+			auto& oldChunk = map->chunks[x][oldChunkIndex];
+			auto& newChunk = map->chunks[x][newChunkIndex];
+
+			oldChunk.shown = false;
+			newChunk.shown = true;
+ 
+			std::vector<Vec4> newBlocks;
+			bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
+			bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
+
+			for (int i = newChunkBounds.x.start; i < newChunkBounds.x.end; i++) {
+				for (int j = newChunkBounds.y.start; j < newChunkBounds.y.end; j++) {
+					newBlocks.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
+				}
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, vbo->GetHandle());
+			glBufferSubData(GL_ARRAY_BUFFER, oldChunk.memPos * sizeof(Vec4), 16 * 16 * sizeof(Vec4), newBlocks.data());
+			newChunk.memPos = oldChunk.memPos;
+		}
+	} else if (lastVisibleChunks.y.start > visibleChunks.y.start) {
+		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
+			int oldChunkIndex = lastVisibleChunks.y.end - 1;
+			int newChunkIndex = visibleChunks.y.start;
+
+			auto& oldChunk = map->chunks[x][oldChunkIndex];
+			auto& newChunk = map->chunks[x][newChunkIndex];
+
+			oldChunk.shown = false;
+			newChunk.shown = true;
+ 
+			std::vector<Vec4> newBlocks;
+			bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
+			bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
+
+			for (int i = newChunkBounds.x.start; i < newChunkBounds.x.end; i++) {
+				for (int j = newChunkBounds.y.start; j < newChunkBounds.y.end; j++) {
+					newBlocks.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
+				}
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, vbo->GetHandle());
+			glBufferSubData(GL_ARRAY_BUFFER, oldChunk.memPos * sizeof(Vec4), 16 * 16 * sizeof(Vec4), newBlocks.data());
+			newChunk.memPos = oldChunk.memPos;
+		}
+	}
+
+	if (lastVisibleChunks.x.end < visibleChunks.x.end) {
+		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
+			int oldChunkIndex = lastVisibleChunks.x.start;
+			int newChunkIndex = visibleChunks.x.end - 1;
+
+			auto& oldChunk = map->chunks[oldChunkIndex][y];
+			auto& newChunk = map->chunks[newChunkIndex][y];
+
+			oldChunk.shown = false;
+			newChunk.shown = true;
+ 
+			std::vector<Vec4> newBlocks;
+			bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
+			bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
+
+			for (int i = newChunkBounds.x.start; i < newChunkBounds.x.end; i++) {
+				for (int j = newChunkBounds.y.start; j < newChunkBounds.y.end; j++) {
+					newBlocks.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
+				}
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, vbo->GetHandle());
+			glBufferSubData(GL_ARRAY_BUFFER, oldChunk.memPos * sizeof(Vec4), 16 * 16 * sizeof(Vec4), newBlocks.data());
+			newChunk.memPos = oldChunk.memPos;
+		}
+	} else if (lastVisibleChunks.x.end > visibleChunks.x.end) {
+		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
+			int oldChunkIndex = lastVisibleChunks.x.end - 1;
+			int newChunkIndex = visibleChunks.x.start;
+
+			auto& oldChunk = map->chunks[oldChunkIndex][y];
+			auto& newChunk = map->chunks[newChunkIndex][y];
+
+			oldChunk.shown = false;
+			newChunk.shown = true;
+ 
+			std::vector<Vec4> newBlocks;
+			bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
+			bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
+
+			for (int i = newChunkBounds.x.start; i < newChunkBounds.x.end; i++) {
+				for (int j = newChunkBounds.y.start; j < newChunkBounds.y.end; j++) {
+					newBlocks.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
+				}
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, vbo->GetHandle());
+			glBufferSubData(GL_ARRAY_BUFFER, oldChunk.memPos * sizeof(Vec4), 16 * 16 * sizeof(Vec4), newBlocks.data());
+			newChunk.memPos = oldChunk.memPos;
+		}
+	}
 }
 
 void Engine::Render() {
 	Werwel::GraphicsContext::Clear();
 
-	std::vector<Vec4> blocksData;
+	camera->OnPositionChange([&]() {
+		map->CalculateVisibleChunks(camera->GetPosition());
+		visibleChunks = map->GetVisibleChunks();
 
-	const auto& chunks = map->GetVisibleChunks();
-	const auto& blocks = map->GetBlocks();
-
-	int blocksRendered = 0;
-
-	{
-		FORGIO_PROFILER_NAMED_SCOPE("Building blocks!");
-		for (int x = chunks.x.start; x < chunks.x.end; x++) {
-			for (int y = chunks.y.start; y < chunks.y.end; y++) {
-				int firstBlockX = x * 16.0f;
-				int lastBlockX = (x + 1) * 16.0f;
-				int firstBlockY = y * 16.0f;
-				int lastBlockY = (y + 1) * 16.0f;
-
-				for (int i = firstBlockX; i < lastBlockX; i++) {
-					for (int j = firstBlockY; j < lastBlockY; j++) {
-						if (blocks[i][j] != BlockType::Empty) {
-							blocksData.emplace_back(i * 16.0f, j * 16.0f, 1, 0);
-						}
-					}
-				}
-			}
+		if (lastVisibleChunks != visibleChunks) {
+			OnVisibleChunksChange();
+			lastVisibleChunks = visibleChunks;
 		}
-	}
+
+		// blocksData.clear();		
+		// PopulateBlockData(false);
+
+		// {
+		// 	FORGIO_PROFILER_NAMED_SCOPE("Updating buffer");
+		// 	vbo->Update(blocksData, blocksData.size());
+		// 	glFinish();
+		// }
+	});
 
 	{
 		FORGIO_PROFILER_NAMED_SCOPE("Binding");
@@ -131,25 +292,26 @@ void Engine::Render() {
 	}
 
 	{
-		FORGIO_PROFILER_NAMED_SCOPE("Updating buffer");
-		vbo->Update(blocksData, blocksData.size());
-		glFinish();
-	}
-
-	{
 		FORGIO_PROFILER_NAMED_SCOPE("Rendering!");
 		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
 		glFinish();
 	}
+	
+	debugRenderer->Render(camera->GetViewMatrix());
 
 	ImGui::Begin("Info");
+		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();
 
 	ImGui::Begin("View");
-		auto& visibleChunks = map->GetVisibleChunks();
 		ImGui::Text(("x: " + std::to_string(visibleChunks.x.start) + " " + std::to_string(visibleChunks.x.end)).c_str());
 		ImGui::Text(("y: " + std::to_string(visibleChunks.y.start) + " " + std::to_string(visibleChunks.y.end)).c_str());
-		ImGui::Text(("Blocks rendered: " + std::to_string(blocksRendered)).c_str());
+
+		ImGui::Text(("Left new: "  + std::string(leftNew ? "true" : "false")).c_str());
+		ImGui::Text(("Left gone: " + std::string(leftGone ? "true" : "false")).c_str());
+		ImGui::Text(("Right new: " + std::string(rightNew ? "true" : "false")).c_str());
+		ImGui::Text(("Right gone: " + std::string(rightGone ? "true" : "false")).c_str());
+		ImGui::Text(("Bot gone: " + std::string(botGone ? "true" : "false")).c_str());
 	ImGui::End();
 }
 

@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <array>
+#include <functional>
 #include <map>
 
 #include "Util/Structures.h"

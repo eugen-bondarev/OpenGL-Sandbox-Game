@@ -22,12 +22,28 @@ public:
 private:
 	Ref<DebugRenderer> debugRenderer;
 
+	std::vector<Vec4> blocksData;
+	void PopulateBlockData(bool firstTime);
+
 	Ref<Map> map;
 	Ref<Werwel::Texture> tileMap;
 	Ref<Werwel::Shader> shader;
 	Ref<Werwel::VAO> vao;
 	Ref<Werwel::VBO> vbo;
 
+	bounds_t lastVisibleChunks;
+	bounds_t visibleChunks;
+	
+	bool leftNew 		{ false };
+	bool leftGone 	{ false };
+	bool rightNew 	{ false };
+	bool rightGone 	{ false };
+	bool topNew 		{ false };
+	bool topGone 		{ false };
+	bool botNew 		{ false };
+	bool botGone 		{ false };
+
+	void OnVisibleChunksChange();
 	Ref<Camera> camera;
 
 	Engine(const Engine&) = delete;
