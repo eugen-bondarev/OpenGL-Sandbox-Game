@@ -23,21 +23,10 @@ Engine::Engine() {
 	debugRenderer = CreateRef<DebugRenderer>();
 }
 
-inline static std::vector<Vertex2D> Verts(float tileSizeX, float tileSizeY, bool flipUVs = false) {
-	return {
-		{ {  tileSizeX / 2,  tileSizeY / 2 }, { 1, 1 } },
-		{ { -tileSizeX / 2,  tileSizeY / 2 }, { 0, 1 } },
-		{ {  tileSizeX / 2, -tileSizeY / 2 }, { 1, 0 } },
-		{ { -tileSizeX / 2, -tileSizeY / 2 }, { 0, 0 } },
-	};
-}
-
-inline static std::vector<int> Inds = { 0, 1, 2, 2, 1, 3 };
-
 void Engine::InitResources() {
 	FORGIO_PROFILER_SCOPE();
 
-	map = CreateRef<Map>(Size(5, 5), Size(200, 200));
+	map = CreateRef<Map>(Size(5, 5), Size(250, 250));
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 
@@ -47,7 +36,7 @@ void Engine::InitResources() {
 	TextAsset fsCode("Assets/MapTest.fs");
 	shader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View", "u_Position", "blockData"
+		"u_Proj", "u_View"
 	);
 
 	shader->Bind();
@@ -68,6 +57,7 @@ void Engine::InitResources() {
 	const auto& inds = Primitives::Block::indices;
 
 	visibleChunks = map->GetVisibleChunks();
+	lastVisibleChunks = visibleChunks;
 
 	int amountOfBlocks = (visibleChunks.x.end - visibleChunks.x.start) * (visibleChunks.y.end - visibleChunks.y.start) * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y;
 
@@ -165,7 +155,6 @@ static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map
 	}
 
 	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memPos);
-	vbo->Unbind();
 	newChunk.memPos = oldChunk.memPos;
 }
 

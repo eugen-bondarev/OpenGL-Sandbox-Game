@@ -10,8 +10,6 @@ out vec2 out_Tile;
 uniform mat4 u_Proj;
 uniform mat4 u_View;
 
-uniform vec2 u_Position;
-
 void main() {
   vec2 POSITION = blockData.xy;
 
