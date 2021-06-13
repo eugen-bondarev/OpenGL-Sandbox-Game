@@ -5,6 +5,7 @@ layout (location = 1) in vec2 uv;
 layout (location = 2) in vec4 blockData;
 
 out vec2 out_UV;
+out vec2 out_Tile;
 
 uniform mat4 u_Proj;
 uniform mat4 u_View;
@@ -16,5 +17,6 @@ void main() {
 
   gl_Position = u_Proj * u_View * vec4(position + POSITION, 0.0, 1.0);
 
-  out_UV = (uv + blockData.zw) / vec2(6, 6);
+  out_UV = uv;
+  out_Tile = blockData.zw;
 }

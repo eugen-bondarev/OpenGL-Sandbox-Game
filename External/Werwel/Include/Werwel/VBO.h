@@ -82,11 +82,11 @@ public:
   }
 
   template <typename T, bool bind = true>
-  inline void Update(const std::vector<T>& vec, int amount) const {
+  inline void Update(const std::vector<T>& vec, int amount, int pos = 0) const {
     if (bind) {
       glBindBuffer(type, handle);
     }
-    glBufferSubData(type, 0, size * amount, vec.data());
+    glBufferSubData(type, size * pos, size * amount, vec.data());
   }
 
   template <bool bind = true>
