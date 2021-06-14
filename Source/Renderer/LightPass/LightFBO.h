@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Werwel/FBO.h"
+#include "Werwel/Texture.h"
 
-class ColorFBO : public Werwel::FBO {
+class LightFBO : public Werwel::FBO {
 public:
-	inline ColorFBO(Size size) : Werwel::FBO(Werwel::Size { size.x, size.y }, GL_COLOR_BUFFER_BIT, { GL_COLOR_ATTACHMENT0 }) {
-		BeginInit();
+  inline LightFBO(Size size) : Werwel::FBO(Werwel::Size { size.x, size.y }, GL_COLOR_BUFFER_BIT, { GL_COLOR_ATTACHMENT0 }) {
+    BeginInit();
 
 		attachments[GL_COLOR_ATTACHMENT0] = CreateRef<Werwel::Texture>(
 			Werwel::Size { size.x, size.y },
@@ -18,7 +19,7 @@ public:
 		);
 
 		EndInit();
-	}
+  }
 
 	inline void Resize(Werwel::Size size) {
 		Werwel::FBO::Resize(size);
@@ -27,6 +28,10 @@ public:
 	inline GLuint GetTextureHandle() const {
 		return attachments.at(GL_COLOR_ATTACHMENT0)->GetHandle();
 	}
+
+  inline const Ref<Werwel::Texture>& GetTexture() const {
+    return attachments.at(GL_COLOR_ATTACHMENT0);
+  }
 
 	inline void BindTexture(GLuint slot) const {
 		glActiveTexture(slot);

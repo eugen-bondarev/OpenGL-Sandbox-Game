@@ -99,6 +99,102 @@ static Vec2 PickRightAngularTile(const blocks_t& blocks, int x, int y) {
   return Vec2(0, 0);
 }
 
+void Engine::InitPipeline() {
+	InitColorPass();
+	InitLightPass();
+	InitCompositionPass();
+}
+
+void Engine::InitColorPass() {
+	pipeline.colorPass = CreateRef<ColorPass>();
+}
+
+void Engine::InitLightPass() {
+	pipeline.lightPass.fbo = CreateRef<LightFBO>(Window::GetSize());
+
+	TextAsset vsCode("Assets/Shaders/Terrain/LightPassShader.vs");
+	TextAsset fsCode("Assets/Shaders/Terrain/LightPassShader.fs");
+	pipeline.lightPass.shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View");
+	
+	const auto& vertices = Primitives::Block::Vertices(256, 256);
+	const auto& indices = Primitives::Block::indices;
+
+	pipeline.lightPass.lightMesh.vao = CreateRef<Werwel::VAO>();
+	pipeline.lightPass.lightMesh.vao->Bind();
+		pipeline.lightPass.lightMesh.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+		pipeline.lightPass.lightMesh.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+		pipeline.lightPass.lightMesh.dynamicVBO = pipeline.lightPass.lightMesh.vao->AddVBO(
+			Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 10000, sizeof(Vec2), nullptr,
+			Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
+		);
+
+
+	ImageAsset lightTexture("Assets/Images/LightMask.png");
+	pipeline.lightPass.lightMesh.texture = CreateRef<Werwel::Texture>(
+		Werwel::Size { lightTexture.GetSize().x, lightTexture.GetSize().y },
+		lightTexture.GetData(),
+		GL_RGBA,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE }
+	);
+}
+
+void Engine::LightPass() {
+// No culling of back faces
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+
+	glClearColor(0, 0, 0, 1);
+
+	pipeline.lightPass.fbo->Bind();
+	pipeline.lightPass.fbo->Clear();
+		pipeline.lightPass.shader->Bind();
+		pipeline.lightPass.shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+		pipeline.lightPass.shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+			pipeline.lightPass.lightMesh.vao->Bind();
+			pipeline.lightPass.lightMesh.vao->GetIndexBuffer()->Bind();
+				pipeline.lightPass.lightMesh.texture->Bind();
+					glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, 12000);
+					
+		pipeline.lightPass.shader->Unbind();
+	pipeline.lightPass.fbo->Unbind();
+}
+
+void Engine::InitCompositionPass() {
+	TextAsset vsCode("Assets/Shaders/Terrain/CompositionShader.vs");
+	TextAsset fsCode("Assets/Shaders/Terrain/CompositionShader.fs");
+	pipeline.compositionPass.shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ColorPassResult", "u_LightPassResult");
+	pipeline.compositionPass.shader->Bind();
+		pipeline.compositionPass.shader->SetInt("u_ColorPassResult", 0);
+		pipeline.compositionPass.shader->SetInt("u_LightPassResult", 1);
+	pipeline.compositionPass.shader->Unbind();
+	
+	const auto& vers = Primitives::Block::Vertices(2, -2);
+	const auto& inds = Primitives::Block::indices;
+
+	pipeline.compositionPass.canvas = CreateRef<Werwel::VAO>();
+	pipeline.compositionPass.canvas->BindSafely();
+	pipeline.compositionPass.canvas->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+	pipeline.compositionPass.canvas->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+}
+
+void Engine::Compose() {
+	pipeline.compositionPass.shader->Bind();
+
+	pipeline.compositionPass.canvas->Bind();
+	pipeline.compositionPass.canvas->GetIndexBuffer()->Bind();
+
+	pipeline.colorPass->GetFBO()->GetTexture()->Bind(GL_TEXTURE0);
+	pipeline.lightPass.fbo->GetTexture()->Bind(GL_TEXTURE0 + 1);
+
+		glDrawElements(GL_TRIANGLES, pipeline.compositionPass.canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+
+	glActiveTexture(GL_TEXTURE0);
+}
+
 void Engine::InitResources() {
 	FORGIO_PROFILER_SCOPE();
 
@@ -108,8 +204,8 @@ void Engine::InitResources() {
 
 	map->CalculateVisibleChunks(camera->GetPosition());
 
-	TextAsset vsCode("Assets/MapTest.vs");
-	TextAsset fsCode("Assets/MapTest.fs");
+	TextAsset vsCode("Assets/Shaders/Terrain/ColorPassShader.vs");
+	TextAsset fsCode("Assets/Shaders/Terrain/ColorPassShader.fs");
 	shader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
 		"u_Proj", "u_View"
@@ -143,6 +239,7 @@ void Engine::InitResources() {
 		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, amountOfBlocks, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
 
+	InitPipeline();
 	PopulateBlockData();
 }
 
@@ -150,6 +247,7 @@ void Engine::PopulateBlockData() {
 	FORGIO_PROFILER_SCOPE();
 
 	std::vector<Vec4> blocksData;
+	std::vector<Vec2> lightData;
 
 	const auto& chunks = map->GetVisibleChunks();
 	const auto& blocks = map->GetBlocks();
@@ -161,15 +259,22 @@ void Engine::PopulateBlockData() {
 			int firstBlockY = y * map->GetChunkSize().y;
 			int lastBlockY = (y + 1) * map->GetChunkSize().y;
 
-			map->chunks[x][y].memOffset = blocksData.size();
+			map->chunks[x][y].colorMemOffset = blocksData.size();
+			map->chunks[x][y].lightMemOffset = lightData.size();
 
 			for (int i = firstBlockX; i < lastBlockX; i++) {
 				for (int j = firstBlockY; j < lastBlockY; j++) {
 					if (blocks[i][j] != BlockType::Empty) {
 						Vec2 tile = Vec2(1, 1) + PickRightAngularTile(blocks, i, j);
 						blocksData.emplace_back(i * map->GetBlockSize(), j * map->GetBlockSize(), tile.x, tile.y);
+						lightData.emplace_back(0, 0);
 					} else {
 						blocksData.emplace_back(0, 0, 0, 0);
+						if (blocks[i][j - 1] != BlockType::Empty) {
+							lightData.emplace_back(16 * i, 16 * j);
+						} else {
+							lightData.emplace_back(0, 0);
+						}
 					}
 				}
 			}
@@ -177,6 +282,7 @@ void Engine::PopulateBlockData() {
 	}
 
 	vbo->Update(blocksData, blocksData.size());
+	pipeline.lightPass.lightMesh.dynamicVBO->Update(lightData, lightData.size());
 }
 
 bool Engine::IsRunning() const {
@@ -192,12 +298,13 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
-static void OverrideChunk(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) { 
+static void OverrideChunk(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo, Ref<Werwel::VBO>& lightVBO) { 
 	FORGIO_PROFILER_SCOPE();
 
 	const auto& blocks = map->GetBlocks();
 
 	std::vector<Vec4> newBlocks;
+	std::vector<Vec2> lightBlocks;
 	bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
 	bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
 
@@ -206,20 +313,30 @@ static void OverrideChunk(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map,
 			if (blocks[x][y] != BlockType::Empty) {
 				Vec2 tile = Vec2(1, 1) + PickRightAngularTile(blocks, x, y);
 				newBlocks.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
+				lightBlocks.emplace_back(0, 0);
 			} else {
 				newBlocks.emplace_back(0, 0, 0, 0);
+
+				if (blocks[x][y - 1] != BlockType::Empty) {
+					lightBlocks.emplace_back(16 * x, 16 * y);
+				} else {
+					lightBlocks.emplace_back(0, 0);
+				}
 			}
 		}
 	}
 
-	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memOffset);
-	newChunk.memOffset = oldChunk.memOffset;
+	vbo->Update(newBlocks, newBlocks.size(), oldChunk.colorMemOffset);
+	lightVBO->Update(lightBlocks, lightBlocks.size(), oldChunk.lightMemOffset);
+
+	newChunk.colorMemOffset = oldChunk.colorMemOffset;
+	newChunk.lightMemOffset = oldChunk.lightMemOffset;
 
 	FORGIO_SYNC_GPU();
 }
 
-static void RerenderChunk(MapChunk& chunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) {
-	OverrideChunk(chunk, chunk, map, vbo);
+static void RerenderChunk(MapChunk& chunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo, Ref<Werwel::VBO>& lightVBO) {
+	OverrideChunk(chunk, chunk, map, vbo, lightVBO);
 }
 
 void Engine::Control() {
@@ -243,7 +360,15 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
-			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo);
+			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+		}
+	}
+
+	if (Input::MouseButtonDown(Button::Right)) {
+		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
+
+		if (settingBlock.IsSet()) {
+			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 }
@@ -253,26 +378,29 @@ void Engine::OnVisibleChunksChange() {
 
 	if (lastVisibleChunks.y.start < visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
-			OverrideChunk(map->chunks[x][lastVisibleChunks.y.start], map->chunks[x][visibleChunks.y.end - 1], map, vbo);
+			OverrideChunk(map->chunks[x][lastVisibleChunks.y.start], map->chunks[x][visibleChunks.y.end - 1], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	} else if (lastVisibleChunks.y.start > visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
-			OverrideChunk(map->chunks[x][lastVisibleChunks.y.end - 1], map->chunks[x][visibleChunks.y.start], map, vbo);
+			OverrideChunk(map->chunks[x][lastVisibleChunks.y.end - 1], map->chunks[x][visibleChunks.y.start], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 
 	if (lastVisibleChunks.x.end < visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
-			OverrideChunk(map->chunks[lastVisibleChunks.x.start][y], map->chunks[visibleChunks.x.end - 1][y], map, vbo);
+			OverrideChunk(map->chunks[lastVisibleChunks.x.start][y], map->chunks[visibleChunks.x.end - 1][y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	} else if (lastVisibleChunks.x.end > visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
-			OverrideChunk(map->chunks[lastVisibleChunks.x.end - 1][y], map->chunks[visibleChunks.x.start][y], map, vbo);
+			OverrideChunk(map->chunks[lastVisibleChunks.x.end - 1][y], map->chunks[visibleChunks.x.start][y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 }
 
 void Engine::Render() {
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
 		visibleChunks = map->GetVisibleChunks();
@@ -292,17 +420,30 @@ void Engine::Render() {
 		vao->GetIndexBuffer()->BindSafely();
 		FORGIO_SYNC_GPU();
 	}
+	glClearColor(0, 0, 0, 0);
+
+	{
+		FORGIO_PROFILER_NAMED_SCOPE("Rendering");
+
+			pipeline.colorPass->GetFBO()->Bind();
+			pipeline.colorPass->GetFBO()->Clear();
+				const int amountOfBlocks = visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y;
+				glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+			pipeline.colorPass->GetFBO()->Unbind();
+
+		FORGIO_SYNC_GPU();
+	}
+
+	LightPass();
+	
 
   static Color sky = Color(209, 247, 255, 255.0f) / 255.0f;
 	Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
 	Werwel::GraphicsContext::Clear();
+	
+	Compose();
 
-	{
-		FORGIO_PROFILER_NAMED_SCOPE("Rendering");
-		const int amountOfBlocks = (visibleChunks.x.end - visibleChunks.x.start) * (visibleChunks.y.end - visibleChunks.y.start) * map->GetChunkSize().x * map->GetChunkSize().y;
-		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-		FORGIO_SYNC_GPU();
-	}
+	// ImGui::MyImage("Image", pipeline.lightPass.fbo->GetTexture(), ImVec2(800, 600));
 	
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 

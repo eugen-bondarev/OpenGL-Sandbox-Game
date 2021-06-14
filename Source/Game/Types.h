@@ -21,6 +21,10 @@ using bounds_t = struct __bounds_t {
   inline bool operator<(__bounds_t const& other) const {
     return x < other.x || (x == other.x && y < other.y);
   }
+
+  inline int GetArea() const {
+    return (x.end - x.start) * (y.end - y.start);
+  }
 };
 
 using chunk_t = bounds_t;
