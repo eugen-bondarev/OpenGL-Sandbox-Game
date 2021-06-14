@@ -8,6 +8,9 @@
 
 #include "Renderer/DebugRenderer.h"
 
+#define LINOW_USE_GLM
+#include "Linow/Linow.h"
+
 class Engine {
 public:
 	Engine();
@@ -20,7 +23,7 @@ public:
 	~Engine();
 
 private:
-	Ref<DebugRenderer> debugRenderer;
+	// Ref<DebugRenderer> debugRenderer;
 
 	std::vector<Vec4> blocksData;
 	void PopulateBlockData(bool firstTime);
@@ -33,15 +36,6 @@ private:
 
 	bounds_t lastVisibleChunks;
 	bounds_t visibleChunks;
-	
-	bool leftNew 		{ false };
-	bool leftGone 	{ false };
-	bool rightNew 	{ false };
-	bool rightGone 	{ false };
-	bool topNew 		{ false };
-	bool topGone 		{ false };
-	bool botNew 		{ false };
-	bool botGone 		{ false };
 
 	void OnVisibleChunksChange();
 	Ref<Camera> camera;

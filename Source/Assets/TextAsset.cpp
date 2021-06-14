@@ -8,11 +8,7 @@ TextAsset::TextAsset(const std::string& path) {
 
 void TextAsset::Load(const std::string& path) {
 	std::ifstream file;
-#ifdef FORGIO_ROOT
-	file.open(std::string(FORGIO_ROOT) + path);
-#else
-	file.open(path);
-#endif
+	file.open(FORGIO_ROOT + path);
 
 	while (!file.eof()) {
 		std::string line;

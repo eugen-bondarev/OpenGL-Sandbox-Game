@@ -20,7 +20,8 @@ Engine::Engine() {
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
 
-	debugRenderer = CreateRef<DebugRenderer>();
+	// debugRenderer = CreateRef<DebugRenderer>();
+	Linow::Init(Math::ToPtr(Window::GetSpace()));
 }
 
 void Engine::InitResources() {
@@ -62,7 +63,7 @@ void Engine::InitResources() {
 	int amountOfBlocks = (visibleChunks.x.end - visibleChunks.x.start) * (visibleChunks.y.end - visibleChunks.y.start) * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y;
 
 	vao = CreateRef<Werwel::VAO>();
-	vao->Bind();
+	vao->BindSafely();
 		vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
 		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, amountOfBlocks, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
@@ -95,11 +96,9 @@ void Engine::PopulateBlockData(bool firstTime) {
 						blocksData.emplace_back(i * map->GetBlockSize(), j * map->GetBlockSize(), 1, 0);
 					} else {
 						blocksData.emplace_back(0, 0, 0, 0);
-					// 	size += 1;
 					}
 				}
 			}
-			// we have position and size..
 		}
 	}
 
@@ -117,6 +116,7 @@ void Engine::BeginFrame() {
 	Input::BeginFrame();
 
 	// debugRenderer->ClearLines();
+	Linow::Clear();
 }
 
 void Engine::Control() {
@@ -135,9 +135,16 @@ void Engine::Control() {
 	if (Input::KeyDown(Key::D)) {
 		camera->SetPosition(camera->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 300.0f);
 	}
+
+	// debugRenderer->AddLine(camera->GetPosition(), camera->GetPosition() + Vec2(16, 0), Vec4(0, 0, 1, 1));
+	// debugRenderer->AddLine(camera->GetPosition(), camera->GetPosition() + Vec2(0, 16), Vec4(0, 1, 0, 1));
+
+	Linow::AddQuad(Vec3(camera->GetPosition(), 0.0f), Vec3(camera->GetPosition() + Vec2(100, 100), 0.0f), Color(0, 1, 0, 1));
 }
 
 static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) { 
+	FORGIO_PROFILER_SCOPE();
+
 	const auto& blocks = map->GetBlocks();
 
 	std::vector<Vec4> newBlocks;
@@ -156,9 +163,13 @@ static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map
 
 	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memPos);
 	newChunk.memPos = oldChunk.memPos;
+
+	FORGIO_SYNC_GPU();
 }
 
 void Engine::OnVisibleChunksChange() {
+	FORGIO_PROFILER_SCOPE();
+
 	if (lastVisibleChunks.y.start < visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
 			int oldChunkIndex = lastVisibleChunks.y.start;
@@ -221,19 +232,19 @@ void Engine::Render() {
 		FORGIO_PROFILER_NAMED_SCOPE("Binding");
 		shader->Bind();
 		shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-		tileMap->Bind();
-		vao->Bind();
-		vao->GetIndexBuffer()->Bind();
-		glFinish();
+		tileMap->BindSafely();
+		vao->BindSafely();
+		vao->GetIndexBuffer()->BindSafely();
+		FORGIO_SYNC_GPU();
 	}
 
 	{
-		FORGIO_PROFILER_NAMED_SCOPE("Rendering!");
+		FORGIO_PROFILER_NAMED_SCOPE("Rendering");
 		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
-		glFinish();
+		FORGIO_SYNC_GPU();
 	}
 	
-	debugRenderer->Render(camera->GetViewMatrix());
+	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 
 	ImGui::Begin("Info");
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
@@ -242,12 +253,6 @@ void Engine::Render() {
 	ImGui::Begin("View");
 		ImGui::Text(("x: " + std::to_string(visibleChunks.x.start) + " " + std::to_string(visibleChunks.x.end)).c_str());
 		ImGui::Text(("y: " + std::to_string(visibleChunks.y.start) + " " + std::to_string(visibleChunks.y.end)).c_str());
-
-		ImGui::Text(("Left new: "  + std::string(leftNew ? "true" : "false")).c_str());
-		ImGui::Text(("Left gone: " + std::string(leftGone ? "true" : "false")).c_str());
-		ImGui::Text(("Right new: " + std::string(rightNew ? "true" : "false")).c_str());
-		ImGui::Text(("Right gone: " + std::string(rightGone ? "true" : "false")).c_str());
-		ImGui::Text(("Bot gone: " + std::string(botGone ? "true" : "false")).c_str());
 	ImGui::End();
 }
 

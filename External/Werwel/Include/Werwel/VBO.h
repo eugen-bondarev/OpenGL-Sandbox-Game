@@ -60,6 +60,12 @@ public:
   inline void Bind() const override {
     glBindBuffer(this->type, handle);
   }
+
+  inline void BindSafely() const {
+    if (!IsBound()) {
+      Bind();
+    }
+  }
   
   inline void Unbind() const override {
 	  glBindBuffer(this->type, 0);
@@ -120,6 +126,11 @@ public:
   inline size_t GetSize() const {
     return size;
   }
+
+	inline static VBO const* boundVBO { nullptr };
+	inline bool IsBound() const {
+		return this == boundVBO;
+	}
 
 private:
   std::vector<GLuint> attributes;

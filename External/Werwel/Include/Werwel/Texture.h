@@ -54,6 +54,13 @@ public:
 	void Bind(GLuint unit) const;
 	void Unbind() const override;
 	void Unbind(GLuint unit) const;
+
+	void BindSafely() const;
+
+	inline static Texture const* boundTexture { nullptr };
+	inline bool IsBound() const {
+		return this == boundTexture;
+	}
 	
 private:
 	Size size;

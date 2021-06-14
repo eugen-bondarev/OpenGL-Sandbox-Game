@@ -9,13 +9,18 @@ set(CMAKE_CXX_FLAGS             "/std:c++17 /EHsc")
 project(${PROJECTOR_PROJECT_NAME} VERSION ${PROJECTOR_PROJECT_VERSION})
 
 file(GLOB src 
-    ${PROJECTOR_SRC_DIR_NAME}/*.cpp
-    ${PROJECTOR_SRC_DIR_NAME}/**/*.cpp
-    ${PROJECTOR_SRC_DIR_NAME}/**/**/*.cpp
-    ${PROJECTOR_SRC_DIR_NAME}/**/**/**/*.cpp
-    ${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/*.cpp
-    ${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/**/*.cpp
+	${PROJECTOR_SRC_DIR_NAME}/*.cpp
+	${PROJECTOR_SRC_DIR_NAME}/**/*.cpp
+	${PROJECTOR_SRC_DIR_NAME}/**/**/*.cpp
+	${PROJECTOR_SRC_DIR_NAME}/**/**/**/*.cpp
+	${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/*.cpp
+	${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/**/*.cpp
 )
+
+file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(${PROJECTOR_APP_NAME} ${src})
 
@@ -31,10 +36,6 @@ set(GLEW_INCLUDE_DIR External/glew/include)
 add_subdirectory(External/glew/build/cmake)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${GLEW_INCLUDE_DIR})
 target_link_libraries(${PROJECTOR_APP_NAME} glew_s)
-
-add_subdirectory(External/spdlog)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/spdlog/include)
-target_link_libraries(${PROJECTOR_APP_NAME} spdlog)
 
 add_subdirectory(External/Werwel)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/Werwel/Include)

@@ -1,12 +1,14 @@
 #pragma once
 
-#include <iostream>
+// #define FORGIO_ENABLE_PROFILING
+// #define FORGIO_ENABLE_GPU_SYNC
 
+#include <functional>
+#include <iostream>
 #include <vector>
 #include <memory>
 #include <string>
 #include <array>
-#include <functional>
 #include <map>
 
 #include "Util/Structures.h"
@@ -14,8 +16,6 @@
 #include "Util/Types.h"
 
 #define VOID_ASSEMBLY ((void)0)
-
-#define FORGIO_ENABLE_PROFILING
 
 #ifdef FORGIO_ENABLE_PROFILING
 # include "Instrumentor.h"
@@ -30,17 +30,18 @@
 # define FORGIO_PROFILER_NAMED_SCOPE(NAME)  VOID_ASSEMBLY
 #endif
 
+#ifdef FORGIO_ENABLE_GPU_SYNC
+# define FORGIO_SYNC_GPU()  glFinish()
+#else
+# define FORGIO_SYNC_GPU() VOID_ASSEMBLY
+#endif
+
 #define FORGIO_DEVELOPMENT  0
 #define FORGIO_PRODUCTION   1
 
-#define FORGIO_BUILD_TYPE   FORGIO_DEVELOPMENT
-// #define FORGIO_BUILD_TYPE   FORGIO_PRODUCTION
+#define FORGIO_BUILD_TYPE   FORGIO_PRODUCTION
 
-#if FORGIO_BUILD_TYPE == FORGIO_DEVELOPMENT
-# define FORGIO_ROOT "D:/Dev/Forgio/"
-#else
-# define FORGIO_ROOT ""
-#endif
+inline std::string FORGIO_ROOT;
 
 #ifdef NDEBUG
 # define FORGIO_RELEASE

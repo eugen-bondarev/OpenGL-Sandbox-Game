@@ -28,6 +28,12 @@ public:
 		}
 	}
 
+	inline void BindSafely() const {
+		if (!IsBound()) {
+			Bind();
+		}
+	}
+
 	inline void Unbind() const override {
 		for (int i = attributes.size() - 1; i >= 0; --i) {
 			glDisableVertexAttribArray(attributes[i]);
@@ -73,6 +79,11 @@ public:
 
 	inline const Mem::Ref<VBO>& GetIndexBuffer() const {
 		return indexBuffer;
+	}
+
+	inline static VAO const* boundVAO { nullptr };
+	inline bool IsBound() const {
+		return this == boundVAO;
 	}
 
 private:
