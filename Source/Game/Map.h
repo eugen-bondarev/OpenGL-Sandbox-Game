@@ -16,7 +16,7 @@ struct BlockSettingData {
 
 struct MapChunk {
 	Pos index;
-	int memPos;
+	int memOffset;
 };
 
 class Map {

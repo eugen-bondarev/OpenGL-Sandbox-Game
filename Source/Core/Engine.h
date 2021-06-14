@@ -1,12 +1,16 @@
 #pragma once
 
 #include "Game/World.h"
-#include "Game/Character.h"
+#include "Game/Control/Camera.h"
 
 #include "Renderer/WorldRenderer.h"
 #include "Renderer/Characters/CharacterRenderer.h"
 
 #include "Renderer/DebugRenderer.h"
+
+#include "Werwel/Texture.h"
+#include "Werwel/Shader.h"
+#include "Werwel/VAO.h"
 
 #define LINOW_USE_GLM
 #include "Linow/Linow.h"
@@ -25,7 +29,6 @@ public:
 private:
 	// Ref<DebugRenderer> debugRenderer;
 
-	std::vector<Vec4> blocksData;
 	void PopulateBlockData();
 
 	Ref<Map> map;

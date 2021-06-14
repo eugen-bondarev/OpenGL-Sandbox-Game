@@ -149,6 +149,8 @@ void Engine::InitResources() {
 void Engine::PopulateBlockData() {
 	FORGIO_PROFILER_SCOPE();
 
+	std::vector<Vec4> blocksData;
+
 	const auto& chunks = map->GetVisibleChunks();
 	const auto& blocks = map->GetBlocks();
 
@@ -159,7 +161,7 @@ void Engine::PopulateBlockData() {
 			int firstBlockY = y * map->GetChunkSize().y;
 			int lastBlockY = (y + 1) * map->GetChunkSize().y;
 
-			map->chunks[x][y].memPos = blocksData.size();
+			map->chunks[x][y].memOffset = blocksData.size();
 
 			for (int i = firstBlockX; i < lastBlockX; i++) {
 				for (int j = firstBlockY; j < lastBlockY; j++) {
@@ -210,8 +212,8 @@ static void OverrideChunk(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map,
 		}
 	}
 
-	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memPos);
-	newChunk.memPos = oldChunk.memPos;
+	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memOffset);
+	newChunk.memOffset = oldChunk.memOffset;
 
 	FORGIO_SYNC_GPU();
 }
@@ -239,7 +241,7 @@ void Engine::Control() {
 
 	if (Input::MouseButtonDown(Button::Left)) {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
-		
+
 		if (settingBlock.IsSet()) {
 			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo);
 		}
@@ -251,45 +253,21 @@ void Engine::OnVisibleChunksChange() {
 
 	if (lastVisibleChunks.y.start < visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
-			int oldChunkIndex = lastVisibleChunks.y.start;
-			int newChunkIndex = visibleChunks.y.end - 1;
-
-			auto& oldChunk = map->chunks[x][oldChunkIndex];
-			auto& newChunk = map->chunks[x][newChunkIndex];
-
-			OverrideChunk(oldChunk, newChunk, map, vbo);
+			OverrideChunk(map->chunks[x][lastVisibleChunks.y.start], map->chunks[x][visibleChunks.y.end - 1], map, vbo);
 		}
 	} else if (lastVisibleChunks.y.start > visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
-			int oldChunkIndex = lastVisibleChunks.y.end - 1;
-			int newChunkIndex = visibleChunks.y.start;
-
-			auto& oldChunk = map->chunks[x][oldChunkIndex];
-			auto& newChunk = map->chunks[x][newChunkIndex];
-
-			OverrideChunk(oldChunk, newChunk, map, vbo);
+			OverrideChunk(map->chunks[x][lastVisibleChunks.y.end - 1], map->chunks[x][visibleChunks.y.start], map, vbo);
 		}
 	}
 
 	if (lastVisibleChunks.x.end < visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
-			int oldChunkIndex = lastVisibleChunks.x.start;
-			int newChunkIndex = visibleChunks.x.end - 1;
-
-			auto& oldChunk = map->chunks[oldChunkIndex][y];
-			auto& newChunk = map->chunks[newChunkIndex][y];
-
-			OverrideChunk(oldChunk, newChunk, map, vbo);
+			OverrideChunk(map->chunks[lastVisibleChunks.x.start][y], map->chunks[visibleChunks.x.end - 1][y], map, vbo);
 		}
 	} else if (lastVisibleChunks.x.end > visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
-			int oldChunkIndex = lastVisibleChunks.x.end - 1;
-			int newChunkIndex = visibleChunks.x.start;
-
-			auto& oldChunk = map->chunks[oldChunkIndex][y];
-			auto& newChunk = map->chunks[newChunkIndex][y];
-
-			OverrideChunk(oldChunk, newChunk, map, vbo);
+			OverrideChunk(map->chunks[lastVisibleChunks.x.end - 1][y], map->chunks[visibleChunks.x.start][y], map, vbo);
 		}
 	}
 }
@@ -321,7 +299,8 @@ void Engine::Render() {
 
 	{
 		FORGIO_PROFILER_NAMED_SCOPE("Rendering");
-		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, blocksData.size());
+		const int amountOfBlocks = (visibleChunks.x.end - visibleChunks.x.start) * (visibleChunks.y.end - visibleChunks.y.start) * map->GetChunkSize().x * map->GetChunkSize().y;
+		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
 		FORGIO_SYNC_GPU();
 	}
 	
