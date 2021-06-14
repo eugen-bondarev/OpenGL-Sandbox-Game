@@ -190,7 +190,7 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
-static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) { 
+static void OverrideChunk(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) { 
 	FORGIO_PROFILER_SCOPE();
 
 	const auto& blocks = map->GetBlocks();
@@ -216,6 +216,10 @@ static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map
 	FORGIO_SYNC_GPU();
 }
 
+static void RerenderChunk(MapChunk& chunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) {
+	OverrideChunk(chunk, chunk, map, vbo);
+}
+
 void Engine::Control() {
 	if (Input::KeyDown(Key::W)) {
 		camera->SetPosition(camera->GetPosition() + Vec2(0, 1) * Time::GetDelta() * 300.0f);
@@ -234,18 +238,11 @@ void Engine::Control() {
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
-		Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
-		mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
-		Vec2 mousePosWorldSpace = camera->GetPosition() + mousePos;
-
-		Vec2 chunkPos = mousePosWorldSpace / Vec2(16.0f * 5.0f);
-		Vec2 blockPos = mousePosWorldSpace / Vec2(16.0f);
-
-		blockPos = round(blockPos);
-		chunkPos = blockPos / Vec2(5.0f);
-
-		map->GetBlocks()[blockPos.x][blockPos.y] = BlockType::Empty;
-		OverrideChunks(map->chunks[chunkPos.x][chunkPos.y], map->chunks[chunkPos.x][chunkPos.y], map, vbo);
+		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
+		
+		if (settingBlock.IsSet()) {
+			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo);
+		}
 	}
 }
 
@@ -260,7 +257,7 @@ void Engine::OnVisibleChunksChange() {
 			auto& oldChunk = map->chunks[x][oldChunkIndex];
 			auto& newChunk = map->chunks[x][newChunkIndex];
 
-			OverrideChunks(oldChunk, newChunk, map, vbo);
+			OverrideChunk(oldChunk, newChunk, map, vbo);
 		}
 	} else if (lastVisibleChunks.y.start > visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
@@ -270,7 +267,7 @@ void Engine::OnVisibleChunksChange() {
 			auto& oldChunk = map->chunks[x][oldChunkIndex];
 			auto& newChunk = map->chunks[x][newChunkIndex];
 
-			OverrideChunks(oldChunk, newChunk, map, vbo);
+			OverrideChunk(oldChunk, newChunk, map, vbo);
 		}
 	}
 
@@ -282,7 +279,7 @@ void Engine::OnVisibleChunksChange() {
 			auto& oldChunk = map->chunks[oldChunkIndex][y];
 			auto& newChunk = map->chunks[newChunkIndex][y];
 
-			OverrideChunks(oldChunk, newChunk, map, vbo);
+			OverrideChunk(oldChunk, newChunk, map, vbo);
 		}
 	} else if (lastVisibleChunks.x.end > visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
@@ -292,7 +289,7 @@ void Engine::OnVisibleChunksChange() {
 			auto& oldChunk = map->chunks[oldChunkIndex][y];
 			auto& newChunk = map->chunks[newChunkIndex][y];
 
-			OverrideChunks(oldChunk, newChunk, map, vbo);
+			OverrideChunk(oldChunk, newChunk, map, vbo);
 		}
 	}
 }

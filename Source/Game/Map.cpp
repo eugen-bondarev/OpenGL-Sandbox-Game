@@ -17,8 +17,15 @@ Map::Map(Size chunkSize, Size amountOfChunks, float blockSize) {
 	GenerateMap();
 }
 
-BlockSettingData Map::SetBlock(const Mat4& viewMatrix, BlockType blockType) {
-	const Pos blockPos = WindowCoordsToBlockCoords(Window::GetMousePosition(), Window::GetSpace(), viewMatrix);
+BlockSettingData Map::SetBlock(const Vec2& cameraPosition, BlockType blockType) {	
+	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
+	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
+	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
+
+	Vec2 chunkPos = mousePosWorldSpace / Vec2(GetBlockSize() * GetChunkSize());
+	Vec2 blockPos = mousePosWorldSpace / Vec2(GetBlockSize());
+
+	blockPos = round(blockPos);
 	auto& block = blocks[blockPos.x][blockPos.y];
 
 	BlockSettingData result;
@@ -26,7 +33,7 @@ BlockSettingData Map::SetBlock(const Mat4& viewMatrix, BlockType blockType) {
 		block = blockType;
 
 		result.block = blockPos;
-		result.chunk = WhatChunk(blockPos);
+		result.chunk = blockPos / GetChunkSize();
 	}
 
 	return result;

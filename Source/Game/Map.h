@@ -27,7 +27,7 @@ public:
 
   Map(Size chunkSize, Size amountOfChunks, float blockSize = 16.0f);
 
-	BlockSettingData SetBlock(const Mat4& viewMatrix, BlockType blockType);
+	BlockSettingData SetBlock(const Vec2& viewMatrix, BlockType blockType);
 
 	inline Pos WhatChunk(Pos block) const {
 		int x = static_cast<int>(truncf(block.x / GetChunkSize().x));
