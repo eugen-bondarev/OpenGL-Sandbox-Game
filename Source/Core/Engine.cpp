@@ -24,6 +24,81 @@ Engine::Engine() {
 	Linow::Init(Math::ToPtr(Window::GetSpace()));
 }
 
+static bool TopBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return y < blocks[x].size() - 1 && blocks[x][y + 1] == BlockType::Empty;
+}
+
+static bool LeftBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return x > 0 && blocks[x - 1][y] == BlockType::Empty;
+}
+
+static bool BottomBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return y > 0 && blocks[x][y - 1] == BlockType::Empty;
+}
+
+static bool RightBlockIsEmpty(const blocks_t& blocks, int x, int y) {
+  return x < blocks.size() - 1 && blocks[x + 1][y] == BlockType::Empty;
+}
+
+static Vec2 PickRightAngularTile(const blocks_t& blocks, int x, int y) {
+  #define TOP()     TopBlockIsEmpty(blocks, x, y)
+  #define LEFT()    LeftBlockIsEmpty(blocks, x, y)
+  #define BOTTOM()  BottomBlockIsEmpty(blocks, x, y)
+  #define RIGHT()   RightBlockIsEmpty(blocks, x, y)
+
+  if (TOP() && LEFT() && BOTTOM() && RIGHT())
+    return { 1, 2 };
+
+  if (LEFT() && TOP() && RIGHT())
+    return { -1, 3 };
+
+  if (LEFT() && BOTTOM() && RIGHT())
+    return { -1, 4 };
+
+  if (TOP() && RIGHT() && BOTTOM())
+    return { 0, 3 };
+
+  if (TOP() && LEFT() && BOTTOM())
+    return { 0, 4 };
+
+  if (TOP() && LEFT())
+    return { -1, -1 };
+
+  if (TOP() && RIGHT())
+    return { 1, -1 };
+
+  if (BOTTOM() && LEFT())
+    return { -1, 1 };
+
+  if (BOTTOM() && RIGHT())
+    return { 1, 1 };
+
+  if (TOP() && BOTTOM())
+    return { 0, 2 };
+
+  if (LEFT() && RIGHT())
+    return { -1, 2 };
+
+  if (TOP())
+    return { 0, -1 };
+
+  if (BOTTOM())
+    return { 0, 1 };
+
+  if (LEFT())
+    return { -1, 0 };
+
+  if (RIGHT())
+    return { 1, 0 };
+
+  #undef TOP
+  #undef BOTTOM
+  #undef LEFT
+  #undef RIGHT
+
+  return Vec2(0, 0);
+}
+
 void Engine::InitResources() {
 	FORGIO_PROFILER_SCOPE();
 
@@ -68,32 +143,29 @@ void Engine::InitResources() {
 		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, amountOfBlocks, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
 
-	PopulateBlockData(true);
+	PopulateBlockData();
 }
 
-void Engine::PopulateBlockData(bool firstTime) {
-	FORGIO_PROFILER_NAMED_SCOPE("Building blocks!");
+void Engine::PopulateBlockData() {
+	FORGIO_PROFILER_SCOPE();
 
 	const auto& chunks = map->GetVisibleChunks();
 	const auto& blocks = map->GetBlocks();
 
 	for (int x = chunks.x.start; x < chunks.x.end; x++) {
-		for (int y = chunks.y.start; y < chunks.y.end; y++) {			
-
-			map->chunks[x][y].shown = true;
-
+		for (int y = chunks.y.start; y < chunks.y.end; y++) {
 			int firstBlockX = x * map->GetChunkSize().x;
 			int lastBlockX = (x + 1) * map->GetChunkSize().x;
 			int firstBlockY = y * map->GetChunkSize().y;
 			int lastBlockY = (y + 1) * map->GetChunkSize().y;
 
-			int pos = blocksData.size();
-			map->chunks[x][y].memPos = pos;
+			map->chunks[x][y].memPos = blocksData.size();
 
 			for (int i = firstBlockX; i < lastBlockX; i++) {
 				for (int j = firstBlockY; j < lastBlockY; j++) {
 					if (blocks[i][j] != BlockType::Empty) {
-						blocksData.emplace_back(i * map->GetBlockSize(), j * map->GetBlockSize(), 1, 0);
+						Vec2 tile = Vec2(1, 1) + PickRightAngularTile(blocks, i, j);
+						blocksData.emplace_back(i * map->GetBlockSize(), j * map->GetBlockSize(), tile.x, tile.y);
 					} else {
 						blocksData.emplace_back(0, 0, 0, 0);
 					}
@@ -115,8 +187,33 @@ void Engine::BeginFrame() {
 	Time::BeginFrame();
 	Input::BeginFrame();
 
-	// debugRenderer->ClearLines();
 	Linow::Clear();
+}
+
+static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) { 
+	FORGIO_PROFILER_SCOPE();
+
+	const auto& blocks = map->GetBlocks();
+
+	std::vector<Vec4> newBlocks;
+	bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
+	bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
+
+	for (int x = newChunkBounds.x.start; x < newChunkBounds.x.end; x++) {
+		for (int y = newChunkBounds.y.start; y < newChunkBounds.y.end; y++) {
+			if (blocks[x][y] != BlockType::Empty) {
+				Vec2 tile = Vec2(1, 1) + PickRightAngularTile(blocks, x, y);
+				newBlocks.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
+			} else {
+				newBlocks.emplace_back(0, 0, 0, 0);
+			}
+		}
+	}
+
+	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memPos);
+	newChunk.memPos = oldChunk.memPos;
+
+	FORGIO_SYNC_GPU();
 }
 
 void Engine::Control() {
@@ -136,35 +233,20 @@ void Engine::Control() {
 		camera->SetPosition(camera->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 300.0f);
 	}
 
-	// debugRenderer->AddLine(camera->GetPosition(), camera->GetPosition() + Vec2(16, 0), Vec4(0, 0, 1, 1));
-	// debugRenderer->AddLine(camera->GetPosition(), camera->GetPosition() + Vec2(0, 16), Vec4(0, 1, 0, 1));
+	if (Input::MouseButtonDown(Button::Left)) {
+		Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
+		mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
+		Vec2 mousePosWorldSpace = camera->GetPosition() + mousePos;
 
-	Linow::AddQuad(Vec3(camera->GetPosition(), 0.0f), Vec3(camera->GetPosition() + Vec2(100, 100), 0.0f), Color(0, 1, 0, 1));
-}
+		Vec2 chunkPos = mousePosWorldSpace / Vec2(16.0f * 5.0f);
+		Vec2 blockPos = mousePosWorldSpace / Vec2(16.0f);
 
-static void OverrideChunks(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map, Ref<Werwel::VBO>& vbo) { 
-	FORGIO_PROFILER_SCOPE();
+		blockPos = round(blockPos);
+		chunkPos = blockPos / Vec2(5.0f);
 
-	const auto& blocks = map->GetBlocks();
-
-	std::vector<Vec4> newBlocks;
-	bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
-	bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
-
-	for (int i = newChunkBounds.x.start; i < newChunkBounds.x.end; i++) {
-		for (int j = newChunkBounds.y.start; j < newChunkBounds.y.end; j++) {
-			if (blocks[i][j] != BlockType::Empty) {
-				newBlocks.emplace_back(i * map->GetBlockSize(), j * map->GetBlockSize(), 1, 0);
-			} else {
-				newBlocks.emplace_back(0, 0, 1, 0);
-			}
-		}
+		map->GetBlocks()[blockPos.x][blockPos.y] = BlockType::Empty;
+		OverrideChunks(map->chunks[chunkPos.x][chunkPos.y], map->chunks[chunkPos.x][chunkPos.y], map, vbo);
 	}
-
-	vbo->Update(newBlocks, newBlocks.size(), oldChunk.memPos);
-	newChunk.memPos = oldChunk.memPos;
-
-	FORGIO_SYNC_GPU();
 }
 
 void Engine::OnVisibleChunksChange() {
@@ -216,8 +298,6 @@ void Engine::OnVisibleChunksChange() {
 }
 
 void Engine::Render() {
-	Werwel::GraphicsContext::Clear();
-
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
 		visibleChunks = map->GetVisibleChunks();
@@ -237,6 +317,10 @@ void Engine::Render() {
 		vao->GetIndexBuffer()->BindSafely();
 		FORGIO_SYNC_GPU();
 	}
+
+  static Color sky = Color(209, 247, 255, 255.0f) / 255.0f;
+	Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
+	Werwel::GraphicsContext::Clear();
 
 	{
 		FORGIO_PROFILER_NAMED_SCOPE("Rendering");

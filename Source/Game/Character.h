@@ -1,6 +1,6 @@
 // #pragma once
 
-// #include "../Math/Math.h"
+// #include "../Maths/Maths.h"
 
 // #include "Renderer/DebugRenderer.h"
 // #include "Map.h"

@@ -4,7 +4,7 @@
 
 #include "Assets/ImageAsset.h"
 #include "Assets/TextAsset.h"
-#include "Math/Primitive.h"
+#include "Maths/Primitive.h"
 
 #include "Renderer/Vertex.h"
 #include "Werwel/Texture.h"

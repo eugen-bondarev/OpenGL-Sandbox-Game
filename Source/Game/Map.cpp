@@ -32,35 +32,17 @@ BlockSettingData Map::SetBlock(const Mat4& viewMatrix, BlockType blockType) {
 	return result;
 }
 
-void Map::CalculateVisibleChunks(Pos viewPos) {
-	// const Pos middle = WhatChunk(GetCenter());
-	// const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
-	// const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
-	// const Vec2 offset = (Window::GetSize() / chunkSizeInPixels / 2.0f);
-	// const Vec2 additionalBlocks = Vec2(2.0f);
-	
-	// visibleChunks.x.start = middle.x - offset.x + ceilf((centeredViewPos.x) / chunkSizeInPixels.x) - additionalBlocks.x;
-	// visibleChunks.x.end   = middle.x + offset.x + ceilf((centeredViewPos.x) / chunkSizeInPixels.x);
-	// visibleChunks.y.start = middle.y - offset.y + ceilf((centeredViewPos.y) / chunkSizeInPixels.y) - additionalBlocks.y;
-	// visibleChunks.y.end   = middle.y + offset.y + ceilf((centeredViewPos.y) / chunkSizeInPixels.y);
-
-	// visibleChunks.x.start = std::max(visibleChunks.x.start, 0);
-	// visibleChunks.y.start = std::max(visibleChunks.y.start, 0);
-
-	// visibleChunks.x.end = std::min(visibleChunks.x.end, static_cast<int>(GetAmountOfChunks().x) - 1);
-	// visibleChunks.y.end = std::min(visibleChunks.y.end, static_cast<int>(GetAmountOfChunks().y) - 1);
-
-	
+void Map::CalculateVisibleChunks(Pos viewPos) {	
 	const Pos middle = WhatChunk(GetCenter());
 	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
 	const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
 	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
-	const Vec2 additionalBlocks = Vec2(4.0f); // when map size is 25x25 chunks.
+	const Vec2 additionalBlocks = Vec2(-1.0f); // when map size is 25x25 chunks.
 	
-	visibleChunks.x.start = middle.x - shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) - additionalBlocks.x;
-	visibleChunks.x.end   = middle.x + shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x);
-	visibleChunks.y.start = middle.y - shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) - additionalBlocks.y;
-	visibleChunks.y.end   = middle.y + shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y);
+	visibleChunks.x.start = middle.x - shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x * 3;
+	visibleChunks.x.end   = middle.x + shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x;
+	visibleChunks.y.start = middle.y - shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) + additionalBlocks.y * 3;
+	visibleChunks.y.end   = middle.y + shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) + additionalBlocks.y;
 
 	visibleChunks.x.start = std::max(visibleChunks.x.start, 0);
 	visibleChunks.y.start = std::max(visibleChunks.y.start, 0);

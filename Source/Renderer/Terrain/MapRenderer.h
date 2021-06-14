@@ -15,7 +15,7 @@
 #include "Werwel/Texture.h"
 #include "Werwel/Shader.h"
 
-#include "Math/Math.h"
+#include "Maths/Maths.h"
 
 class MapRenderer {
 public:

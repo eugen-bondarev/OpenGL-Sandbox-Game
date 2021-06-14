@@ -7,8 +7,8 @@
 
 #include "Werwel/GraphicsContext.h"
 
-#include "Math/Math.h"
-#include "Math/Primitive.h"
+#include "Maths/Maths.h"
+#include "Maths/Primitive.h"
 
 LightPass::LightPass(Ref<MapRenderer>& mapRenderer) {  
 	this->mapRenderer = mapRenderer;

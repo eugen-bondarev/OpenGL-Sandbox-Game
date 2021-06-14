@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Werwel/VAO.h"
-#include "Math/Primitive.h"
+#include "Maths/Primitive.h"
 
 #include <memory>
 

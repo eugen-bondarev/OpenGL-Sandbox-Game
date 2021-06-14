@@ -26,7 +26,7 @@ private:
 	// Ref<DebugRenderer> debugRenderer;
 
 	std::vector<Vec4> blocksData;
-	void PopulateBlockData(bool firstTime);
+	void PopulateBlockData();
 
 	Ref<Map> map;
 	Ref<Werwel::Texture> tileMap;

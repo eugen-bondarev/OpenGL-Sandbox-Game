@@ -145,8 +145,7 @@ void Shutdown();
 
 template <typename... Args>
 void AddLine(Args&&... args);
-
-void AddQuad(Vec2 start, Vec2 end, Color color = Color(1.0f, 0.0f, 0.0f, 1.0f));
+void AddQuad(Vec3 start, Vec3 end, Color color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 
 /*
   --------------------- Implementation --------------------- 

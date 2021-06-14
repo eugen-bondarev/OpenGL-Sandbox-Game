@@ -16,10 +16,7 @@ struct BlockSettingData {
 
 struct MapChunk {
 	Pos index;
-
 	int memPos;
-
-	bool shown { false };
 };
 
 class Map {
@@ -80,7 +77,7 @@ public:
 		return blockSize;
 	}
 
-	inline const blocks_t& GetBlocks() const {
+	inline blocks_t& GetBlocks() {
 		return blocks;
 	}
 

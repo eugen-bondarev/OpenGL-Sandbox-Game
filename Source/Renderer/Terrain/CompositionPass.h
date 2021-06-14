@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Math/Primitive.h"
+#include "Maths/Primitive.h"
 
 #include "Werwel/VAO.h"
 #include "Werwel/Shader.h"

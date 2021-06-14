@@ -3,7 +3,7 @@
 // #include "Werwel/Shader.h"
 // #include "Werwel/VAO.h"
 
-// #include "Math/Primitive.h"
+// #include "Maths/Primitive.h"
 
 // #include "Core/Window.h"
 

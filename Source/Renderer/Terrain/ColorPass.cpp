@@ -6,8 +6,8 @@
 
 #include "Werwel/GraphicsContext.h"
 
-#include "Math/Math.h"
-#include "Math/Primitive.h"
+#include "Maths/Maths.h"
+#include "Maths/Primitive.h"
 
 ColorPass::ColorPass(Ref<Map>& map) {
   this->map = map;

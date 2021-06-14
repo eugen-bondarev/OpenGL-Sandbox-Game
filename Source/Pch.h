@@ -24,7 +24,7 @@
 # define FORGIO_PROFILER_SCOPE()            InstrumentationTimer timer(__FUNCSIG__)
 # define FORGIO_PROFILER_NAMED_SCOPE(NAME)  InstrumentationTimer timer(NAME)
 #else
-# define FORGIO_PROFILER_BEGIN()            VOID_ASSEMBLY
+# define FORGIO_PROFILER_BEGIN(NAME)        VOID_ASSEMBLY
 # define FORGIO_PROFILER_END()              VOID_ASSEMBLY
 # define FORGIO_PROFILER_SCOPE()            VOID_ASSEMBLY
 # define FORGIO_PROFILER_NAMED_SCOPE(NAME)  VOID_ASSEMBLY

@@ -3,7 +3,7 @@
 /**
  * Math implementation
  */
-#include "../Math/Math.h"
+#include "../Maths/Maths.h"
 
 using Size = Vec2;
 using Pos  = Vec2;

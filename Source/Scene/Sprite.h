@@ -2,8 +2,8 @@
 
 #include "Assets/ImageAsset.h"
 
-#include "Math/Math.h"
-#include "Math/Primitive.h"
+#include "Maths/Maths.h"
+#include "Maths/Primitive.h"
 
 class Sprite {
 public:

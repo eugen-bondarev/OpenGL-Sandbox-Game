@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Util/Structures.h"
-#include "Math/Math.h"
+#include "Maths/Maths.h"
 
 class Window {
 public:

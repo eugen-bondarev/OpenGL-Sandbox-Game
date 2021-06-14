@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Math/Math.h"
-
 #include <GL/glew.h>
 
 namespace Werwel {
