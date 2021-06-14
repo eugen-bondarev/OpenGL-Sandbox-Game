@@ -106,7 +106,7 @@ void Engine::InitPipeline() {
 }
 
 void Engine::InitColorPass() {
-	pipeline.colorPass = CreateRef<ColorPass>();
+	pipeline.colorPass = CreateRef<ColorPass>(visibleChunks.GetArea() * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y);
 }
 
 void Engine::InitLightPass() {
@@ -157,7 +157,7 @@ void Engine::LightPass() {
 			pipeline.lightPass.lightMesh.vao->Bind();
 			pipeline.lightPass.lightMesh.vao->GetIndexBuffer()->Bind();
 				pipeline.lightPass.lightMesh.texture->Bind();
-					glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, 12000);
+					glDrawElementsInstanced(GL_TRIANGLES, pipeline.colorPass->vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, 12000);
 					
 		pipeline.lightPass.shader->Unbind();
 	pipeline.lightPass.fbo->Unbind();
@@ -204,42 +204,11 @@ void Engine::InitResources() {
 
 	map->CalculateVisibleChunks(camera->GetPosition());
 
-	TextAsset vsCode("Assets/Shaders/Terrain/ColorPassShader.vs");
-	TextAsset fsCode("Assets/Shaders/Terrain/ColorPassShader.fs");
-	shader = CreateRef<Werwel::Shader>(
-		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View"
-	);
-
-	shader->Bind();
-		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-
-	const ImageAsset tileMapTexture("Assets/Images/Map.png");
-	tileMap = CreateRef<Werwel::Texture>(
-		Werwel::Size(tileMapTexture.GetSize().x, tileMapTexture.GetSize().y),
-		tileMapTexture.GetData(),
-		GL_RGBA,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-	);
-	
-	const auto& vers = Primitives::Block::Vertices(16, 16);
-	const auto& inds = Primitives::Block::indices;
-
 	visibleChunks = map->GetVisibleChunks();
 	lastVisibleChunks = visibleChunks;
 
-	int amountOfBlocks = (visibleChunks.x.end - visibleChunks.x.start) * (visibleChunks.y.end - visibleChunks.y.start) * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y;
-
-	vao = CreateRef<Werwel::VAO>();
-	vao->BindSafely();
-		vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
-		vbo = vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, amountOfBlocks, sizeof(Vec4), nullptr, std::vector<Werwel::VertexBufferLayout> { { 4, sizeof(Vec4), 0, 1 } });
-
 	InitPipeline();
+
 	PopulateBlockData();
 }
 
@@ -281,7 +250,7 @@ void Engine::PopulateBlockData() {
 		}
 	}
 
-	vbo->Update(blocksData, blocksData.size());
+	pipeline.colorPass->vbo->Update(blocksData, blocksData.size());
 	pipeline.lightPass.lightMesh.dynamicVBO->Update(lightData, lightData.size());
 }
 
@@ -360,7 +329,7 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
-			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, pipeline.colorPass->vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 
@@ -368,7 +337,7 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
-			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+			RerenderChunk(map->chunks[settingBlock.chunk.x][settingBlock.chunk.y], map, pipeline.colorPass->vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 }
@@ -378,21 +347,21 @@ void Engine::OnVisibleChunksChange() {
 
 	if (lastVisibleChunks.y.start < visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
-			OverrideChunk(map->chunks[x][lastVisibleChunks.y.start], map->chunks[x][visibleChunks.y.end - 1], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+			OverrideChunk(map->chunks[x][lastVisibleChunks.y.start], map->chunks[x][visibleChunks.y.end - 1], map, pipeline.colorPass->vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	} else if (lastVisibleChunks.y.start > visibleChunks.y.start) {
 		for (int x = lastVisibleChunks.x.start; x < lastVisibleChunks.x.end; x++) {
-			OverrideChunk(map->chunks[x][lastVisibleChunks.y.end - 1], map->chunks[x][visibleChunks.y.start], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+			OverrideChunk(map->chunks[x][lastVisibleChunks.y.end - 1], map->chunks[x][visibleChunks.y.start], map, pipeline.colorPass->vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 
 	if (lastVisibleChunks.x.end < visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
-			OverrideChunk(map->chunks[lastVisibleChunks.x.start][y], map->chunks[visibleChunks.x.end - 1][y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+			OverrideChunk(map->chunks[lastVisibleChunks.x.start][y], map->chunks[visibleChunks.x.end - 1][y], map, pipeline.colorPass->vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	} else if (lastVisibleChunks.x.end > visibleChunks.x.end) {
 		for (int y = lastVisibleChunks.y.start; y < lastVisibleChunks.y.end; y++) {
-			OverrideChunk(map->chunks[lastVisibleChunks.x.end - 1][y], map->chunks[visibleChunks.x.start][y], map, vbo, pipeline.lightPass.lightMesh.dynamicVBO);
+			OverrideChunk(map->chunks[lastVisibleChunks.x.end - 1][y], map->chunks[visibleChunks.x.start][y], map, pipeline.colorPass->vbo, pipeline.lightPass.lightMesh.dynamicVBO);
 		}
 	}
 }
@@ -413,11 +382,11 @@ void Engine::Render() {
 
 	{
 		FORGIO_PROFILER_NAMED_SCOPE("Binding");
-		shader->Bind();
-		shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-		tileMap->BindSafely();
-		vao->BindSafely();
-		vao->GetIndexBuffer()->BindSafely();
+		pipeline.colorPass->shader->Bind();
+		pipeline.colorPass->shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+		pipeline.colorPass->tileMap->BindSafely();
+		pipeline.colorPass->vao->BindSafely();
+		pipeline.colorPass->vao->GetIndexBuffer()->BindSafely();
 		FORGIO_SYNC_GPU();
 	}
 	glClearColor(0, 0, 0, 0);
@@ -428,7 +397,7 @@ void Engine::Render() {
 			pipeline.colorPass->GetFBO()->Bind();
 			pipeline.colorPass->GetFBO()->Clear();
 				const int amountOfBlocks = visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y;
-				glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+				glDrawElementsInstanced(GL_TRIANGLES, pipeline.colorPass->vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
 			pipeline.colorPass->GetFBO()->Unbind();
 
 		FORGIO_SYNC_GPU();
