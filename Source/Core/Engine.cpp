@@ -20,7 +20,6 @@ Engine::Engine() {
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
 
-	// debugRenderer = CreateRef<DebugRenderer>();
 	Linow::Init(Math::ToPtr(Window::GetSpace()));
 }
 
@@ -144,7 +143,9 @@ void Engine::InitLightPass() {
 }
 
 void Engine::LightPass() {
-// No culling of back faces
+	/**
+	 * VERY IMPORTANT!
+	 */
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 
 	glClearColor(0, 0, 0, 1);

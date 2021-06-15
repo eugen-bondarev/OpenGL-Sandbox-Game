@@ -60,10 +60,6 @@ private:
 	void Compose();
 
 	Ref<Map> map;
-	// Ref<Werwel::Texture> tileMap;
-	// Ref<Werwel::Shader> shader;
-	// Ref<Werwel::VAO> vao;
-	// Ref<Werwel::VBO> vbo;
 
 	bounds_t lastVisibleChunks;
 	bounds_t visibleChunks;
