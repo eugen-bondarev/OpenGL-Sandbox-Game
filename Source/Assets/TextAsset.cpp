@@ -13,7 +13,7 @@ void TextAsset::Load(const std::string& path) {
 	while (!file.eof()) {
 		std::string line;
 		std::getline(file, line);
-		content.append(line.empty() ? "\n" : line);
+		content.append(line.empty() ? "\n" : line + '\n');
 	}
 
 	file.close();
