@@ -212,6 +212,17 @@ void Engine::InitResources() {
 	PopulateBlockData();
 }
 
+static void ProcessBlock(const Ref<Map>& map, Vec4& block, Vec2& light, int x, int y) {
+	if (map->GetBlocks()[x][y] != BlockType::Empty) {
+		const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetBlocks(), x, y);
+		block = Vec4(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
+	} else {
+		if (map->GetBlocks()[x][y - 1] != BlockType::Empty) {
+			light = Vec2(16 * x, 16 * y);
+		}
+	}
+}
+
 void Engine::PopulateBlockData() {
 	FORGIO_PROFILER_SCOPE();
 
@@ -221,30 +232,21 @@ void Engine::PopulateBlockData() {
 	const auto& chunks = map->GetVisibleChunks();
 	const auto& blocks = map->GetBlocks();
 
-	for (int x = chunks.x.start; x < chunks.x.end; x++) {
-		for (int y = chunks.y.start; y < chunks.y.end; y++) {
-			int firstBlockX = x * map->GetChunkSize().x;
-			int lastBlockX = (x + 1) * map->GetChunkSize().x;
-			int firstBlockY = y * map->GetChunkSize().y;
-			int lastBlockY = (y + 1) * map->GetChunkSize().y;
+	for (int i = chunks.x.start; i < chunks.x.end; i++) {
+		for (int j = chunks.y.start; j < chunks.y.end; j++) {
+			const bounds_t chunk = {
+				{ i * static_cast<int>(map->GetChunkSize().x), (i + 1) * static_cast<int>(map->GetChunkSize().x) },
+				{ j * static_cast<int>(map->GetChunkSize().y), (j + 1) * static_cast<int>(map->GetChunkSize().y) }
+			};
 
-			map->chunks[x][y].colorMemOffset = blocksData.size();
-			map->chunks[x][y].lightMemOffset = lightData.size();
+			map->chunks[i][j].colorMemOffset = blocksData.size();
+			map->chunks[i][j].lightMemOffset = lightData.size();
 
-			for (int i = firstBlockX; i < lastBlockX; i++) {
-				for (int j = firstBlockY; j < lastBlockY; j++) {
-					if (blocks[i][j] != BlockType::Empty) {
-						Vec2 tile = Vec2(1, 1) + PickRightAngularTile(blocks, i, j);
-						blocksData.emplace_back(i * map->GetBlockSize(), j * map->GetBlockSize(), tile.x, tile.y);
-						lightData.emplace_back(0, 0);
-					} else {
-						blocksData.emplace_back(0, 0, 0, 0);
-						if (blocks[i][j - 1] != BlockType::Empty) {
-							lightData.emplace_back(16 * i, 16 * j);
-						} else {
-							lightData.emplace_back(0, 0);
-						}
-					}
+			for (int x = chunk.x.start; x < chunk.x.end; x++) {
+				for (int y = chunk.y.start; y < chunk.y.end; y++) {
+					Vec4& newBlock = blocksData.emplace_back(0);
+					Vec2& newLightBlock = lightData.emplace_back(0);
+					ProcessBlock(map, newBlock, newLightBlock, x, y);
 				}
 			}
 		}
@@ -279,19 +281,9 @@ static void OverrideChunk(MapChunk& oldChunk, MapChunk& newChunk, Ref<Map>& map,
 
 	for (int x = newChunkBounds.x.start; x < newChunkBounds.x.end; x++) {
 		for (int y = newChunkBounds.y.start; y < newChunkBounds.y.end; y++) {
-			if (blocks[x][y] != BlockType::Empty) {
-				Vec2 tile = Vec2(1, 1) + PickRightAngularTile(blocks, x, y);
-				newBlocks.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
-				lightBlocks.emplace_back(0, 0);
-			} else {
-				newBlocks.emplace_back(0, 0, 0, 0);
-
-				if (blocks[x][y - 1] != BlockType::Empty) {
-					lightBlocks.emplace_back(16 * x, 16 * y);
-				} else {
-					lightBlocks.emplace_back(0, 0);
-				}
-			}
+			Vec4& newBlock = newBlocks.emplace_back(0);
+			Vec2& newLightBlock = lightBlocks.emplace_back(0);
+			ProcessBlock(map, newBlock, newLightBlock, x, y);
 		}
 	}
 

@@ -11,8 +11,8 @@ using blocks_t = std::vector<blocks_row_t>;
 using walls_t = blocks_t;
 
 using bounds_t = struct __bounds_t {
-  Period<> x;
-  Period<> y;
+  Period<int> x;
+  Period<int> y;
 
   inline bool operator!=(__bounds_t const& other) const {
     return x.start != other.x.start || x.end != other.x.end || y.start != other.y.start || y.end != other.y.end;
