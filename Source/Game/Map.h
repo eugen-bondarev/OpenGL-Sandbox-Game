@@ -6,38 +6,34 @@
 #include "Types.h"
 
 struct BlockSettingData {
-	Pos block { -1, -1 };
-	Pos chunk { -1, -1 };
+	Vec2 block { -1, -1 };
+	Vec2 chunk { -1, -1 };
 
 	inline bool IsSet() const {
-		return chunk != Pos { -1, -1 };
+		return chunk != Vec2 { -1, -1 };
 	}
 };
 
 struct MapChunk {
-	Pos index;
+	Vec2 index;
 	int colorMemOffset;
 	int lightMemOffset;
 };
 
 class Map {
 public:
-	std::vector<
-		std::vector<MapChunk>
-	> chunks;
-
   Map(Size chunkSize, Size amountOfChunks, float blockSize = 16.0f);
 
 	BlockSettingData SetBlock(const Vec2& viewMatrix, BlockType blockType);
 
-	inline Pos WhatChunk(Pos block) const {
+	inline Vec2 WhatChunk(Vec2 block) const {
 		int x = static_cast<int>(truncf(block.x / GetChunkSize().x));
 		int y = static_cast<int>(truncf(block.y / GetChunkSize().y));
 
 		return { x, y };
 	}
 
-	inline chunk_t WhatBlocks(Pos chunk) const {
+	inline chunk_t WhatBlocks(Vec2 chunk) const {
 		Period<> x { static_cast<int>(chunk.x * GetChunkSize().x), static_cast<int>((chunk.x + 1.0f) * GetChunkSize().x) };
 		Period<> y { static_cast<int>(chunk.y * GetChunkSize().y), static_cast<int>((chunk.y + 1.0f) * GetChunkSize().y) };
 		return { x, y };
@@ -64,11 +60,11 @@ public:
     return amountOfChunks;
   }
 
-	inline Pos GetCenter() const {
+	inline Vec2 GetCenter() const {
 		return amountOfBlocks / 2.0f;
 	}
 
-	void CalculateVisibleChunks(Pos viewPos);
+	void CalculateVisibleChunks(Vec2 viewPos);
 	
 	inline const bounds_t& GetVisibleChunks() const {
 		return visibleChunks;
@@ -94,7 +90,15 @@ public:
 		return walls[x][y] == type;
 	}
 
+	using chunks_row_t = std::vector<MapChunk>;
+	using chunks_t = std::vector<chunks_row_t>;
+
+	inline chunks_t& GetChunks() {
+		return chunks;
+	}
+
 private:
+	chunks_t chunks;
 	blocks_t blocks;
 	walls_t walls;
 

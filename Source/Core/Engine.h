@@ -11,8 +11,7 @@
 #include "Werwel/Shader.h"
 #include "Werwel/VAO.h"
 
-#include "Renderer/ColorPass/ColorPass.h"
-#include "Renderer/LightPass/LightFBO.h"
+#include "Renderer/MapRenderer.h"
 
 #define LINOW_USE_GLM
 #include "Linow/Linow.h"
@@ -31,38 +30,8 @@ public:
 private:
 	void PopulateBlockData();
 
-	struct {
-		Ref<ColorPass> colorPass;
-
-		struct {
-			Ref<LightFBO> fbo;
-			Ref<Werwel::Shader> shader;
-			struct {
-				Ref<Werwel::VAO> vao;
-				Ref<Werwel::Texture> texture;
-				Ref<Werwel::VBO> dynamicVBO;
-			} lightMesh;
-			std::vector<Vec2> lightPositions;
-		} lightPass;
-
-		struct {
-			Ref<Werwel::Shader> shader;
-			Ref<Werwel::VAO> canvas;
-		} compositionPass;
-	} pipeline;
-
-	void InitPipeline();
-	void InitColorPass();
-	void InitLightPass();
-	void InitCompositionPass();
-
-	void LightPass();
-	void Compose();
-
 	Ref<Map> map;
-
-	bounds_t lastVisibleChunks;
-	bounds_t visibleChunks;
+	Ref<MapRenderer> mapRenderer;
 
 	void OnVisibleChunksChange();
 	Ref<Camera> camera;
