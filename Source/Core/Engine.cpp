@@ -7,8 +7,6 @@
 
 #include "Renderer/Entities/RectVao.h"
 
-#include "Util/ImGuiHelper.h"
-
 #include "Werwel/GraphicsContext.h"
 
 Engine::Engine() {
@@ -16,6 +14,7 @@ Engine::Engine() {
 	Gui::Create();
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
+
 	Linow::Init(Math::ToPtr(Window::GetSpace()));
 }
 
@@ -25,7 +24,7 @@ void Engine::InitResources() {
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 	map->CalculateVisibleChunks(camera->GetPosition());
-	mapRenderer = CreateRef<MapRenderer>(map);
+	mapRenderer = CreateRef<MapRenderer>(map, camera);
 }
 
 bool Engine::IsRunning() const {
@@ -38,7 +37,7 @@ void Engine::BeginFrame() {
 	Time::BeginFrame();
 	Input::BeginFrame();
 
-	Linow::Clear();
+	// Linow::Clear();
 }
 
 void Engine::Control() {
@@ -62,20 +61,8 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
-			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 0) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x - 1, settingBlock.chunk.y);
-			}
-			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 4) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x + 1, settingBlock.chunk.y);
-			}
-			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 0) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y - 1);
-			}
-			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 4) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y + 1);
-			}
-
-			mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y);
+			mapRenderer->rerender = true;
+			mapRenderer->chunksUpdated = true;
 		}
 	}
 
@@ -83,34 +70,21 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
-			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 0) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x - 1, settingBlock.chunk.y);
-			}
-			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 4) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x + 1, settingBlock.chunk.y);
-			}
-			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 0) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y - 1);
-			}
-			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 4) {
-				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y + 1);
-			}
-
-			mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y);
+			mapRenderer->rerender = true;
+			mapRenderer->chunksUpdated = true;
 		}
 	}
 }
 
 void Engine::Render() {
-	Werwel::GraphicsContext::ClearColor(0, 0, 0, 0);
-
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
-		mapRenderer->OnVisibleChunksChange();
 		mapRenderer->rerender = true;
 	});
 	
-	mapRenderer->Render(camera);
+	mapRenderer->Render();
+	
+	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 
 	ImGui::Begin("Info");
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
@@ -120,8 +94,6 @@ void Engine::Render() {
 		ImGui::Text(("x: " + std::to_string(mapRenderer->GetVisibleChunks().x.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().x.end)).c_str());
 		ImGui::Text(("y: " + std::to_string(mapRenderer->GetVisibleChunks().y.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().y.end)).c_str());
 	ImGui::End();
-	
-	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 }
 
 void Engine::EndFrame() {

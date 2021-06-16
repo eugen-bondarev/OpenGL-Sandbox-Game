@@ -7,6 +7,8 @@
 
 #include "Maths/Primitive.h"
 
+#include "Werwel/GraphicsContext.h"
+
 ColorPass::ColorPass(int amountOfBlocks) {
   fbo = CreateRef<ColorFBO>(Window::GetSize());
 
@@ -62,21 +64,22 @@ ColorPass::ColorPass(int amountOfBlocks) {
 		);
 }
 
-void ColorPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {
-	glEnable(GL_DEPTH_TEST);
+void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks) {
+	FORGIO_PROFILER_SCOPE();
 
-	fbo->Bind();
+	Werwel::GraphicsContext::ClearColor(0, 0, 0, 0);
+
+	fbo->Bind();	
 	fbo->Clear();
 		shader->Bind();
 		shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-			tileMap->BindSafely();
-				walls.vao->BindSafely();
-				walls.vao->GetIndexBuffer()->BindSafely();	
-					glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-				blocks.vao->BindSafely();
-				blocks.vao->GetIndexBuffer()->BindSafely();			
+			tileMap->Bind();
+				walls.vao->Bind();
+				walls.vao->GetIndexBuffer()->Bind();
+					glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfWalls);
+				blocks.vao->Bind();
+				blocks.vao->GetIndexBuffer()->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-	fbo->Unbind();
 
-	glDisable(GL_DEPTH_TEST);
+	FORGIO_SYNC_GPU();
 }

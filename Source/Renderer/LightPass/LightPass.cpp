@@ -1,11 +1,15 @@
 #include "LightPass.h"
 
+#include "Core/Window.h"
+
 LightPass::LightPass() {
   fbo = CreateRef<LightFBO>(Window::GetSize());
 
   TextAsset vsCode("Assets/Shaders/Terrain/LightPassShader.vs");
   TextAsset fsCode("Assets/Shaders/Terrain/LightPassShader.fs");
   shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View");
+  shader->Bind();
+    shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
     
   const auto& vertices = Primitives::Block::Vertices(200, 200);
   const auto& indices = Primitives::Block::indices;
@@ -60,13 +64,17 @@ void LightPass::Render(int amountOfBlocks) {
   FORGIO_SYNC_GPU();
 }
 
-void LightPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {  
-  FORGIO_PROFILER_SCOPE();
+void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {  
+  FORGIO_PROFILER_SCOPE();  
 
-  Bind(camera);
-  Render(amountOfBlocks);
-          
-    shader->Unbind();
+  fbo->Bind();
+  fbo->Clear();
+    shader->Bind();
+    shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+      lightMesh.vao->Bind();
+      lightMesh.vao->GetIndexBuffer()->Bind();
+        lightMesh.texture->Bind();
+          glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
   fbo->Unbind();
 
   FORGIO_SYNC_GPU();

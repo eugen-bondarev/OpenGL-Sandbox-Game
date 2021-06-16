@@ -26,16 +26,12 @@ void CompositionPass::Perform(const Ref<ColorPass>& colorPass, const Ref<LightPa
   Werwel::GraphicsContext::Clear();
 
   shader->Bind();
-
-  canvas->Bind();
-  canvas->GetIndexBuffer()->Bind();
-
-  colorPass->GetFBO()->GetTexture()->Bind(GL_TEXTURE0);
-  lightPass->GetFBO()->GetTexture()->Bind(GL_TEXTURE0 + 1);
-
-  glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
-
-  glActiveTexture(GL_TEXTURE0);
+    canvas->Bind();
+    canvas->GetIndexBuffer()->Bind();
+      colorPass->fbo->GetTexture()->Bind(GL_TEXTURE0);
+      lightPass->fbo->GetTexture()->Bind(GL_TEXTURE0 + 1);
+        glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+      glActiveTexture(GL_TEXTURE0);
 
   FORGIO_SYNC_GPU();
 }

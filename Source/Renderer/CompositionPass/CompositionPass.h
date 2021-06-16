@@ -14,7 +14,7 @@ public:
   CompositionPass();
   void Perform(const Ref<ColorPass>& colorPass, const Ref<LightPass>& lightPass);
 
-private:
   Ref<Werwel::Shader> shader;
   Ref<Werwel::VAO> canvas;
+private:
 };

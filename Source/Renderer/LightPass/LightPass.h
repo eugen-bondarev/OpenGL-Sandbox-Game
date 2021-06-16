@@ -31,7 +31,6 @@ public:
   void Bind(const Ref<Camera>& camera);
   void Render(int amountOfBlocks);
 
-private:
   Ref<LightFBO> fbo;
   Ref<Werwel::Shader> shader;
   Ref<Werwel::VBO> vbo;
@@ -41,4 +40,5 @@ private:
     Ref<Werwel::Texture> texture;
   } lightMesh;
   std::vector<Vec2> lightPositions;
+private:
 };

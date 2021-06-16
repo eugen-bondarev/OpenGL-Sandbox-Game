@@ -32,7 +32,7 @@ class ColorPass {
 public:
   ColorPass(int amountOfBlocks);
 
-  void Perform(const Ref<Camera>& camera, int amountOfBlocks);
+  void Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks);
 
   inline const Ref<Werwel::VBO>& GetBlocksVBO() const {
     return blocks.vbo;
@@ -46,7 +46,6 @@ public:
     return fbo;
   }
 
-private:
   Ref<ColorFBO> fbo;
   Ref<Werwel::Shader> shader;
 
@@ -61,4 +60,5 @@ private:
   } walls;
 
   Ref<Werwel::Texture> tileMap;
+private:
 };

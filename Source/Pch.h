@@ -1,7 +1,7 @@
 #pragma once
 
-#define FORGIO_ENABLE_PROFILING
-#define FORGIO_ENABLE_GPU_SYNC
+// #define FORGIO_ENABLE_PROFILING
+// #define FORGIO_ENABLE_GPU_SYNC
 
 #include <functional>
 #include <iostream>

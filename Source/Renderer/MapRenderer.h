@@ -9,24 +9,28 @@
 class MapRenderer
 {
 public:
-  MapRenderer(const Ref<Map> &map);
+  MapRenderer(const Ref<Map> &map, const Ref<Camera>& camera);
 
-  void ProcessBlock(BlockData &block, WallData& wallData, Vec2 &light, int x, int y);
-  void PopulateBlockData();
-  void OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk);
-  void RerenderChunk(int chunkIndexI, int chunkIndexJ);
-  void Recalculate();
-  void OnVisibleChunksChange();
+  void RebuildScene();
+  void UpdateScene();
+  void CheckVisibleChunks();
+  void PerformRenderPasses();
+  void Compose();
 
-  void Render(Ref<Camera>& camera);
+  void Render();
 
   inline const bounds_t& GetVisibleChunks() const {
     return visibleChunks;
   }
 
   bool rerender { false };
+  bool chunksUpdated { true };
 
 private:
+  std::vector<BlockData> blocksData;
+  std::vector<WallData> wallsData;
+  std::vector<Vec2> lightData;
+
   struct {
     Ref<ColorPass> colorPass;
     Ref<LightPass> lightPass;
@@ -34,6 +38,7 @@ private:
   } pipeline;
 
   const Ref<Map>& map;
+  const Ref<Camera>& camera;
 
   bounds_t lastVisibleChunks;
   bounds_t visibleChunks;
