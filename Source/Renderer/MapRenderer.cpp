@@ -2,6 +2,8 @@
 
 #include "Tiles.h"
 
+#include <algorithm>
+
 MapRenderer::MapRenderer(const Ref<Map> &map) : map { map } {
 
   visibleChunks = map->GetVisibleChunks();
@@ -49,16 +51,20 @@ void MapRenderer::PopulateBlockData() {
 
       for (int x = chunk.x.start; x < chunk.x.end; x++) {
         for (int y = chunk.y.start; y < chunk.y.end; y++) {
-          Vec4& newBlock = blocksData.emplace_back(0);
-          Vec2& newLightBlock = lightData.emplace_back(0);
+          Vec4& newBlock = blocksData.emplace_back();
+          Vec2& newLightBlock = lightData.emplace_back();
           ProcessBlock(newBlock, newLightBlock, x, y);
         }
       }
     }
   }
 
-  pipeline.colorPass->vbo->Update(blocksData, blocksData.size());
-  pipeline.lightPass->lightMesh.dynamicVBO->Update(lightData, lightData.size());
+  // std::sort(blocksData.begin(), blocksData.end(), [](const BlockData& a, const BlockData& b) -> bool {
+  //   return a.tile.x > b.tile.x;
+  // });
+
+  pipeline.colorPass->GetVBO()->Update(blocksData, blocksData.size());
+  pipeline.lightPass->GetVBO()->Update(lightData, lightData.size());
 }
 
 void MapRenderer::OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk) {
@@ -79,8 +85,8 @@ void MapRenderer::OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk) {
     }
   }
 
-  pipeline.colorPass->vbo->Update(newBlocks, newBlocks.size(), oldChunk.colorMemOffset);
-  pipeline.lightPass->lightMesh.dynamicVBO->Update(lightBlocks, lightBlocks.size(), oldChunk.lightMemOffset);
+  pipeline.colorPass->GetVBO()->Update(newBlocks, newBlocks.size(), oldChunk.colorMemOffset);
+  pipeline.lightPass->GetVBO()->Update(lightBlocks, lightBlocks.size(), oldChunk.lightMemOffset);
 
   newChunk.colorMemOffset = oldChunk.colorMemOffset;
   newChunk.lightMemOffset = oldChunk.lightMemOffset;

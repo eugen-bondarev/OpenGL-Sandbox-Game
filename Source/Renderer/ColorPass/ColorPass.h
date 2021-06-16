@@ -8,35 +8,42 @@
 
 #include "Game/Control/Camera.h"
 
+// struct BlockData {
+//   struct {
+//     float x { 0 }, y { 0 };
+//   } pos;
+
+//   struct {
+//     float x { 0 }, y { 0 };
+//   } tile;
+
+//   BlockData() = default;
+//   BlockData(float posX, float posY, float tileX, float tileY) {
+//     pos.x = posX;
+//     pos.y = posY;
+//     tile.x = tileX;
+//     tile.y = tileY;
+//   }
+// };
+
 class ColorPass {
 public:
   ColorPass(int amountOfBlocks);
-  const Ref<ColorFBO>& GetFBO() const;
 
+  void Perform(const Ref<Camera>& camera, int amountOfBlocks);
+
+  inline const Ref<Werwel::VBO>& GetVBO() const {
+    return vbo;
+  }
+
+  inline const Ref<ColorFBO>& GetFBO() const {
+    return fbo;
+  }
+
+private:
   Ref<ColorFBO> fbo;
   Ref<Werwel::Shader> shader;
   Ref<Werwel::VAO> vao;
   Ref<Werwel::VBO> vbo;
   Ref<Werwel::Texture> tileMap;
-
-  void Perform(const Ref<Camera>& camera, int amountOfBlocks) {
-    {
-      FORGIO_PROFILER_NAMED_SCOPE("Binding");
-      shader->Bind();
-      shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-      tileMap->BindSafely();
-      vao->BindSafely();
-      vao->GetIndexBuffer()->BindSafely();
-      FORGIO_SYNC_GPU();
-    }
-
-    {
-      FORGIO_PROFILER_NAMED_SCOPE("Rendering");
-      fbo->Bind();
-      fbo->Clear();
-      glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-      fbo->Unbind();
-      FORGIO_SYNC_GPU();
-    }
-  }
 };

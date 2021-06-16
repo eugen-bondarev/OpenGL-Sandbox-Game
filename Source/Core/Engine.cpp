@@ -1,14 +1,11 @@
 #include "Engine.h"
 
+#include "Core/Input/Input.h"
 #include "Core/Window.h"
 #include "Core/Time.h"
 #include "Core/Gui.h"
-#include "Core/Input/Input.h"
 
 #include "Renderer/Entities/RectVao.h"
-
-#include "Assets/ImageAsset.h"
-#include "Assets/TextAsset.h"
 
 #include "Util/ImGuiHelper.h"
 
@@ -19,19 +16,15 @@ Engine::Engine() {
 	Gui::Create();
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
-
 	Linow::Init(Math::ToPtr(Window::GetSpace()));
 }
 
 void Engine::InitResources() {
 	FORGIO_PROFILER_SCOPE();
-
 	map = CreateRef<Map>(Size(5, 5), Size(250, 250));
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
-
 	map->CalculateVisibleChunks(camera->GetPosition());
-
 	mapRenderer = CreateRef<MapRenderer>(map);
 }
 
@@ -83,8 +76,7 @@ void Engine::Control() {
 }
 
 void Engine::Render() {
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	Werwel::GraphicsContext::ClearColor(0, 0, 0, 0);
 
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
@@ -92,8 +84,6 @@ void Engine::Render() {
 	});
 	
 	mapRenderer->Render(camera);
-	
-	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 
 	ImGui::Begin("Info");
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
@@ -103,6 +93,8 @@ void Engine::Render() {
 		ImGui::Text(("x: " + std::to_string(mapRenderer->GetVisibleChunks().x.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().x.end)).c_str());
 		ImGui::Text(("y: " + std::to_string(mapRenderer->GetVisibleChunks().y.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().y.end)).c_str());
 	ImGui::End();
+	
+	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 }
 
 void Engine::EndFrame() {
