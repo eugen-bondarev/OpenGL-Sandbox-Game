@@ -63,8 +63,6 @@ ColorPass::ColorPass(int amountOfBlocks) {
 }
 
 void ColorPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {
-  FORGIO_PROFILER_SCOPE();
-
 	glEnable(GL_DEPTH_TEST);
 
 	fbo->Bind();
@@ -81,6 +79,4 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {
 	fbo->Unbind();
 
 	glDisable(GL_DEPTH_TEST);
-
-  FORGIO_SYNC_GPU();
 }

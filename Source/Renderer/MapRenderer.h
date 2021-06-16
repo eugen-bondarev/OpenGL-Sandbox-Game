@@ -24,6 +24,8 @@ public:
     return visibleChunks;
   }
 
+  bool rerender { false };
+
 private:
   struct {
     Ref<ColorPass> colorPass;

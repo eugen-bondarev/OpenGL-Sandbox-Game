@@ -19,7 +19,7 @@ LightPass::LightPass() {
       Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
     );
 
-  ImageAsset lightTexture("Assets/Images/LightMask32.png");
+  ImageAsset lightTexture("Assets/Images/LightMask64.png");
   lightMesh.texture = CreateRef<Werwel::Texture>(
     Werwel::Size { lightTexture.GetSize().x, lightTexture.GetSize().y },
     lightTexture.GetData(),
@@ -36,31 +36,35 @@ LightPass::LightPass() {
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 }
 
+void LightPass::Bind(const Ref<Camera>& camera) {
+  FORGIO_PROFILER_SCOPE();
+
+  glClearColor(0, 0, 0, 1);
+  fbo->Bind();
+  fbo->Clear();
+    shader->Bind();
+    shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+    shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+      lightMesh.vao->Bind();
+      lightMesh.vao->GetIndexBuffer()->Bind();
+        lightMesh.texture->Bind();
+
+  FORGIO_SYNC_GPU();
+}
+
+void LightPass::Render(int amountOfBlocks) {
+  FORGIO_PROFILER_SCOPE();
+
+  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+
+  FORGIO_SYNC_GPU();
+}
+
 void LightPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {  
   FORGIO_PROFILER_SCOPE();
 
-  {
-    FORGIO_PROFILER_NAMED_SCOPE("Binding");
-    glClearColor(0, 0, 0, 1);
-    fbo->Bind();
-    fbo->Clear();
-      shader->Bind();
-      shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-      shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-        lightMesh.vao->Bind();
-        lightMesh.vao->GetIndexBuffer()->Bind();
-          lightMesh.texture->Bind();
-
-    FORGIO_SYNC_GPU();
-  }
-
-  {
-    FORGIO_PROFILER_NAMED_SCOPE("Rendering");
-
-    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-
-    FORGIO_SYNC_GPU();
-  }
+  Bind(camera);
+  Render(amountOfBlocks);
           
     shader->Unbind();
   fbo->Unbind();

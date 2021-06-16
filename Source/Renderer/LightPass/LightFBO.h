@@ -11,8 +11,8 @@ public:
 		attachments[GL_COLOR_ATTACHMENT0] = CreateRef<Werwel::Texture>(
 			Werwel::Size { size.x, size.y },
 			nullptr,
-			GL_RGBA,
-			GL_RGBA,
+			GL_R8,
+			GL_RED,
 			GL_UNSIGNED_BYTE,
 			Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
 			Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }

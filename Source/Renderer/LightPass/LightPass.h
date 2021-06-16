@@ -28,6 +28,9 @@ public:
     return vbo;
   }
 
+  void Bind(const Ref<Camera>& camera);
+  void Render(int amountOfBlocks);
+
 private:
   Ref<LightFBO> fbo;
   Ref<Werwel::Shader> shader;

@@ -107,6 +107,7 @@ void Engine::Render() {
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
 		mapRenderer->OnVisibleChunksChange();
+		mapRenderer->rerender = true;
 	});
 	
 	mapRenderer->Render(camera);
