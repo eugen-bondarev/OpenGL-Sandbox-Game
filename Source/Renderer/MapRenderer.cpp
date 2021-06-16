@@ -64,9 +64,13 @@ void MapRenderer::RebuildScene() {
 
 void MapRenderer::UpdateScene() {
   FORGIO_PROFILER_SCOPE();
-  pipeline.colorPass->blocks.vbo->Update(blocksData, blocksData.size());
-  pipeline.colorPass->walls.vbo->Update(wallsData, wallsData.size());
-  pipeline.lightPass->vbo->Update(lightData, lightData.size());
+  // pipeline.colorPass->blocks.vbo->Update(blocksData, blocksData.size());
+  pipeline.colorPass->blocks.vbo->Store(blocksData);
+  // pipeline.colorPass->walls.vbo->Update(wallsData, wallsData.size());
+  pipeline.colorPass->walls.vbo->Store(wallsData);
+
+  // pipeline.lightPass->vbo->Update(lightData, lightData.size());
+  pipeline.lightPass->vbo->Store(lightData);
   FORGIO_SYNC_GPU();
 }
 
@@ -90,7 +94,7 @@ void MapRenderer::Compose() {
 }
 
 void MapRenderer::Render() {
-  FORGIO_PROFILER_SCOPE();
+  // FORGIO_PROFILER_SCOPE();
 
   CheckVisibleChunks();
 

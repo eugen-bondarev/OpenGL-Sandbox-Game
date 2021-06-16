@@ -26,7 +26,7 @@ LightPass::LightPass() {
     lightMesh.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
     lightMesh.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
     vbo = lightMesh.vao->AddVBO(
-      Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 10000, sizeof(Vec2), nullptr,
+      Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 0, sizeof(Vec2), nullptr,
       Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
     );
 

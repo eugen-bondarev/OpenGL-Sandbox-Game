@@ -37,7 +37,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 		blocks.vbo = blocks.vao->AddVBO(
 			Werwel::VBO::Type::Array, 
 			Werwel::VBO::Usage::Stream, 
-			amountOfBlocks, 
+			0, //amountOfBlocks, 
 			sizeof(Vec4), 
 			nullptr, 
 			std::vector<Werwel::VertexBufferLayout> { 
@@ -52,7 +52,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 		walls.vbo = walls.vao->AddVBO(
 			Werwel::VBO::Type::Array, 
 			Werwel::VBO::Usage::Stream, 
-			amountOfBlocks, 
+			0, //amountOfBlocks, 
 			sizeof(BlockData), 
 			nullptr, 
 			std::vector<Werwel::VertexBufferLayout> { 
