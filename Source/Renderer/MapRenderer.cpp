@@ -16,11 +16,16 @@ MapRenderer::MapRenderer(const Ref<Map> &map) : map { map } {
   PopulateBlockData();
 }
 
-void MapRenderer::ProcessBlock(Vec4 &block, Vec2 &light, int x, int y) {
+void MapRenderer::ProcessBlock(BlockData &block, Vec2 &light, int x, int y) {
   if (map->GetBlocks()[x][y] != BlockType::Empty) {
     const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetBlocks(), x, y);
-    block = Vec4(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
+    block = BlockData(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
   } else {
+    if (map->GetWalls()[x][y] != BlockType::Empty) {
+      const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetWalls(), x, y);
+      block = BlockData(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x + 3, tile.y);
+    }
+
     if (map->GetBlocks()[x][y - 1] != BlockType::Empty) {
       light = Vec2(16 * x, 16 * y);
     }
@@ -33,7 +38,7 @@ void MapRenderer::ProcessBlock(Vec4 &block, Vec2 &light, int x, int y) {
 void MapRenderer::PopulateBlockData() {
   FORGIO_PROFILER_SCOPE();
 
-  std::vector<Vec4> blocksData;
+  std::vector<BlockData> blocksData;
   std::vector<Vec2> lightData;
 
   const auto& chunks = map->GetVisibleChunks();
@@ -51,7 +56,7 @@ void MapRenderer::PopulateBlockData() {
 
       for (int x = chunk.x.start; x < chunk.x.end; x++) {
         for (int y = chunk.y.start; y < chunk.y.end; y++) {
-          Vec4& newBlock = blocksData.emplace_back();
+          BlockData& newBlock = blocksData.emplace_back();
           Vec2& newLightBlock = lightData.emplace_back();
           ProcessBlock(newBlock, newLightBlock, x, y);
         }
@@ -72,14 +77,14 @@ void MapRenderer::OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk) {
 
   const auto &blocks = map->GetBlocks();
 
-  std::vector<Vec4> newBlocks;
+  std::vector<BlockData> newBlocks;
   std::vector<Vec2> lightBlocks;
   bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
   bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
 
   for (int x = newChunkBounds.x.start; x < newChunkBounds.x.end; x++) {
     for (int y = newChunkBounds.y.start; y < newChunkBounds.y.end; y++) {
-      Vec4 &newBlock = newBlocks.emplace_back(0);
+      BlockData &newBlock = newBlocks.emplace_back();
       Vec2 &newLightBlock = lightBlocks.emplace_back(0);
       ProcessBlock(newBlock, newLightBlock, x, y);
     }
