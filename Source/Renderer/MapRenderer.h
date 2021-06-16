@@ -25,6 +25,18 @@ public:
 
   bool rerender { false };
   bool chunksUpdated { true };
+  
+  inline int GetAmountOfRenderedBlocks() const {
+    return blocksData.size();
+  }
+  
+  inline int GetAmountOfRenderedWalls() const {
+    return wallsData.size();
+  }
+  
+  inline int GetAmountOfRenderedLights() const {
+    return lightData.size();
+  }
 
 private:
   std::vector<BlockData> blocksData;

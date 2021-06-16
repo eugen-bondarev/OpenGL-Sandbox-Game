@@ -7,11 +7,18 @@ LightPass::LightPass() {
 
   TextAsset vsCode("Assets/Shaders/Terrain/LightPassShader.vs");
   TextAsset fsCode("Assets/Shaders/Terrain/LightPassShader.fs");
-  shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_Proj", "u_View");
-  shader->Bind();
-    shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+  shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ProjectionView");
     
-  const auto& vertices = Primitives::Block::Vertices(200, 200);
+  /**
+   * Amount of blocks that each light reaches.
+   */
+  float lightBlocks = 3.5f;
+
+  /**
+   * Empirical constant.
+   */
+  const float lightTextureGradientConstant = 1.35f;
+  const auto& vertices = Primitives::Block::Vertices(16 * (lightBlocks * lightTextureGradientConstant) * 2, 16 * (lightBlocks * lightTextureGradientConstant) * 2);
   const auto& indices = Primitives::Block::indices;
 
   lightMesh.vao = CreateRef<Werwel::VAO>();
@@ -23,7 +30,7 @@ LightPass::LightPass() {
       Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
     );
 
-  ImageAsset lightTexture("Assets/Images/LightMask64.png");
+  ImageAsset lightTexture("Assets/Images/LightMask128.png");
   lightMesh.texture = CreateRef<Werwel::Texture>(
     Werwel::Size { lightTexture.GetSize().x, lightTexture.GetSize().y },
     lightTexture.GetData(),
@@ -43,12 +50,13 @@ LightPass::LightPass() {
 void LightPass::Bind(const Ref<Camera>& camera) {
   FORGIO_PROFILER_SCOPE();
 
+	Mat4 projView = Window::GetSpace() * camera->GetViewMatrix();
+
   glClearColor(0, 0, 0, 1);
   fbo->Bind();
   fbo->Clear();
     shader->Bind();
-    shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-    shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+    shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
       lightMesh.vao->Bind();
       lightMesh.vao->GetIndexBuffer()->Bind();
         lightMesh.texture->Bind();
@@ -67,10 +75,12 @@ void LightPass::Render(int amountOfBlocks) {
 void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {  
   FORGIO_PROFILER_SCOPE();  
 
+	Mat4 projView = Window::GetSpace() * camera->GetViewMatrix();
+
   fbo->Bind();
   fbo->Clear();
     shader->Bind();
-    shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+    shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
       lightMesh.vao->Bind();
       lightMesh.vao->GetIndexBuffer()->Bind();
         lightMesh.texture->Bind();

@@ -16,11 +16,8 @@ ColorPass::ColorPass(int amountOfBlocks) {
 	TextAsset fsCode("Assets/Shaders/Terrain/ColorPassShader.fs");
 	shader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View"
+		"u_ProjectionView"
 	);
-
-	shader->Bind();
-		shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 
 	const ImageAsset tileMapTexture("Assets/Images/Map.png");
 	tileMap = CreateRef<Werwel::Texture>(
@@ -69,10 +66,12 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 
 	Werwel::GraphicsContext::ClearColor(0, 0, 0, 0);
 
+	Mat4 projView = Window::GetSpace() * camera->GetViewMatrix();
+
 	fbo->Bind();	
 	fbo->Clear();
 		shader->Bind();
-		shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+		shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
 			tileMap->Bind();
 				walls.vao->Bind();
 				walls.vao->GetIndexBuffer()->Bind();

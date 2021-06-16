@@ -88,6 +88,9 @@ void Engine::Render() {
 
 	ImGui::Begin("Info");
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
+		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
+		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());
+		ImGui::Text(("Lights:" + std::to_string(mapRenderer->GetAmountOfRenderedLights())).c_str());
 	ImGui::End();
 
 	ImGui::Begin("View");
