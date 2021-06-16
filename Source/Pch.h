@@ -1,7 +1,7 @@
 #pragma once
 
-#define FORGIO_ENABLE_PROFILING
-#define FORGIO_ENABLE_GPU_SYNC
+// #define FORGIO_ENABLE_PROFILING
+// #define FORGIO_ENABLE_GPU_SYNC
 
 #include <functional>
 #include <iostream>
@@ -15,7 +15,7 @@
 #include "Util/Memory.h"
 #include "Util/Types.h"
 
-#define VOID_ASSEMBLY ((void)0)
+#define FORGIO_VOID_ASSEMBLY ((void)0)
 
 #ifdef FORGIO_ENABLE_PROFILING
 # include "Instrumentor.h"
@@ -24,16 +24,16 @@
 # define FORGIO_PROFILER_SCOPE()            InstrumentationTimer timer(__FUNCSIG__)
 # define FORGIO_PROFILER_NAMED_SCOPE(NAME)  InstrumentationTimer timer(NAME)
 #else
-# define FORGIO_PROFILER_BEGIN(NAME)        VOID_ASSEMBLY
-# define FORGIO_PROFILER_END()              VOID_ASSEMBLY
-# define FORGIO_PROFILER_SCOPE()            VOID_ASSEMBLY
-# define FORGIO_PROFILER_NAMED_SCOPE(NAME)  VOID_ASSEMBLY
+# define FORGIO_PROFILER_BEGIN(NAME)        FORGIO_VOID_ASSEMBLY
+# define FORGIO_PROFILER_END()              FORGIO_VOID_ASSEMBLY
+# define FORGIO_PROFILER_SCOPE()            FORGIO_VOID_ASSEMBLY
+# define FORGIO_PROFILER_NAMED_SCOPE(NAME)  FORGIO_VOID_ASSEMBLY
 #endif
 
 #ifdef FORGIO_ENABLE_GPU_SYNC
 # define FORGIO_SYNC_GPU()  glFinish()
 #else
-# define FORGIO_SYNC_GPU() VOID_ASSEMBLY
+# define FORGIO_SYNC_GPU() FORGIO_VOID_ASSEMBLY
 #endif
 
 #define FORGIO_DEVELOPMENT  0
@@ -54,5 +54,5 @@ inline std::string FORGIO_ROOT;
 #ifdef FORGIO_DEBUG
 # define DEBUG_LOG_OUT(x) LOG_OUT(x)
 #else
-# define DEBUG_LOG_OUT(x) VOID_ASSEMBLY
+# define DEBUG_LOG_OUT(x) FORGIO_VOID_ASSEMBLY
 #endif
