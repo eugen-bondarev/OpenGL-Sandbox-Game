@@ -22,11 +22,8 @@ ColorPass::ColorPass(int amountOfBlocks) {
 
 	const ImageAsset tileMapTexture("Assets/Images/Map.png");
 	tileMap = CreateRef<Werwel::Texture>(
-		Werwel::Size(tileMapTexture.GetSize().x, tileMapTexture.GetSize().y),
-		tileMapTexture.GetData(),
-		GL_RGBA,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
+		Werwel::Size(tileMapTexture.GetSize().x, tileMapTexture.GetSize().y),tileMapTexture.GetData(),
+		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
@@ -34,12 +31,11 @@ ColorPass::ColorPass(int amountOfBlocks) {
 	const auto& vers = Primitives::Block::Vertices(16, 16);
 	const auto& inds = Primitives::Block::indices;
 
-	vao = CreateRef<Werwel::VAO>();
-	vao->BindSafely();
-		vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-		vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
-		
-		vbo = vao->AddVBO(
+	blocks.vao = CreateRef<Werwel::VAO>();
+	blocks.vao->BindSafely();
+		blocks.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+		blocks.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);		
+		blocks.vbo = blocks.vao->AddVBO(
 			Werwel::VBO::Type::Array, 
 			Werwel::VBO::Usage::Stream, 
 			amountOfBlocks, 
@@ -49,29 +45,42 @@ ColorPass::ColorPass(int amountOfBlocks) {
 				{ 4, sizeof(Vec4), 0, 1 }
 			}
 		);
+
+	walls.vao = CreateRef<Werwel::VAO>();
+	walls.vao->BindSafely();
+		walls.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+		walls.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);		
+		walls.vbo = walls.vao->AddVBO(
+			Werwel::VBO::Type::Array, 
+			Werwel::VBO::Usage::Stream, 
+			amountOfBlocks, 
+			sizeof(BlockData), 
+			nullptr, 
+			std::vector<Werwel::VertexBufferLayout> { 
+				{ 4, sizeof(BlockData), 0, 1 }
+			}
+		);
 }
 
 void ColorPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {
+  FORGIO_PROFILER_SCOPE();
+
 	glEnable(GL_DEPTH_TEST);
 
-	{
-		FORGIO_PROFILER_NAMED_SCOPE("Binding");
+	fbo->Bind();
+	fbo->Clear();
 		shader->Bind();
 		shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-		tileMap->BindSafely();
-		vao->BindSafely();
-		vao->GetIndexBuffer()->BindSafely();
-		FORGIO_SYNC_GPU();
-	}
-
-	{
-		FORGIO_PROFILER_NAMED_SCOPE("Rendering");
-		fbo->Bind();
-		fbo->Clear();
-		glDrawElementsInstanced(GL_TRIANGLES, vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-		fbo->Unbind();
-		FORGIO_SYNC_GPU();
-	}
+			tileMap->BindSafely();
+				walls.vao->BindSafely();
+				walls.vao->GetIndexBuffer()->BindSafely();	
+					glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+				blocks.vao->BindSafely();
+				blocks.vao->GetIndexBuffer()->BindSafely();			
+					glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+	fbo->Unbind();
 
 	glDisable(GL_DEPTH_TEST);
+
+  FORGIO_SYNC_GPU();
 }

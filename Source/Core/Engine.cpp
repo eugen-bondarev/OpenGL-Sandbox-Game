@@ -62,6 +62,19 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
+			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 0) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x - 1, settingBlock.chunk.y);
+			}
+			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 4) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x + 1, settingBlock.chunk.y);
+			}
+			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 0) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y - 1);
+			}
+			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 4) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y + 1);
+			}
+
 			mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y);
 		}
 	}
@@ -70,6 +83,19 @@ void Engine::Control() {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
+			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 0) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x - 1, settingBlock.chunk.y);
+			}
+			if (static_cast<int>(settingBlock.block.x) % static_cast<int>(map->GetChunkSize().x) == 4) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x + 1, settingBlock.chunk.y);
+			}
+			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 0) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y - 1);
+			}
+			if (static_cast<int>(settingBlock.block.y) % static_cast<int>(map->GetChunkSize().y) == 4) {
+				mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y + 1);
+			}
+
 			mapRenderer->RerenderChunk(settingBlock.chunk.x, settingBlock.chunk.y);
 		}
 	}

@@ -16,20 +16,27 @@ MapRenderer::MapRenderer(const Ref<Map> &map) : map { map } {
   PopulateBlockData();
 }
 
-void MapRenderer::ProcessBlock(BlockData &block, Vec2 &light, int x, int y) {
-  if (map->GetBlocks()[x][y] != BlockType::Empty) {
+void MapRenderer::ProcessBlock(BlockData &block, WallData& wallData, Vec2 &light, int x, int y) {
+  static int offset = -4;
+
+  if (!map->BlockIsEmpty(x, y)) {
     const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetBlocks(), x, y);
     block = BlockData(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
+
+    if ((map->BlockIsEmpty(x, y - 1) && !map->WallIsEmpty(x, y - 1))
+    ||  (map->BlockIsEmpty(x - 1, y) && !map->WallIsEmpty(x - 1, y))
+    ||  (map->BlockIsEmpty(x - 1, y - 1) && !map->WallIsEmpty(x - 1, y - 1))
+    ) {
+      const Vec2 tile = Vec2(4, 1) + PickRightAngularTile(map->GetWalls(), x, y);
+      wallData = WallData(x * map->GetBlockSize() + offset, (y) * map->GetBlockSize() + offset, tile.x, tile.y);
+    }
   } else {
-    if (map->GetWalls()[x][y] != BlockType::Empty) {
-      const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetWalls(), x, y);
-      block = BlockData(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x + 3, tile.y);
+    if (!map->WallIsEmpty(x, y)) {
+      const Vec2 tile = Vec2(4, 1) + PickRightAngularTile(map->GetWalls(), x, y);
+      wallData = BlockData(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
     }
 
-    if (map->GetBlocks()[x][y - 1] != BlockType::Empty) {
-      light = Vec2(16 * x, 16 * y);
-    }
-    if (map->GetBlocks()[x][y + 1] != BlockType::Empty) {
+    if (map->BlockIsEmpty(x, y - 1)) {
       light = Vec2(16 * x, 16 * y);
     }
   }
@@ -39,10 +46,13 @@ void MapRenderer::PopulateBlockData() {
   FORGIO_PROFILER_SCOPE();
 
   std::vector<BlockData> blocksData;
+  std::vector<WallData> wallsData;
   std::vector<Vec2> lightData;
 
   const auto& chunks = map->GetVisibleChunks();
   const auto& blocks = map->GetBlocks();
+
+  int lights = 0;
 
   for (int i = chunks.x.start; i < chunks.x.end; i++) {
     for (int j = chunks.y.start; j < chunks.y.end; j++) {
@@ -52,23 +62,31 @@ void MapRenderer::PopulateBlockData() {
       };
 
       map->GetChunks()[i][j].colorMemOffset = blocksData.size();
+      map->GetChunks()[i][j].wallMemOffset = wallsData.size();
       map->GetChunks()[i][j].lightMemOffset = lightData.size();
 
       for (int x = chunk.x.start; x < chunk.x.end; x++) {
         for (int y = chunk.y.start; y < chunk.y.end; y++) {
           BlockData& newBlock = blocksData.emplace_back();
-          Vec2& newLightBlock = lightData.emplace_back();
-          ProcessBlock(newBlock, newLightBlock, x, y);
+          WallData& newWall = wallsData.emplace_back();
+          Vec2& newLightBlock = lightData.emplace_back(0);
+          ProcessBlock(newBlock, newWall, newLightBlock, x, y);
+          if (newLightBlock.x != 0 && newLightBlock.y != 0) {
+            lights += 1;
+          }
         }
       }
     }
   }
 
+  LOG_OUT(lights);
+
   // std::sort(blocksData.begin(), blocksData.end(), [](const BlockData& a, const BlockData& b) -> bool {
   //   return a.tile.x > b.tile.x;
   // });
 
-  pipeline.colorPass->GetVBO()->Update(blocksData, blocksData.size());
+  pipeline.colorPass->GetBlocksVBO()->Update(blocksData, blocksData.size());
+  pipeline.colorPass->GetWallsVBO()->Update(wallsData, wallsData.size());
   pipeline.lightPass->GetVBO()->Update(lightData, lightData.size());
 }
 
@@ -78,6 +96,7 @@ void MapRenderer::OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk) {
   const auto &blocks = map->GetBlocks();
 
   std::vector<BlockData> newBlocks;
+  std::vector<WallData> newWalls;
   std::vector<Vec2> lightBlocks;
   bounds_t oldChunkBounds = map->WhatBlocks(oldChunk.index);
   bounds_t newChunkBounds = map->WhatBlocks(newChunk.index);
@@ -85,15 +104,18 @@ void MapRenderer::OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk) {
   for (int x = newChunkBounds.x.start; x < newChunkBounds.x.end; x++) {
     for (int y = newChunkBounds.y.start; y < newChunkBounds.y.end; y++) {
       BlockData &newBlock = newBlocks.emplace_back();
+      WallData &newWall = newWalls.emplace_back();
       Vec2 &newLightBlock = lightBlocks.emplace_back(0);
-      ProcessBlock(newBlock, newLightBlock, x, y);
+      ProcessBlock(newBlock, newWall, newLightBlock, x, y);
     }
   }
 
-  pipeline.colorPass->GetVBO()->Update(newBlocks, newBlocks.size(), oldChunk.colorMemOffset);
+  pipeline.colorPass->GetBlocksVBO()->Update(newBlocks, newBlocks.size(), oldChunk.colorMemOffset);
+  pipeline.colorPass->GetWallsVBO()->Update(newWalls, newWalls.size(), oldChunk.wallMemOffset);
   pipeline.lightPass->GetVBO()->Update(lightBlocks, lightBlocks.size(), oldChunk.lightMemOffset);
 
   newChunk.colorMemOffset = oldChunk.colorMemOffset;
+  newChunk.wallMemOffset = oldChunk.wallMemOffset;
   newChunk.lightMemOffset = oldChunk.lightMemOffset;
 
   FORGIO_SYNC_GPU();
@@ -138,7 +160,11 @@ void MapRenderer::OnVisibleChunksChange() {
 }
 
 void MapRenderer::Render(Ref<Camera>& camera) {
+  FORGIO_PROFILER_SCOPE();
+
 	pipeline.colorPass->Perform(camera, visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y);
 	pipeline.lightPass->Perform(camera, visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y);
 	pipeline.compositionPass->Perform(pipeline.colorPass, pipeline.lightPass);
+
+  FORGIO_SYNC_GPU();
 }

@@ -26,14 +26,20 @@ struct BlockData {
   }
 };
 
+using WallData = BlockData;
+
 class ColorPass {
 public:
   ColorPass(int amountOfBlocks);
 
   void Perform(const Ref<Camera>& camera, int amountOfBlocks);
 
-  inline const Ref<Werwel::VBO>& GetVBO() const {
-    return vbo;
+  inline const Ref<Werwel::VBO>& GetBlocksVBO() const {
+    return blocks.vbo;
+  }
+
+  inline const Ref<Werwel::VBO>& GetWallsVBO() const {
+    return walls.vbo;
   }
 
   inline const Ref<ColorFBO>& GetFBO() const {
@@ -43,7 +49,16 @@ public:
 private:
   Ref<ColorFBO> fbo;
   Ref<Werwel::Shader> shader;
-  Ref<Werwel::VAO> vao;
-  Ref<Werwel::VBO> vbo;
+
+  struct {
+    Ref<Werwel::VAO> vao;
+    Ref<Werwel::VBO> vbo;
+  } blocks;
+
+  struct {
+    Ref<Werwel::VAO> vao;
+    Ref<Werwel::VBO> vbo;    
+  } walls;
+
   Ref<Werwel::Texture> tileMap;
 };

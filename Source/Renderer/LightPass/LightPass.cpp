@@ -36,19 +36,34 @@ LightPass::LightPass() {
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 }
 
-void LightPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {    
-  glClearColor(0, 0, 0, 1);
+void LightPass::Perform(const Ref<Camera>& camera, int amountOfBlocks) {  
+  FORGIO_PROFILER_SCOPE();
 
-  fbo->Bind();
-  fbo->Clear();
-    shader->Bind();
-    shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-    shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
-      lightMesh.vao->Bind();
-      lightMesh.vao->GetIndexBuffer()->Bind();
-        lightMesh.texture->Bind();
-          glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+  {
+    FORGIO_PROFILER_NAMED_SCOPE("Binding");
+    glClearColor(0, 0, 0, 1);
+    fbo->Bind();
+    fbo->Clear();
+      shader->Bind();
+      shader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+      shader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+        lightMesh.vao->Bind();
+        lightMesh.vao->GetIndexBuffer()->Bind();
+          lightMesh.texture->Bind();
+
+    FORGIO_SYNC_GPU();
+  }
+
+  {
+    FORGIO_PROFILER_NAMED_SCOPE("Rendering");
+
+    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, amountOfBlocks);
+
+    FORGIO_SYNC_GPU();
+  }
           
     shader->Unbind();
   fbo->Unbind();
+
+  FORGIO_SYNC_GPU();
 }

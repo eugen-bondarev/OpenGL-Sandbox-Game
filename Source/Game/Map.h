@@ -17,6 +17,7 @@ struct BlockSettingData {
 struct MapChunk {
 	Vec2 index;
 	int colorMemOffset;
+	int wallMemOffset;
 	int lightMemOffset;
 };
 
@@ -89,6 +90,14 @@ public:
 	inline bool WallIs(int x, int y, WallType type) const {
 		return walls[x][y] == type;
 	}
+
+  inline bool BlockIsEmpty(int x, int y) const {
+    return BlockIs(x, y, BlockType::Empty);
+  }
+
+  inline bool WallIsEmpty(int x, int y) const {
+    return WallIs(x, y, WallType::Empty);
+  }
 
 	using chunks_row_t = std::vector<MapChunk>;
 	using chunks_t = std::vector<chunks_row_t>;

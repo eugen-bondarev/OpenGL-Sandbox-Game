@@ -11,7 +11,7 @@ class MapRenderer
 public:
   MapRenderer(const Ref<Map> &map);
 
-  void ProcessBlock(BlockData &block, Vec2 &light, int x, int y);
+  void ProcessBlock(BlockData &block, WallData& wallData, Vec2 &light, int x, int y);
   void PopulateBlockData();
   void OverrideChunk(MapChunk &oldChunk, MapChunk &newChunk);
   void RerenderChunk(int chunkIndexI, int chunkIndexJ);
