@@ -15,7 +15,7 @@ Engine::Engine() {
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
 
-	Linow::Init(Math::ToPtr(Window::GetSpace()));
+	Linow::Init();
 }
 
 void Engine::InitResources() {
@@ -25,6 +25,10 @@ void Engine::InitResources() {
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 	map->CalculateVisibleChunks(camera->GetPosition());
 	mapRenderer = CreateRef<MapRenderer>(map, camera);
+
+	character = CreateRef<Character>();
+	character->SetPosition(camera->GetPosition() + Vec2(0, 15.0f));
+	characterRenderer = CreateRef<CharacterRenderer>();
 }
 
 bool Engine::IsRunning() const {
@@ -37,7 +41,7 @@ void Engine::BeginFrame() {
 	Time::BeginFrame();
 	Input::BeginFrame();
 
-	// Linow::Clear();
+	Linow::Clear();
 }
 
 void Engine::Control() {
@@ -56,6 +60,8 @@ void Engine::Control() {
 	if (Input::KeyDown(Key::D)) {
 		camera->SetPosition(camera->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 300.0f);
 	}
+
+	camera->SetPosition(character->GetPosition());
 
 	if (Input::MouseButtonDown(Button::Left)) {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
@@ -83,6 +89,11 @@ void Engine::Render() {
 	});
 	
 	mapRenderer->Render();
+
+	characterRenderer->Render({ character }, camera);
+
+	character->Update(Time::GetDelta());
+	character->CheckCollisions(map, camera);
 	
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 

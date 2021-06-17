@@ -5,13 +5,14 @@
 
 #include "Renderer/Characters/CharacterRenderer.h"
 
-#include "Renderer/DebugRenderer.h"
-
 #include "Werwel/Texture.h"
 #include "Werwel/Shader.h"
 #include "Werwel/VAO.h"
 
 #include "Renderer/MapRenderer.h"
+
+#include "Game/Character.h"
+#include "Renderer/Characters/CharacterRenderer.h"
 
 #define LINOW_USE_GLM
 #include "Linow/Linow.h"
@@ -32,6 +33,9 @@ private:
 
 	Ref<Map> map;
 	Ref<MapRenderer> mapRenderer;
+
+	Ref<Character> character;
+	Ref<CharacterRenderer> characterRenderer;
 
 	void OnVisibleChunksChange();
 	Ref<Camera> camera;
