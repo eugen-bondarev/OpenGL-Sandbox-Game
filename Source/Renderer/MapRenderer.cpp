@@ -83,8 +83,9 @@ void MapRenderer::CheckVisibleChunks() {
   }
 }
 
-void MapRenderer::PerformRenderPasses() {
+void MapRenderer::PerformRenderPasses(std::function<void()> AddToFBO) {
   pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size());
+  AddToFBO();
   pipeline.lightPass->Perform(camera, lightData.size());
 
 }
@@ -93,9 +94,7 @@ void MapRenderer::Compose() {
   pipeline.compositionPass->Perform(pipeline.colorPass, pipeline.lightPass);
 }
 
-void MapRenderer::Render() {
-  // FORGIO_PROFILER_SCOPE();
-
+void MapRenderer::Render(std::function<void()> AddToFBO) {
   CheckVisibleChunks();
 
   if (rerender) {
@@ -104,7 +103,7 @@ void MapRenderer::Render() {
       chunksUpdated = false; 
     }
     UpdateScene();    
-    PerformRenderPasses();
+    PerformRenderPasses(AddToFBO);
   }  
   Compose();
 

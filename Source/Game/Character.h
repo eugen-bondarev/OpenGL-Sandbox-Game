@@ -5,6 +5,8 @@
 #include "Map.h"
 #include "Control/Camera.h"
 
+#include "Core/Time.h"
+
 #define LINOW_USE_GLM
 #include "Linow/Linow.h"
 
@@ -27,6 +29,11 @@ public:
     CalculateModelMatrix();
   }
 
+  inline void SetPositionX(float x) {
+    position.x = x;
+    CalculateModelMatrix();
+  }
+
   template <typename... Args>
   inline void AddPosition(Args... args) {
     Vec2 delta = Vec2(std::forward<Args>(args)...);
@@ -37,22 +44,24 @@ public:
     return modelMatrix;
   }
 
+  inline static float factor = 150.0f;
   void Update(float deltaTime) {
+
     if (!onGround) {
-      SetPosition(position + Vec2(0.0f, deltaTime) * acceleration);
-      acceleration += -Physics::g;
+      SetPosition(position + velocity * Vec2(0, 1) * deltaTime);
+      velocity += -Physics::g * deltaTime * factor;
 
       if (ceiling) {
-        acceleration = 0;
+        velocity = Vec2(0.0f);
         ceiling = false;
       }
     } else {
-      acceleration = 0;
+      velocity = Vec2(0.0f);
     }
   }
 
   inline void Jump() {
-    acceleration = 320.0f;
+    velocity = Vec2(0.0f, 4.0f * factor);
     onGround = false;
   }
 
@@ -60,67 +69,49 @@ public:
 		Ref<Map>& map,
 		Ref<Camera>& camera
   ) {
-		// CanMoveLeft(CheckCollision(
-		// 	map,
-		// 	camera,
-		// 	Vec2(0, 1), 
-		// 	Vec2(0, 1),
-		// 	Vec2(0),
-		// 	Vec2(0.0f, 0.0f),
-		// 	4,
-		// 	8.0f,
-		// 	true
-		// ));
-		
-		// CanMoveRight(CheckCollision(
-		// 	map,
-		// 	camera,
-		// 	Vec2(0, 1), 
-		// 	Vec2(3, 1),
-		// 	Vec2(3, 0),
-		// 	Vec2(0.0f, 0.0f),
-		// 	4,
-		// 	8.0f,
-		// 	false
-		// ));
+    static float shiftY = 4.0f;
+    if (onGround)    
+      SetPositionY((roundf(position.y / 16.0f)) * 16.0f + shiftY);
 
-		OnGround(!CheckCollision( 
-			map,
-			camera,
-			Vec2(1, 0), 
-			Vec2(1, 0),
-			Vec2(0),
-			Vec2(0.0f, -4.0f),
-			2,
-			0.0f,
-			true
-		));
+		Vec2 block = map->WindowCoordsToBlockCoords(camera->GetPositionOnScreen(GetPosition()), Window::GetSpace(), camera->GetViewMatrix());
+		block.x = static_cast<int>(block.x);
+		block.y = static_cast<int>(block.y);
+		auto charBlock = (block - map->GetChunkSize() / 2.0f) * map->GetBlockSize();
+    auto current = charBlock + Vec2(1, 0) * map->GetBlockSize();
 
-		// Ceiling(!CheckCollision( 
-		// 	map,
-		// 	camera,
-		// 	Vec2(1, 0), 
-		// 	Vec2(1, 4),
-		// 	Vec2(0, 3),
-		// 	Vec2(0.0f, -4.0f),
-		// 	2,
-		// 	0.0f,
-		// 	true
-		// ));
+    const auto& blocks = map->GetBlocks();
+    const auto& coord = current / 16.0f + Vec2(1, 0);
+
+		onGround = false;    
+		for (int i = 0; i < 2; i++) {
+			Vec2 blockPos = coord * 16.0f;
+			Linow::AddQuad(
+				Vec3((blockPos) + Vec2(16.0f * (i - 1), 0.0f), 0.0f), 
+				Vec3((blockPos) + Vec2(16.0f * (i - 1), 0.0f) + map->GetBlockSize(), 0.0f)
+			);
+
+			if (blocks[coord.x + i][coord.y + 1] != BlockType::Empty) {
+				onGround = true;
+				break;
+			}
+		}
+
+		static float offset = 9.0f;
+    static float offsetY = 4.0f;
+
+    static float lineWidth = 1.0f;
+		Vec2 colliderTopLeft(GetPosition() + Vec2(offset - lineWidth, 4 * 16 + offsetY - lineWidth));
+		Vec2 colliderBotRight(GetPosition() + Vec2(3 * 16 - (offset - lineWidth), offsetY - lineWidth));
+
+		Linow::AddQuad(
+			Vec3(colliderTopLeft, 0),
+			Vec3(colliderBotRight, 0)
+		);
   }
 
 	bool CheckCollision(
 		Ref<Map>& map,
-		Ref<Camera>& camera,
-
-		Vec2 affect,
-		Vec2 check,
-		Vec2 characterSize,
-		Vec2 correction,
-
-		int times,
-		float leaveSpace,
-		bool reverse
+		Ref<Camera>& camera
 	) {		
 		Vec2 block = map->WindowCoordsToBlockCoords(camera->GetPositionOnScreen(GetPosition()), Window::GetSpace(), camera->GetViewMatrix());
 		block.x = static_cast<int>(block.x);
@@ -128,56 +119,25 @@ public:
 		auto charBlock = (block - map->GetChunkSize() / 2.0f) * map->GetBlockSize();
     auto current = charBlock + Vec2(1, 0) * map->GetBlockSize();
 
-    Linow::AddQuad(
-      Vec3(current, 0.0f), 
-      Vec3(current + map->GetBlockSize(), 0.0f)
-    );
-
     const auto& blocks = map->GetBlocks();
     const auto& coord = current / 16.0f + Vec2(1, 0);
+
+		bool blocksDown = true;
     
-    if (blocks[coord.x][coord.y + 1] != BlockType::Empty) {
-      return false;
-    }
+		for (int i = 0; i < 2; i++) {
+			Vec2 blockPos = coord * 16.0f;
+			Linow::AddQuad(
+				Vec3((blockPos) + Vec2(16.0f * (i - 1), 0.0f), 0.0f), 
+				Vec3((blockPos) + Vec2(16.0f * (i - 1), 0.0f) + map->GetBlockSize(), 0.0f)
+			);
 
-    return true;
+			if (blocks[coord.x + i][coord.y + 1] != BlockType::Empty) {
+				blocksDown = false;
+				break;
+			}
+		}
 
-		// characterSize *= map->GetBlockSize();
-
-
-		// for (int i = 0; i < times; ++i) {
-		// 	auto currentBlock = charBlock + Vec2(check.x, check.y) * map->GetBlockSize() + affect * static_cast<float>(i) * map->GetBlockSize();
-
-    //   Linow::AddQuad(
-    //     Vec3(currentBlock, 0.0f), 
-    //     Vec3(currentBlock + map->GetBlockSize(), 0.0f)
-    //   );
-
-		// 	const auto& blocks = map->GetBlocks();
-
-		// 	bool positionalCondition;
-		// 	if (affect.x) {
-		// 		positionalCondition = reverse ? (GetPosition().y + leaveSpace + characterSize.y < currentBlock.y + map->GetBlockSize()) : (GetPosition().y + leaveSpace + characterSize.y > currentBlock.y + map->GetBlockSize());
-		// 	} else if (affect.y) {
-		// 		positionalCondition = reverse ? (GetPosition().x + leaveSpace + characterSize.x < currentBlock.x + map->GetBlockSize()) : (GetPosition().x + leaveSpace + characterSize.x > currentBlock.x + map->GetBlockSize());
-		// 	}
-
-		// 	if (positionalCondition && blocks[block.x + check.x + affect.x * i][block.y + check.y + affect.y * i] != BlockType::Empty) {
-		// 		if (correction.x) {
-		// 			SetPosition((currentBlock + map->GetBlockSize() - leaveSpace + correction.x - characterSize.x).x, GetPosition().y);
-		// 		} else if (correction.y) {
-		// 			if (!characterSize.y) {
-		// 				SetPosition(GetPosition().x, (currentBlock + map->GetBlockSize() - leaveSpace + correction.y).y);
-		// 			} else {
-		// 				SetPosition(GetPosition().x, (currentBlock - map->GetBlockSize() - leaveSpace + correction.y - characterSize.y).y);
-		// 			}
-		// 		}
-		// 		return false;
-		// 	}
-		// }
-
-		// return true;
-    return false;
+    return blocksDown;
 	}
 
   inline void Ceiling(bool value) { ceiling = value; }
@@ -196,7 +156,7 @@ private:
   bool canMoveLeft  { true };
   bool canMoveRight { true };
 
-  float acceleration { 0 };
+  Vec2 velocity { 0 };
 
   Vec2 position;
   Mat4 modelMatrix;

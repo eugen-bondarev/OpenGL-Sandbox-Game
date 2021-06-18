@@ -27,7 +27,7 @@ void Engine::InitResources() {
 	mapRenderer = CreateRef<MapRenderer>(map, camera);
 
 	character = CreateRef<Character>();
-	character->SetPosition(camera->GetPosition() + Vec2(0, 15.0f));
+	character->SetPosition(camera->GetPosition() + Vec2(0, 250.0f));
 	characterRenderer = CreateRef<CharacterRenderer>();
 }
 
@@ -45,23 +45,19 @@ void Engine::BeginFrame() {
 }
 
 void Engine::Control() {
-	if (Input::KeyDown(Key::W)) {
-		camera->SetPosition(camera->GetPosition() + Vec2(0, 1) * Time::GetDelta() * 300.0f);
-	}
-
 	if (Input::KeyDown(Key::A)) {
-		camera->SetPosition(camera->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 300.0f);
+		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
 	}
-
-	if (Input::KeyDown(Key::S)) {
-		camera->SetPosition(camera->GetPosition() + Vec2(0, -1) * Time::GetDelta() * 300.0f);
+	if (Input::KeyDown(Key::Space)) {
+		if (character->OnGround()) {
+			character->Jump();
+		}
+		// character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
 	}
 
 	if (Input::KeyDown(Key::D)) {
-		camera->SetPosition(camera->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 300.0f);
+		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 100.0f);
 	}
-
-	camera->SetPosition(character->GetPosition());
 
 	if (Input::MouseButtonDown(Button::Left)) {
 		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
@@ -87,14 +83,15 @@ void Engine::Render() {
 		map->CalculateVisibleChunks(camera->GetPosition());
 		mapRenderer->rerender = true;
 	});
-	
-	mapRenderer->Render();
-
-	characterRenderer->Render({ character }, camera);
 
 	character->Update(Time::GetDelta());
 	character->CheckCollisions(map, camera);
-	
+	camera->SetPosition(character->GetPosition());
+
+	mapRenderer->Render([&]() {
+		characterRenderer->Render({ character }, camera);
+	});
+
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 
 	ImGui::Begin("Info");
@@ -103,7 +100,7 @@ void Engine::Render() {
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());
 		ImGui::Text(("Lights:" + std::to_string(mapRenderer->GetAmountOfRenderedLights())).c_str());
 	ImGui::End();
-
+	
 	ImGui::Begin("View");
 		ImGui::Text(("x: " + std::to_string(mapRenderer->GetVisibleChunks().x.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().x.end)).c_str());
 		ImGui::Text(("y: " + std::to_string(mapRenderer->GetVisibleChunks().y.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().y.end)).c_str());

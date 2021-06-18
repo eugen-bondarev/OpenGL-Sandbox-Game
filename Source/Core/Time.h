@@ -6,7 +6,7 @@ class Time {
 public:
   inline static void BeginFrame() {
     currentTime = static_cast<float>(glfwGetTime());
-    delta = currentTime - lastTime;
+    delta = (currentTime - lastTime);
     lastTime = currentTime;
   }
 
@@ -30,11 +30,11 @@ public:
     return static_cast<float>(glfwGetTime());
   }
 
+	inline static float delta{0};
 private:
   Time();
 
 	inline static float currentTime{0};
-	inline static float delta{0};
 	inline static float lastTime{0};
 
 	inline static float fpsTimer{0};

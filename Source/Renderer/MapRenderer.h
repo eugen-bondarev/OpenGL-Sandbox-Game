@@ -14,10 +14,10 @@ public:
   void RebuildScene();
   void UpdateScene();
   void CheckVisibleChunks();
-  void PerformRenderPasses();
+  void PerformRenderPasses(std::function<void()> AddToFBO);
   void Compose();
 
-  void Render();
+  void Render(std::function<void()> AddToFBO);
 
   inline const bounds_t& GetVisibleChunks() const {
     return visibleChunks;
