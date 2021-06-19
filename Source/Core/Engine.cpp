@@ -85,7 +85,6 @@ void Engine::Render() {
 	});
 
 	character->Update(Time::GetDelta(), map, camera);
-	character->CheckCollisions(map, camera);
 	camera->SetPosition(character->GetPosition());
 
 	mapRenderer->Render([&]() {
