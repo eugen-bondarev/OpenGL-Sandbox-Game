@@ -84,7 +84,7 @@ void Engine::Render() {
 		mapRenderer->rerender = true;
 	});
 
-	character->Update(Time::GetDelta());
+	character->Update(Time::GetDelta(), map, camera);
 	character->CheckCollisions(map, camera);
 	camera->SetPosition(character->GetPosition());
 
@@ -95,6 +95,7 @@ void Engine::Render() {
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 
 	ImGui::Begin("Info");
+		ImGui::Text(("OnGround:" + std::to_string(character->OnGround())).c_str());
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());

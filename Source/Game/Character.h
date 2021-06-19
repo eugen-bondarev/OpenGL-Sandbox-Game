@@ -45,8 +45,7 @@ public:
   }
 
   inline static float factor = 150.0f;
-  void Update(float deltaTime) {
-
+  void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
     if (!onGround) {
       SetPosition(position + velocity * Vec2(0, 1) * deltaTime);
       velocity += -Physics::g * deltaTime * factor;
@@ -65,35 +64,36 @@ public:
     onGround = false;
   }
 
+  Vec2 GetBlockPosUnderPlayer(Ref<Map>& map, Ref<Camera>& camera) {
+		Vec2 block = map->WindowCoordsToBlockCoords(camera->GetPositionOnScreen(GetPosition()), Window::GetSpace(), camera->GetViewMatrix());
+    block = ToInt(block);
+		auto charBlock = (block - map->GetChunkSize() / 2.0f) * map->GetBlockSize();
+    Vec2 blockPos = charBlock + Vec2(2.0f, 0.0f) * map->GetBlockSize();
+
+    return blockPos;
+  }
+
   void CheckCollisions(
 		Ref<Map>& map,
 		Ref<Camera>& camera
   ) {
-    static float shiftY = 4.0f;
-    if (onGround)    
-      SetPositionY((roundf(position.y / 16.0f)) * 16.0f + shiftY);
-
-		Vec2 block = map->WindowCoordsToBlockCoords(camera->GetPositionOnScreen(GetPosition()), Window::GetSpace(), camera->GetViewMatrix());
-		block.x = static_cast<int>(block.x);
-		block.y = static_cast<int>(block.y);
-		auto charBlock = (block - map->GetChunkSize() / 2.0f) * map->GetBlockSize();
-    auto current = charBlock + Vec2(1, 0) * map->GetBlockSize();
-
     const auto& blocks = map->GetBlocks();
-    const auto& coord = current / 16.0f + Vec2(1, 0);
+    Vec2 blockPos = GetBlockPosUnderPlayer(map, camera);
 
-		onGround = false;    
-		for (int i = 0; i < 2; i++) {
-			Vec2 blockPos = coord * 16.0f;
+		for (int i = -1; i < 1; i++) {
 			Linow::AddQuad(
-				Vec3((blockPos) + Vec2(16.0f * (i - 1), 0.0f), 0.0f), 
-				Vec3((blockPos) + Vec2(16.0f * (i - 1), 0.0f) + map->GetBlockSize(), 0.0f)
+				Vec3(blockPos + Vec2(16.0f * i, 0.0f), 0.0f), 
+				Vec3(blockPos + Vec2(16.0f * i, 0.0f) + map->GetBlockSize(), 0.0f)
 			);
 
-			if (blocks[coord.x + i][coord.y + 1] != BlockType::Empty) {
-				onGround = true;
-				break;
-			}
+      if (blocks[(blockPos.x / 16.0f) + (i + 1)][(blockPos.y / 16.0f) + 1] != BlockType::Empty) {
+        if (!onGround) {
+          onGround = true;
+        }
+        break;
+      } else {
+        onGround = false;
+      }
 		}
 
 		static float offset = 9.0f;
@@ -152,7 +152,7 @@ public:
 
 private:
   bool ceiling      { false };
-  bool onGround     { true };
+  bool onGround     { false };
   bool canMoveLeft  { true };
   bool canMoveRight { true };
 

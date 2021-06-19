@@ -17,12 +17,20 @@ using Color = Vec4;
 
 inline Vec2 ceil(Vec2 value) { return Vec2(ceilf(value.x), ceilf(value.y)); }
 inline Vec3 ceil(Vec3 value) { return Vec3(ceilf(value.x), ceilf(value.y), ceilf(value.z)); }
-
 inline Vec2 trunc(Vec2 value) { return Vec2(truncf(value.x), truncf(value.y)); }
 inline Vec3 trunc(Vec3 value) { return Vec3(truncf(value.x), truncf(value.y), truncf(value.z)); }
-
 inline Vec2 round(Vec2 value) { return Vec2(roundf(value.x), roundf(value.y)); }
 inline Vec3 round(Vec3 value) { return Vec3(roundf(value.x), roundf(value.y), roundf(value.z)); }
+inline Vec2 ToInt(Vec2 value) { return Vec2(static_cast<int>(value.x), static_cast<int>(value.y)); }
+inline Vec3 ToInt(Vec3 value) { return Vec3(static_cast<int>(value.x), static_cast<int>(value.y), static_cast<int>(value.z)); }
+
+inline static void ForEachComp(float* vec, int components, std::function<float(float)> action) {
+	float* address = vec;
+	for (int i = 0; i < components; i++) {
+		float newValue = action(*address);
+		memcpy(address++, &newValue, sizeof(float));
+	}	
+}
 
 inline static Color RED_COLOR = Color(1, 0, 0, 1);
 inline static Color GREEN_COLOR = Color(0, 1, 0, 1);
