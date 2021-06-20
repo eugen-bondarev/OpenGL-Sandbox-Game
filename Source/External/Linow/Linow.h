@@ -421,7 +421,10 @@ inline void Init() {
   LINOW_LOG_OUT("Initialization succeeded.");
 }
 
-inline void Render(const float* projection, const float* view) {    
+inline void Render(const float* projection, const float* view) {
+  if (!lines.size())
+    return;
+
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   float R[4][4];

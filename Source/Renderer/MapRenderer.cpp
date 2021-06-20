@@ -64,12 +64,9 @@ void MapRenderer::RebuildScene() {
 
 void MapRenderer::UpdateScene() {
   FORGIO_PROFILER_SCOPE();
-  // pipeline.colorPass->blocks.vbo->Update(blocksData, blocksData.size());
   pipeline.colorPass->blocks.vbo->Store(blocksData);
-  // pipeline.colorPass->walls.vbo->Update(wallsData, wallsData.size());
   pipeline.colorPass->walls.vbo->Store(wallsData);
 
-  // pipeline.lightPass->vbo->Update(lightData, lightData.size());
   std::vector<Vec2> copy = lightData;
   for (const Vec2& light : additionalLightData) {
     copy.push_back(light);

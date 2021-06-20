@@ -1,23 +1,10 @@
 #include "Map.h"
 
-Map::Map(Size chunkSize, Size amountOfChunks, float blockSize) {
-  this->chunkSize = chunkSize;
-  this->amountOfChunks = amountOfChunks;
-	this->blockSize = blockSize;
-
-	chunks.resize(amountOfChunks.x);
-	for (int i = 0; i < chunks.size(); i++) {
-		chunks[i].resize(amountOfChunks.y);
-		
-		for (int j = 0; j < chunks[i].size(); j++) {
-			chunks[i][j].index = Pos(i, j);
-		}
-	}
-
+Map::Map(Size chunkSize, Size amountOfChunks, float blockSize) : chunkSize { chunkSize }, amountOfChunks { amountOfChunks }, blockSize { blockSize } {
 	GenerateMap();
 }
 
-BlockSettingData Map::SetBlock(const Vec2& cameraPosition, BlockType blockType) {	
+Map::BlockSettingData Map::SetBlock(const Vec2& cameraPosition, BlockType blockType) {	
 	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
 	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
 	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
@@ -81,4 +68,74 @@ void Map::GenerateMap() {
 	}
 
 	walls = blocks;
+}
+
+Vec2 Map::WhatChunk(Vec2 block) const {
+	int x = static_cast<int>(truncf(block.x / GetChunkSize().x));
+	int y = static_cast<int>(truncf(block.y / GetChunkSize().y));
+
+	return { x, y };
+}
+
+chunk_t Map::WhatBlocks(Vec2 chunk) const {
+	Period<> x { static_cast<int>(chunk.x * GetChunkSize().x), static_cast<int>((chunk.x + 1.0f) * GetChunkSize().x) };
+	Period<> y { static_cast<int>(chunk.y * GetChunkSize().y), static_cast<int>((chunk.y + 1.0f) * GetChunkSize().y) };
+	return { x, y };
+}
+
+Vec2 Map::WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4& projectionMatrix, const Mat4& viewMatrix) const {
+	const Vec2& viewPos = viewMatrix[0];
+
+	const Vec2 screenCoords = (windowCoords / Window::GetSize() - Vec2(0.5f, 0.5f)) * Vec2(1.0f, -1.0f) * 2.0f;
+	const Vec4 projCoords = Math::Inverse(projectionMatrix) * Vec4(screenCoords, 0.0f, 1.0f);
+	const Vec4 projViewCoords = Math::Inverse(viewMatrix) * projCoords;
+
+	static const Vec2 normalization = Vec2(0.0f);
+	const Vec2 block = (Vec2(projViewCoords) - viewPos) / blockSize + normalization + GetChunkSize() / 2.0f;
+	
+	return block;
+}
+
+Size Map::GetChunkSize() const {
+	return chunkSize;
+}
+
+Size Map::GetAmountOfChunks() const {
+	return amountOfChunks;
+}
+
+Vec2 Map::GetCenter() const {
+	return amountOfBlocks / 2.0f;
+}
+
+const bounds_t& Map::GetVisibleChunks() const {
+	return visibleChunks;
+}
+
+float Map::GetBlockSize() const {
+	return blockSize;
+}
+
+blocks_t& Map::GetBlocks() {
+	return blocks;
+}
+
+const walls_t& Map::GetWalls() const {
+	return walls;
+}
+
+bool Map::BlockIs(int x, int y, BlockType type) const {
+	return blocks[x][y] == type;
+}
+
+bool Map::WallIs(int x, int y, WallType type) const {
+	return walls[x][y] == type;
+}
+
+bool Map::BlockIsEmpty(int x, int y) const {
+	return BlockIs(x, y, BlockType::Empty);
+}
+
+bool Map::WallIsEmpty(int x, int y) const {
+	return WallIs(x, y, WallType::Empty);
 }

@@ -70,7 +70,7 @@ void Engine::Control() {
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
-		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
+		Map::BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
 			mapRenderer->rerender = true;
@@ -79,7 +79,7 @@ void Engine::Control() {
 	}
 
 	if (Input::MouseButtonDown(Button::Right)) {
-		BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
+		Map::BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
 			mapRenderer->rerender = true;
@@ -97,7 +97,6 @@ void Engine::Render() {
 	character->Update(Time::GetDelta());
 	character->CollectLights(mapRenderer->GetAdditionalLightData());
 	camera->SetPosition(character->GetPosition());
-	// std::vector<Vec2> additionalLights = character->GetAdditionalLights();
 
 	mapRenderer->Render([&]() {
 		characterRenderer->Render({ character }, camera);
