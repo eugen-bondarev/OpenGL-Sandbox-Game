@@ -53,19 +53,27 @@ public:
     Vec2 worldPosition;
   };
 
-  inline Block GetBlock(Vec2 fix, Vec2 offset = Vec2(0, 0)) {
+  inline Block GetBlock(Vec2 pos, Vec2 fix, Vec2 offset = Vec2(0, 0)) {
     Block block;
-    block.worldPosition = ToInt((position + fix + offset * 16.0f) / 16.0f) * 16.0f - 8.0f;
+    block.worldPosition = ToInt((pos + fix + offset * 16.0f) / 16.0f) * 16.0f - 8.0f;
     block.index = (block.worldPosition + 8.0f) / 16.0f;
     return block;    
   }
 
+  Vec2 nextPosition;
+  Mat4 nextModelMatrix;
+
   inline static float factor = 150.0f;
+
   void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
 
     if (!onGround) {
-      SetPosition(position + velocity * Vec2(0, 1) * deltaTime);
-      velocity += -Physics::g * deltaTime * factor;
+      SetPosition(position + velocity * Vec2(0, 1) * Time::delta);
+      velocity += -Physics::g * Time::delta * factor;
+
+      Vec2 nextVelocity = velocity - Physics::g * Time::nextDelta * factor;
+      nextPosition = position + nextVelocity * Vec2(0, 1) * Time::nextDelta;
+      nextModelMatrix = Math::Translate(Mat4(1), Vec3(nextPosition + Vec2(64, 0), 0.0));
 
       if (ceiling) {
         velocity = Vec2(0.0f);
@@ -75,7 +83,7 @@ public:
       velocity = Vec2(0.0f);
     }
 
-    const auto& blocks = map->GetBlocks();
+    auto& blocks = map->GetBlocks();
     onGround = false;
 
     collider->SetPosition(position);    
@@ -83,22 +91,27 @@ public:
     Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * 16.0f * 2.0f);
 
     for (int i = 2; i < 4; i++) {
-      Block block = GetBlock(Vec2(-5.0f, 5.0f), Vec2(i, 0));
+      Block block = GetBlock(position, Vec2(-5.0f, 5.0f), Vec2(i, 0));
+      Block nextBlock = GetBlock(nextPosition, Vec2(-5.0f, 5.0f), Vec2(i, 0));
 
       Collider blockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
-      blockCollider.SetPosition(block.worldPosition);    
+      blockCollider.SetPosition(block.worldPosition);
+
+      Collider nextBlockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
+      nextBlockCollider.SetPosition(nextBlock.worldPosition);
 
       Linow::AddLine(blockCollider.GetEnd(), blockCollider.GetEnd() + Vec2(1.0f, 0.0f) * 16.0f);
+      Linow::AddLine(nextBlockCollider.GetEnd(), nextBlockCollider.GetEnd() + Vec2(1.0f, 0.0f) * 16.0f);
 
-
-      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
-        SetPositionY(blockCollider.GetEnd().y - 4);
-        onGround = true;
-      }
-
-      if (blocks[block.index.x][block.index.y + 1] != BlockType::Empty) {
-        SetPositionY(blockCollider.GetEnd().y - 4 - 16.0f);
-        onGround = true;
+      if (blocks[nextBlock.index.x][nextBlock.index.y + 1] != BlockType::Empty) {
+        for (int j = 0; j < 5; j++) {
+          if (blocks[nextBlock.index.x][nextBlock.index.y + j] == BlockType::Empty) {
+            SetPositionY(nextBlock.worldPosition.y - 4.0f + j * 16.0f);
+            onGround = true;
+            LOG_OUT("Case");
+            break;
+          }
+        }
       }
 
       if (onGround) {
