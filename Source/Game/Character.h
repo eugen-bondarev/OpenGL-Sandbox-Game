@@ -9,11 +9,13 @@
 
 class Character : public ITransform {
 public:
-  inline static float velocityFactor = 150.0f;
+  inline static constexpr float velocityFactor = 150.0f;
+
   Character(const Ref<Map>& map);
 
   Blocks::Representations::IndexAndPosition GetBlockNearby(Vec2 fix, Vec2 offset = Vec2(0, 0)) const;
 
+  void CollectLights(std::vector<Vec2>& lights) const;
   void Update(float deltaTime);
   void CheckCollisions();
   void Jump();
@@ -38,7 +40,7 @@ private:
 
   Vec2 velocity { 0 };
 
-  inline void CalculateTransform() override {
+  void CalculateTransform() override {
     transform = Math::Translate(Mat4(1), Vec3(position, 0.0));
   }
 

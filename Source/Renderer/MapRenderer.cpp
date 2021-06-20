@@ -47,13 +47,13 @@ void MapRenderer::RebuildScene() {
               const Vec2 tile = Vec2(4, 1) + PickRightAngularTile(map->GetWalls(), x, y);
               wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
             } else {
-            }
-            if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {
-              lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
-            }
+              if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {
+                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+              }
 
-            if (!map->BlockIsEmpty(x, y + 1) || !map->WallIsEmpty(x, y - 1)) {
-              lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+              if (!map->BlockIsEmpty(x, y + 1) || !map->WallIsEmpty(x, y - 1)) {
+                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+              }
             }
           }
         }
@@ -70,7 +70,12 @@ void MapRenderer::UpdateScene() {
   pipeline.colorPass->walls.vbo->Store(wallsData);
 
   // pipeline.lightPass->vbo->Update(lightData, lightData.size());
-  pipeline.lightPass->vbo->Store(lightData);
+  std::vector<Vec2> copy = lightData;
+  for (const Vec2& light : additionalLightData) {
+    copy.push_back(light);
+  }
+  
+  pipeline.lightPass->vbo->Store(copy);
   FORGIO_SYNC_GPU();
 }
 
@@ -86,8 +91,7 @@ void MapRenderer::CheckVisibleChunks() {
 void MapRenderer::PerformRenderPasses(std::function<void()> AddToFBO) {
   pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size());
   AddToFBO();
-  pipeline.lightPass->Perform(camera, lightData.size());
-
+  pipeline.lightPass->Perform(camera, lightData.size() + additionalLightData.size());
 }
 
 void MapRenderer::Compose() {
@@ -106,6 +110,8 @@ void MapRenderer::Render(std::function<void()> AddToFBO) {
     PerformRenderPasses(AddToFBO);
   }  
   Compose();
+
+	additionalLightData.clear();
 
   rerender = false;
 }

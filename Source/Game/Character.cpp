@@ -9,6 +9,22 @@ Blocks::Representations::IndexAndPosition Character::GetBlockNearby(Vec2 fix, Ve
   return block;    
 }
 
+void Character::CollectLights(std::vector<Vec2>& lights) const {
+  const auto& blocks = map->GetBlocks();
+  const auto& walls = map->GetWalls();
+
+  for (int x = 0; x < 3; x++) {
+    for (int y = 0; y < 3; y++) {
+      auto& block = GetBlockNearby(Vec2(), Vec2(1 + x, 2 + y * 2));
+      if (blocks[block.index.x][block.index.y] == BlockType::Empty && walls[block.index.x][block.index.y] == WallType::Empty) {
+        lights.push_back(block.worldPosition);
+      }
+    }
+  }
+}
+
+static constexpr bool RENDER_COLLIDERS = false;
+
 void Character::CheckCollisions() {
   auto& blocks = map->GetBlocks();
 
@@ -19,7 +35,9 @@ void Character::CheckCollisions() {
   
   for (int i = 2; i < 4; i++) {
     Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-10.0f, 10.0f), Vec2(i, 0));
-    Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
+
+    if (RENDER_COLLIDERS)
+      Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
     if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
       SetPositionY(block.worldPosition.y + map->GetBlockSize() - 4.0f);
@@ -42,7 +60,9 @@ void Character::CheckCollisions() {
 
   for (int i = 2; i < 4; i++) {
     Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-10.0f, -10.0f), Vec2(i, 6));
-    Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
+
+    if (RENDER_COLLIDERS)
+      Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
     if (blocks[block.index.x][block.index.y - 1] != BlockType::Empty) {
       SetPositionY(block.worldPosition.y - 5 * map->GetBlockSize());
@@ -53,7 +73,9 @@ void Character::CheckCollisions() {
 
   for (int i = 1; i < 5; i++) {
     Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f), Vec2(1, i));
-    Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
+
+    if (RENDER_COLLIDERS)
+      Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
     if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
       canMoveLeft = false;
@@ -63,7 +85,9 @@ void Character::CheckCollisions() {
 
   for (int i = 1; i < 5; i++) {
     Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f), Vec2(3, i));
-    Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
+
+    if (RENDER_COLLIDERS)
+      Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
     if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
       canMoveRight = false;

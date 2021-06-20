@@ -38,7 +38,13 @@ public:
     return lightData.size();
   }
 
+  inline std::vector<Vec2>& GetAdditionalLightData() {
+    return additionalLightData;
+  }
+
 private:
+  std::vector<Vec2> additionalLightData;
+
   std::vector<BlockData> blocksData;
   std::vector<WallData> wallsData;
   std::vector<Vec2> lightData;

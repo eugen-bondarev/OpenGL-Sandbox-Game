@@ -20,7 +20,7 @@ Engine::Engine() {
 
 void Engine::InitResources() {
 	FORGIO_PROFILER_SCOPE();
-	map = CreateRef<Map>(Size(5, 5), Size(250, 250));
+	map = CreateRef<Map>(Size(5, 5), Size(500, 500));
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 	map->CalculateVisibleChunks(camera->GetPosition());
@@ -95,7 +95,9 @@ void Engine::Render() {
 	});
 
 	character->Update(Time::GetDelta());
+	character->CollectLights(mapRenderer->GetAdditionalLightData());
 	camera->SetPosition(character->GetPosition());
+	// std::vector<Vec2> additionalLights = character->GetAdditionalLights();
 
 	mapRenderer->Render([&]() {
 		characterRenderer->Render({ character }, camera);
