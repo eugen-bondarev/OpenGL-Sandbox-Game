@@ -83,6 +83,7 @@ public:
       }
     } else {
       velocity = Vec2(0.0f);
+      nextPosition.x = position.x;
     }
 
     auto& blocks = map->GetBlocks();
@@ -109,7 +110,7 @@ public:
             if (blocks[nextBlock.index.x][nextBlock.index.y + 1 + j] == BlockType::Empty) {
               onGround = true;
               SetPositionY((nextBlock.index.y + j) * 16.0f + collider->GetRect().y.bottom);
-              nextPosition = position;
+              // nextPosition = position;
               break;
             }
           }

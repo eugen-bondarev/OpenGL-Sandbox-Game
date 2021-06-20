@@ -47,13 +47,13 @@ void MapRenderer::RebuildScene() {
               const Vec2 tile = Vec2(4, 1) + PickRightAngularTile(map->GetWalls(), x, y);
               wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
             } else {
-              if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {
-                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
-              }
+            }
+            if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {
+              lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+            }
 
-              if (!map->BlockIsEmpty(x, y + 1) || !map->WallIsEmpty(x, y - 1)) {
-                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
-              }
+            if (!map->BlockIsEmpty(x, y + 1) || !map->WallIsEmpty(x, y - 1)) {
+              lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
             }
           }
         }
