@@ -102,6 +102,8 @@ public:
   }
 
   inline void Jump() {
+    // Without vSync:
+    // SetPositionY(position.y + 16.0f - 4.0f - 5.0f);
     velocity = Vec2(0.0f, 4.0f * factor);
     onGround = false;
   }
