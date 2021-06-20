@@ -37,14 +37,14 @@ CharacterRenderer::CharacterRenderer() {
 void CharacterRenderer::Render(const std::vector<Ref<Character>>& characters, Ref<Camera>& camera) {  
 	characterShader->Bind();
 	characterShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
-	characterShader->SetMat4x4("u_View", Math::ToPtr(camera->GetViewMatrix()));
+	characterShader->SetMat4x4("u_View", Math::ToPtr(camera->GetTransform()));
 
   characterVAO->Bind();
   characterVAO->GetIndexBuffer()->Bind();
   characterTexture->Bind();
 
   for (const auto& character : characters) {
-    characterShader->SetMat4x4("u_Model", Math::ToPtr(character->GetModelMatrix()));
+    characterShader->SetMat4x4("u_Model", Math::ToPtr(character->GetTransform()));
 		glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }

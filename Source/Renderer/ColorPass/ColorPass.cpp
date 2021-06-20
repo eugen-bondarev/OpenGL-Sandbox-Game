@@ -66,7 +66,7 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 
 	Werwel::GraphicsContext::ClearColor(0, 0, 0, 0);
 
-	Mat4 projView = Window::GetSpace() * camera->GetViewMatrix();
+	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
 	fbo->Bind();	
 	fbo->Clear();

@@ -26,7 +26,7 @@ void Engine::InitResources() {
 	map->CalculateVisibleChunks(camera->GetPosition());
 	mapRenderer = CreateRef<MapRenderer>(map, camera);
 
-	character = CreateRef<Character>();
+	character = CreateRef<Character>(map);
 	character->SetPosition(camera->GetPosition() + Vec2(0, 250.0f));
 	characterRenderer = CreateRef<CharacterRenderer>();
 }
@@ -46,7 +46,7 @@ void Engine::BeginFrame() {
 
 void Engine::Control() {	
 	if (Input::KeyDown(Key::Space)) {
-		if (character->OnGround()) {
+		if (character->GetOnGround()) {
 			character->Jump();
 		}
 	}
@@ -64,7 +64,7 @@ void Engine::Control() {
 	}
 
 	if (Input::KeyDown(Key::S)) {
-		if (character->OnGround()) {
+		if (character->GetOnGround()) {
 			character->SetPosition(character->GetPosition() + Vec2(0, -1) * Time::GetDelta() * 100.0f);
 		}
 	}
@@ -94,19 +94,18 @@ void Engine::Render() {
 		mapRenderer->rerender = true;
 	});
 
-	character->Update(Time::GetDelta(), map, camera);
+	character->Update(Time::GetDelta());
 	camera->SetPosition(character->GetPosition());
 
 	mapRenderer->Render([&]() {
 		characterRenderer->Render({ character }, camera);
 	});
 
-	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
+	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
 
 	ImGui::Begin("Info");
-		ImGui::Text(("Intersection:" + std::to_string(character->intersection)).c_str());
-		ImGui::Text(("OnGround:" + std::to_string(character->OnGround())).c_str());
-		ImGui::Text(("Ceiling:" + std::to_string(character->Ceiling())).c_str());
+		ImGui::Text(("OnGround:" + std::to_string(character->GetOnGround())).c_str());
+		ImGui::Text(("Ceiling:" + std::to_string(character->GetCeiling())).c_str());
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());

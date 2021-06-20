@@ -50,7 +50,7 @@ LightPass::LightPass() {
 void LightPass::Bind(const Ref<Camera>& camera) {
   FORGIO_PROFILER_SCOPE();
 
-	Mat4 projView = Window::GetSpace() * camera->GetViewMatrix();
+	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
   glClearColor(0, 0, 0, 1);
   fbo->Bind();
@@ -75,7 +75,7 @@ void LightPass::Render(int amountOfBlocks) {
 void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {  
   FORGIO_PROFILER_SCOPE();  
 
-	Mat4 projView = Window::GetSpace() * camera->GetViewMatrix();
+	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
   fbo->Bind();
   fbo->Clear();
