@@ -21,6 +21,7 @@ public:
 
   Vec2 GetStart() const;
   Vec2 GetEnd() const;
+  ColliderRect GetRect() const;
 
 private:
   Vec2 position;

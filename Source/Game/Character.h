@@ -65,6 +65,8 @@ public:
 
   inline static float factor = 150.0f;
 
+  float stopAt = 0.0f;
+
   void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
 
     if (!onGround) {
@@ -91,35 +93,34 @@ public:
     Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * 16.0f * 2.0f);
 
     for (int i = 2; i < 4; i++) {
-      Block block = GetBlock(position, Vec2(-5.0f, 5.0f), Vec2(i, 0));
-      Block nextBlock = GetBlock(nextPosition, Vec2(-5.0f, 5.0f), Vec2(i, 0));
+      Block block = GetBlock(position + Vec2(0, 0), Vec2(-5.0f, 5.0f), Vec2(i, 0));
+      Block nextBlock = GetBlock(nextPosition + Vec2(0, 0), Vec2(-5.0f, 0.0f), Vec2(i, 0));
 
       Collider blockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
       blockCollider.SetPosition(block.worldPosition);
+      Linow::AddQuad(blockCollider.GetStart(), blockCollider.GetEnd());
 
       Collider nextBlockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
       nextBlockCollider.SetPosition(nextBlock.worldPosition);
 
-      Linow::AddLine(blockCollider.GetEnd(), blockCollider.GetEnd() + Vec2(1.0f, 0.0f) * 16.0f);
-      Linow::AddLine(nextBlockCollider.GetEnd(), nextBlockCollider.GetEnd() + Vec2(1.0f, 0.0f) * 16.0f);
-
-      if (blocks[nextBlock.index.x][nextBlock.index.y + 1] != BlockType::Empty) {
-        for (int j = 0; j < 5; j++) {
-          if (blocks[nextBlock.index.x][nextBlock.index.y + j] == BlockType::Empty) {
-            SetPositionY(nextBlock.worldPosition.y - 4.0f + j * 16.0f);
-            onGround = true;
-            LOG_OUT("Case");
-            break;
+      // if (abs(velocity.y) > 100) {
+        if (blocks[nextBlock.index.x][nextBlock.index.y + 1] != BlockType::Empty) {    
+          for (int j = 1; j < 5; j++) {
+            if (blocks[nextBlock.index.x][nextBlock.index.y + 1 + j] == BlockType::Empty) {
+              onGround = true;
+              SetPositionY((nextBlock.index.y + j) * 16.0f + collider->GetRect().y.bottom);
+              nextPosition = position;
+              break;
+            }
           }
         }
-      }
-
-      if (onGround) {
-        if (collider->GetStart().y < blockCollider.GetEnd().y) {
-          SetPositionY(blockCollider.GetEnd().y - 4);
-          collider->SetPosition(position);
-        }
-      }
+      // } else {
+      //   if (blocks[block.index.x][block.index.y + 1] != BlockType::Empty) {    
+      //     onGround = true;
+      //     SetPositionY((block.index.y) * 16.0f + collider->GetRect().y.bottom);
+      //     break;
+      //   }
+      // }
     }
   }
 

@@ -16,6 +16,10 @@ Vec2 Collider::GetEnd() const {
   return position + Vec2(size.x - rect.x.right, size.y - rect.y.top);
 }
 
+ColliderRect Collider::GetRect() const {
+  return rect;
+}
+
 void LogOut(const Vec2& vec) {
   LOG_OUT(vec.x << ' ' << vec.y);
 }
