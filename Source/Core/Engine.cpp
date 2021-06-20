@@ -51,11 +51,11 @@ void Engine::Control() {
 		}
 	}
 
-	if (Input::KeyDown(Key::A)) {
+	if (Input::KeyDown(Key::A) && character->CanMoveLeft()) {
 		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
 	}
 
-	if (Input::KeyDown(Key::D)) {
+	if (Input::KeyDown(Key::D) && character->CanMoveRight()) {
 		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 100.0f);
 	}
 
@@ -106,6 +106,7 @@ void Engine::Render() {
 	ImGui::Begin("Info");
 		ImGui::Text(("Intersection:" + std::to_string(character->intersection)).c_str());
 		ImGui::Text(("OnGround:" + std::to_string(character->OnGround())).c_str());
+		ImGui::Text(("Ceiling:" + std::to_string(character->Ceiling())).c_str());
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());

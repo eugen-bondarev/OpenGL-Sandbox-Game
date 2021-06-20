@@ -70,7 +70,7 @@ public:
     Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * map->GetBlockSize() * 2.0f);
 
     for (int i = 2; i < 4; i++) {
-      Block block = GetBlock(position, Vec2(-5.0f, 10.0f), Vec2(i, 0));
+      Block block = GetBlock(position, Vec2(-10.0f, 10.0f), Vec2(i, 0));
       Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
 
       if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
@@ -86,7 +86,41 @@ public:
         onGround = true;
         break;
       }
-    }    
+    }
+
+    ceiling = false;
+    for (int i = 2; i < 4; i++) {
+      Block block = GetBlock(position, Vec2(-10.0f, -10.0f), Vec2(i, 6));
+      Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
+
+      if (blocks[block.index.x][block.index.y - 1] != BlockType::Empty) {
+        SetPositionY(block.worldPosition.y - 5 * 16.0f);
+        ceiling = true;
+        break;
+      }
+    }
+
+    canMoveLeft = true;
+    for (int i = 1; i < 5; i++) {
+      Block block = GetBlock(position, Vec2(-2.0f, 10.0f), Vec2(1, i));
+      Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
+
+      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+        canMoveLeft = false;
+        break;
+      }
+    }
+
+    canMoveRight = true;
+    for (int i = 1; i < 5; i++) {
+      Block block = GetBlock(position, Vec2(-2.0f, 10.0f), Vec2(3, i));
+      Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
+
+      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+        canMoveRight = false;
+        break;
+      }
+    }
   }
 
   void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
@@ -95,11 +129,11 @@ public:
       velocity += -Physics::g * Time::delta * factor;
 
       if (ceiling) {
-        velocity = Vec2(0.0f);
+        velocity.y = 0.0f;
         ceiling = false;
       }
     } else {
-      velocity = Vec2(0.0f);
+      velocity.y = 0.0f;
     }
 
     CheckCollisions(map, camera);
@@ -107,7 +141,7 @@ public:
 
   inline void Jump() {
     // Without vSync:
-    // SetPositionY(position.y + map->GetBlockSize()- 4.0f - 10.0f);
+    SetPositionY(position.y + 16.0f - 4.0f - 10.0f);
     velocity = Vec2(0.0f, 4.0f * factor);
     onGround = false;
   }
@@ -122,6 +156,7 @@ public:
   }
 
   inline void Ceiling(bool value) { ceiling = value; }
+  inline bool Ceiling() { return ceiling; }
 
   inline void OnGround(bool value) { onGround = value; }
   inline bool OnGround() const { return onGround; }
