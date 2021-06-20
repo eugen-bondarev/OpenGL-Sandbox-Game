@@ -46,7 +46,5 @@ void CharacterRenderer::Render(const std::vector<Ref<Character>>& characters, Re
   for (const auto& character : characters) {
     characterShader->SetMat4x4("u_Model", Math::ToPtr(character->GetModelMatrix()));
 		glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
-    characterShader->SetMat4x4("u_Model", Math::ToPtr(character->nextModelMatrix));
-		glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }

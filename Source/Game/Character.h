@@ -60,12 +60,7 @@ public:
     return block;    
   }
 
-  Vec2 nextPosition;
-  Mat4 nextModelMatrix;
-
   inline static float factor = 150.0f;
-
-  float stopAt = 0.0f;
 
   void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
 
@@ -73,53 +68,35 @@ public:
       SetPosition(position + velocity * Vec2(0, 1) * Time::delta);
       velocity += -Physics::g * Time::delta * factor;
 
-      Vec2 nextVelocity = velocity - Physics::g * Time::nextDelta * factor;
-      nextPosition = position + nextVelocity * 4.0f * Vec2(0, 1) * Time::nextDelta;
-      nextModelMatrix = Math::Translate(Mat4(1), Vec3(nextPosition + Vec2(64, 0), 0.0));
-
       if (ceiling) {
         velocity = Vec2(0.0f);
         ceiling = false;
       }
     } else {
       velocity = Vec2(0.0f);
-      nextPosition.x = position.x;
     }
 
     auto& blocks = map->GetBlocks();
     onGround = false;
 
-    collider->SetPosition(position);    
-
+    collider->SetPosition(position);
     Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * 16.0f * 2.0f);
 
     for (int i = 2; i < 4; i++) {
-      Block block = GetBlock(position + Vec2(0, 0), Vec2(-5.0f, 5.0f), Vec2(i, -1));
-      Block nextBlock = GetBlock(nextPosition + Vec2(0, 0), Vec2(-5.0f, 0.0f), Vec2(i, 0));
+      Block block = GetBlock(position, Vec2(-5.0f, 5.0f), Vec2(i, 0));
+      Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
 
-      Collider blockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
-      blockCollider.SetPosition(block.worldPosition);
-      Linow::AddQuad(blockCollider.GetStart(), blockCollider.GetEnd());
-
-      Collider nextBlockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
-      nextBlockCollider.SetPosition(nextBlock.worldPosition);
-
-      if (blocks[nextBlock.index.x][nextBlock.index.y + 1] != BlockType::Empty) {    
+      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
         for (int j = 1; j < 5; j++) {
-          if (blocks[nextBlock.index.x][nextBlock.index.y + 1 + j] == BlockType::Empty) {
-            stopAt = (nextBlock.index.y + j) * 16.0f + collider->GetRect().y.bottom;
-            break;
+          if (blocks[block.index.x][block.index.y + j] != BlockType::Empty) {
+            SetPositionY(block.worldPosition.y + 16.0f * j + 16.0f - 4.0f);
+            onGround = true;
+            return;
           }
         }
-      }
 
-      if (blocks[block.index.x][block.index.y + 1] != BlockType::Empty) {
-        if (stopAt) {
-          SetPositionY(stopAt);
-          stopAt = 0.0f;
-        }
+        SetPositionY(block.worldPosition.y + 16.0f - 4.0f);
         onGround = true;
-        return;
       }
     }
   }
