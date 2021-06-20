@@ -15,7 +15,7 @@
 class Character {
 public:
   Character() {
-    collider = CreateRef<Collider>(position, ColliderRect { { 8.0f, 8.0f }, { 2.0f, 2.0f } });
+    collider = CreateRef<Collider>(ColliderRect { { 8.0f, 8.0f }, { 2.0f, 2.0f } }, Vec2 { 16 * 3, 16 * 4 });
   }
 
   inline Vec2 GetPosition() const {
@@ -48,16 +48,24 @@ public:
     return modelMatrix;
   }
 
+  struct Block {
+    Vec2 index;
+    Vec2 worldPosition;
+  };
+
+  inline Block GetBlock(Vec2 fix, Vec2 offset = Vec2(0, 0)) {
+    Block block;
+    block.worldPosition = ToInt((position + fix + offset * 16.0f) / 16.0f) * 16.0f - 8.0f;
+    block.index = (block.worldPosition + 8.0f) / 16.0f;
+    return block;    
+  }
+
   inline static float factor = 150.0f;
   void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
-    Linow::AddQuad(
-      Vec3(collider->GetStart(), 0.0f),
-      Vec3(collider->GetEnd(), 0.0f)
-    );
 
     if (!onGround) {
       SetPosition(position + velocity * Vec2(0, 1) * deltaTime);
-      // velocity += -Physics::g * deltaTime * factor;
+      velocity += -Physics::g * deltaTime * factor;
 
       if (ceiling) {
         velocity = Vec2(0.0f);
@@ -65,6 +73,40 @@ public:
       }
     } else {
       velocity = Vec2(0.0f);
+    }
+
+    const auto& blocks = map->GetBlocks();
+    onGround = false;
+
+    collider->SetPosition(position);    
+
+    Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * 16.0f * 2.0f);
+
+    for (int i = 2; i < 4; i++) {
+      Block block = GetBlock(Vec2(-5.0f, 5.0f), Vec2(i, 0));
+
+      Collider blockCollider({ 0.0f, 0.0f, 0.0f, 0.0f }, { 16, 16 });
+      blockCollider.SetPosition(block.worldPosition);    
+
+      Linow::AddLine(blockCollider.GetEnd(), blockCollider.GetEnd() + Vec2(1.0f, 0.0f) * 16.0f);
+
+
+      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+        SetPositionY(blockCollider.GetEnd().y - 4);
+        onGround = true;
+      }
+
+      if (blocks[block.index.x][block.index.y + 1] != BlockType::Empty) {
+        SetPositionY(blockCollider.GetEnd().y - 4 - 16.0f);
+        onGround = true;
+      }
+
+      if (onGround) {
+        if (collider->GetStart().y < blockCollider.GetEnd().y) {
+          SetPositionY(blockCollider.GetEnd().y - 4);
+          collider->SetPosition(position);
+        }
+      }
     }
   }
 
@@ -91,6 +133,8 @@ public:
   inline void CanMoveRight(bool value) { canMoveRight = value; }
   inline bool CanMoveLeft() const { return canMoveLeft; }
   inline bool CanMoveRight() const { return canMoveRight; }
+
+  bool intersection { false };
 
 private:
   bool ceiling      { false };

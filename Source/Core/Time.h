@@ -4,22 +4,25 @@
 
 class Time {
 public:
+  inline static float delta { 0 };
+
   inline static void BeginFrame() {
     currentTime = static_cast<float>(glfwGetTime());
-    delta = (currentTime - lastTime);
+    delta = nextDelta;
+    nextDelta = (currentTime - lastTime);
     lastTime = currentTime;
   }
 
   inline static void EndFrame() {
-    fpsTimer += delta;
+    fpsTimer += nextDelta;
     if (fpsTimer >= 1.0f) {
-      fps = 1.0f / delta;
+      fps = 1.0f / nextDelta;
       fpsTimer = 0;
     }
   }
 
   inline static float GetDelta() {
-    return delta;
+    return nextDelta;
   }
 
   inline static int GetFps() {
@@ -30,7 +33,7 @@ public:
     return static_cast<float>(glfwGetTime());
   }
 
-	inline static float delta{0};
+	inline static float nextDelta{0};
 private:
   Time();
 

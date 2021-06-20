@@ -145,6 +145,7 @@ void Shutdown();
 
 template <typename... Args>
 void AddLine(Args&&... args);
+void AddQuad(Vec2 start, Vec2 end, Color color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 void AddQuad(Vec3 start, Vec3 end, Color color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 
 /*
@@ -157,6 +158,12 @@ struct Line {
   inline Line(const Vec3& start, const Vec3& end, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f)) {
     points[0] = start;
     points[1] = end;
+    this->color = color;
+  }
+  
+  inline Line(const Vec2& start, const Vec2& end, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f)) {
+    points[0] = Vec3(start, 0.0f);
+    points[1] = Vec3(end, 0.0f);
     this->color = color;
   }
 };
@@ -452,6 +459,18 @@ inline void Shutdown() {
 template <typename... Args>
 inline void AddLine(Args&&... args) {
   lines.emplace_back(std::forward<Args>(args)...);
+}
+
+inline void AddQuad(Vec2 start, Vec2 end, Color color) {
+  Line left(start, Vec2(start.x, end.y), color);
+  Line right(Vec2(end.x, start.y), end, color);
+  Line top(start, Vec2(end.x, start.y), color);
+  Line bottom(Vec2(start.x, end.y), end, color);
+
+  AddLine(left);
+  AddLine(right);
+  AddLine(top);
+  AddLine(bottom);
 }
 
 inline void AddQuad(Vec3 start, Vec3 end, Color color) {

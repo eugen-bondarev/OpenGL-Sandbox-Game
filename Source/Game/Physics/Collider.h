@@ -14,14 +14,18 @@ struct ColliderRect {
 
 class Collider {
 public:
-  Collider(Vec2& position, ColliderRect rect);
+  Collider(ColliderRect rect, Vec2 size);
+
+  void SetPosition(const Vec2& position);
+  bool IntersectsWith(const Collider& collider) const;
 
   Vec2 GetStart() const;
   Vec2 GetEnd() const;
 
 private:
-  const Vec2& position;
+  Vec2 position;
   ColliderRect rect;
+  Vec2 size;
 
   Vec2 start;
   Vec2 end;

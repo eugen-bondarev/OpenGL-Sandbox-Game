@@ -44,19 +44,29 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
-void Engine::Control() {
-	if (Input::KeyDown(Key::A)) {
-		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
-	}
+void Engine::Control() {	
 	if (Input::KeyDown(Key::Space)) {
 		if (character->OnGround()) {
 			character->Jump();
 		}
-		// character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
+	}
+
+	if (Input::KeyDown(Key::A)) {
+		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
 	}
 
 	if (Input::KeyDown(Key::D)) {
 		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 100.0f);
+	}
+
+	if (Input::KeyDown(Key::W)) {
+		character->SetPosition(character->GetPosition() + Vec2(0, 1) * Time::GetDelta() * 100.0f);
+	}
+
+	if (Input::KeyDown(Key::S)) {
+		if (character->OnGround()) {
+			character->SetPosition(character->GetPosition() + Vec2(0, -1) * Time::GetDelta() * 100.0f);
+		}
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
@@ -94,6 +104,7 @@ void Engine::Render() {
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetViewMatrix()));
 
 	ImGui::Begin("Info");
+		ImGui::Text(("Intersection:" + std::to_string(character->intersection)).c_str());
 		ImGui::Text(("OnGround:" + std::to_string(character->OnGround())).c_str());
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
