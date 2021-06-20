@@ -62,8 +62,34 @@ public:
 
   inline static float factor = 150.0f;
 
-  void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
+  void CheckCollisions(const Ref<Map>& map, const Ref<Camera>& camera) {
+    auto& blocks = map->GetBlocks();
+    onGround = false;
 
+    collider->SetPosition(position);
+    Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * map->GetBlockSize() * 2.0f);
+
+    for (int i = 2; i < 4; i++) {
+      Block block = GetBlock(position, Vec2(-5.0f, 10.0f), Vec2(i, 0));
+      Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
+
+      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+        SetPositionY(block.worldPosition.y + map->GetBlockSize() - 4.0f);
+
+        for (int j = 1; j < 5; j++) {
+          if (blocks[block.index.x][block.index.y + j] != BlockType::Empty) {
+            SetPositionY(block.worldPosition.y + map->GetBlockSize() * j + map->GetBlockSize() - 4.0f);
+            break;
+          }
+        }
+
+        onGround = true;
+        break;
+      }
+    }    
+  }
+
+  void Update(float deltaTime, const Ref<Map>& map, const Ref<Camera>& camera) {
     if (!onGround) {
       SetPosition(position + velocity * Vec2(0, 1) * Time::delta);
       velocity += -Physics::g * Time::delta * factor;
@@ -76,34 +102,12 @@ public:
       velocity = Vec2(0.0f);
     }
 
-    auto& blocks = map->GetBlocks();
-    onGround = false;
-
-    collider->SetPosition(position);
-    Linow::AddLine(collider->GetStart(), collider->GetStart() + Vec2(1.0f, 0.0f) * 16.0f * 2.0f);
-
-    for (int i = 2; i < 4; i++) {
-      Block block = GetBlock(position, Vec2(-5.0f, 5.0f), Vec2(i, 0));
-      Linow::AddQuad(block.worldPosition, block.worldPosition + 16.0f);
-
-      if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
-        for (int j = 1; j < 5; j++) {
-          if (blocks[block.index.x][block.index.y + j] != BlockType::Empty) {
-            SetPositionY(block.worldPosition.y + 16.0f * j + 16.0f - 4.0f);
-            onGround = true;
-            return;
-          }
-        }
-
-        SetPositionY(block.worldPosition.y + 16.0f - 4.0f);
-        onGround = true;
-      }
-    }
+    CheckCollisions(map, camera);
   }
 
   inline void Jump() {
     // Without vSync:
-    // SetPositionY(position.y + 16.0f - 4.0f - 5.0f);
+    // SetPositionY(position.y + map->GetBlockSize()- 4.0f - 10.0f);
     velocity = Vec2(0.0f, 4.0f * factor);
     onGround = false;
   }
