@@ -10,5 +10,5 @@ uniform float u_Frame;
 uniform float u_Direction;
 
 void main() {
-  out_Color = texture(u_Texture, ((out_Uv + vec2(u_Frame, 0)) / vec2(u_Direction * 9, 1)));
+  out_Color = texture(u_Texture, ((out_Uv + vec2(u_Frame, 0)) / vec2(u_Direction * 12, 1)));
 }

@@ -55,13 +55,13 @@ void Engine::Control() {
 
 	if (Input::KeyDown(Key::A) && character->CanMoveLeft()) {
 		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 75.0f);
-		foo -= 0.3f;
-		character->frame = truncf(foo);
+		foo -= 0.25f;
+		character->frame = roundf(foo);
 		character->direction = -1;
 	} else if (Input::KeyDown(Key::D) && character->CanMoveRight()) {
 		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 75.0f);
-		foo += 0.3f;
-		character->frame = truncf(foo);
+		foo += 0.25f;
+		character->frame = roundf(foo);
 		character->direction = 1;
 	} else {
 		character->frame = character->direction == 1 ? 0 : -1;
@@ -124,6 +124,10 @@ void Engine::Render() {
 	ImGui::Begin("View");
 		ImGui::Text(("x: " + std::to_string(mapRenderer->GetVisibleChunks().x.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().x.end)).c_str());
 		ImGui::Text(("y: " + std::to_string(mapRenderer->GetVisibleChunks().y.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().y.end)).c_str());
+
+		if (ImGui::SliderInt("Frame", &character->frame, 0, 9)) {
+			mapRenderer->rerender = true;
+		}
 	ImGui::End();
 }
 
