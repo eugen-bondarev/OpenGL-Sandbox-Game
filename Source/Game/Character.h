@@ -15,6 +15,9 @@ public:
 
   Blocks::Representations::IndexAndPosition GetBlockNearby(Vec2 fix, Vec2 offset = Vec2(0, 0)) const;
 
+  int frame { 0 };
+  int direction { 1 };
+
   void CollectLights(std::vector<Vec2>& lights) const;
   void Update(float deltaTime);
   void CheckCollisions();

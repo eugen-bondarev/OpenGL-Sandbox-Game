@@ -6,6 +6,9 @@ out vec4 out_Color;
 
 uniform sampler2D u_Texture;
 
+uniform float u_Frame;
+uniform float u_Direction;
+
 void main() {
-  out_Color = texture(u_Texture, out_Uv);
+  out_Color = texture(u_Texture, ((out_Uv + vec2(u_Frame, 0)) / vec2(u_Direction * 9, 1)));
 }

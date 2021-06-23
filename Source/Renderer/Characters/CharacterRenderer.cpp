@@ -8,7 +8,7 @@
 #include "Core/Window.h"
 
 CharacterRenderer::CharacterRenderer() {
-	const ImageAsset characterTextureAsset("Assets/Images/Characters/Character.png");
+	const ImageAsset characterTextureAsset("Assets/Images/Characters/Char.png");
 	characterTexture = CreateRef<Werwel::Texture>(
 		Werwel::Size(characterTextureAsset.GetSize().x, characterTextureAsset.GetSize().y),
 		characterTextureAsset.GetData(),
@@ -30,7 +30,7 @@ CharacterRenderer::CharacterRenderer() {
 	TextAsset fsCode("Assets/Shaders/Characters/Default.fs");
 	characterShader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View", "u_Model"
+		"u_Proj", "u_View", "u_Model", "u_Frame", "u_Direction"
 	);
 }
 
@@ -45,6 +45,8 @@ void CharacterRenderer::Render(const std::vector<Ref<Character>>& characters, Re
 
   for (const auto& character : characters) {
     characterShader->SetMat4x4("u_Model", Math::ToPtr(character->GetTransform()));
+    characterShader->SetFloat("u_Frame", static_cast<float>(character->frame));
+    characterShader->SetFloat("u_Direction", static_cast<float>(character->direction));
 		glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }

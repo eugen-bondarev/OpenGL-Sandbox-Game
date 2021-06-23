@@ -44,6 +44,8 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
+static float foo;
+
 void Engine::Control() {	
 	if (Input::KeyDown(Key::Space)) {
 		if (character->GetOnGround()) {
@@ -52,11 +54,17 @@ void Engine::Control() {
 	}
 
 	if (Input::KeyDown(Key::A) && character->CanMoveLeft()) {
-		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 100.0f);
-	}
-
-	if (Input::KeyDown(Key::D) && character->CanMoveRight()) {
-		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 100.0f);
+		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 75.0f);
+		foo -= 0.3f;
+		character->frame = truncf(foo);
+		character->direction = -1;
+	} else if (Input::KeyDown(Key::D) && character->CanMoveRight()) {
+		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 75.0f);
+		foo += 0.3f;
+		character->frame = truncf(foo);
+		character->direction = 1;
+	} else {
+		character->frame = character->direction == 1 ? 0 : -1;
 	}
 
 	if (Input::KeyDown(Key::W)) {
