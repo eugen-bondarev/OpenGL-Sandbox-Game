@@ -16,6 +16,11 @@ MapRenderer::MapRenderer(const Ref<Map>& map, const Ref<Camera>& camera) : map {
   pipeline.compositionPass = CreateRef<CompositionPass>();
 }
 
+static std::map<BlockType, Vec2> texts = {
+  { BlockType::Dirt, Vec2(1, 1) },
+  { BlockType::Grass, Vec2(1, 7) },
+};
+
 void MapRenderer::RebuildScene() { 
   FORGIO_PROFILER_SCOPE();
 
@@ -30,7 +35,7 @@ void MapRenderer::RebuildScene() {
       for (int x = chunkX * map->GetChunkSize().x; x < (chunkX + 1) * map->GetChunkSize().y; x++) {
         for (int y = chunkY * map->GetChunkSize().y; y < (chunkY + 1) * map->GetChunkSize().y; y++) {
           if (!map->BlockIsEmpty(x, y)) {
-            const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetBlocks(), x, y);
+            const Vec2 tile = texts[map->GetBlocks()[x][y]] + PickRightAngularTile(map->GetBlocks(), x, y);
             blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
 
             if ((map->BlockIsEmpty(x, y - 1) && !map->WallIsEmpty(x, y - 1))

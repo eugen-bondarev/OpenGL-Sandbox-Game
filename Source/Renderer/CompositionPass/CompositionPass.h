@@ -16,5 +16,9 @@ public:
 
   Ref<Werwel::Shader> shader;
   Ref<Werwel::VAO> canvas;
+  
 private:
+  struct {
+    Ref<Werwel::Shader> shader;
+  } sky;
 };

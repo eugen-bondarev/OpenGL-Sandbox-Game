@@ -13,6 +13,7 @@ Map::BlockSettingData Map::SetBlock(const Vec2& cameraPosition, BlockType blockT
 	Vec2 blockPos = mousePosWorldSpace / Vec2(GetBlockSize());
 
 	blockPos = round(blockPos);
+
 	auto& block = blocks[blockPos.x][blockPos.y];
 
 	BlockSettingData result;
@@ -62,7 +63,9 @@ void Map::GenerateMap() {
 			blocks[x][y] = BlockType::Dirt;
 		}
 
-		for (int y = middle; y < amountOfBlocks.y; y++) {
+		blocks[x][middle] = BlockType::Grass;
+
+		for (int y = middle + 1; y < amountOfBlocks.y; y++) {
 			blocks[x][y] = BlockType::Empty;
 		}
 	}

@@ -30,46 +30,23 @@ LightPass::LightPass() {
       Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
     );
 
-  ImageAsset lightTexture("Assets/Images/LightMask128.png");
+  ImageAsset lightTexture("Assets/Images/LightMask16.png");
   lightMesh.texture = CreateRef<Werwel::Texture>(
     Werwel::Size { lightTexture.GetSize().x, lightTexture.GetSize().y },
     lightTexture.GetData(),
     GL_RGBA,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER,          GL_LINEAR },
+    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER,          GL_LINEAR },
+    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int,     GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER },
+    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int,     GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER }
   );
 
   /**
    * VERY IMPORTANT!
    */
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-}
-
-void LightPass::Bind(const Ref<Camera>& camera) {
-  FORGIO_PROFILER_SCOPE();
-
-	Mat4 projView = Window::GetSpace() * camera->GetTransform();
-
-  glClearColor(0, 0, 0, 1);
-  fbo->Bind();
-  fbo->Clear();
-    shader->Bind();
-    shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
-      lightMesh.vao->Bind();
-      lightMesh.vao->GetIndexBuffer()->Bind();
-        lightMesh.texture->Bind();
-
-  FORGIO_SYNC_GPU();
-}
-
-void LightPass::Render(int amountOfBlocks) {
-  FORGIO_PROFILER_SCOPE();
-
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr, amountOfBlocks);
-
-  FORGIO_SYNC_GPU();
 }
 
 void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {  

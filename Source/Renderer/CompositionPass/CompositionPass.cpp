@@ -8,6 +8,14 @@ CompositionPass::CompositionPass() {
     shader->SetInt("u_ColorPassResult", 0);
     shader->SetInt("u_LightPassResult", 1);
   shader->Unbind();
+
+  TextAsset vsSky("Assets/Shaders/Sky/Sky.vs");
+  TextAsset fsSky("Assets/Shaders/Sky/Sky.fs");
+  sky.shader = CreateRef<Werwel::Shader>(vsSky.GetContent(), fsSky.GetContent(), "u_Color0", "u_Color1");
+  sky.shader->Bind();
+    sky.shader->SetVec3("u_Color0", Math::ToPtr(Vec3(176, 226, 255) / 255.0f));
+    sky.shader->SetVec3("u_Color1", Math::ToPtr(Vec3(99, 172, 255) / 255.0f));
+  sky.shader->Unbind();
   
   const auto& vers = Primitives::Block::Vertices(2, -2);
   const auto& inds = Primitives::Block::indices;
@@ -21,13 +29,15 @@ CompositionPass::CompositionPass() {
 void CompositionPass::Perform(const Ref<ColorPass>& colorPass, const Ref<LightPass>& lightPass) {   
   FORGIO_PROFILER_SCOPE();
 
-  static Color sky = Color(209, 247, 255, 255.0f) / 255.0f;
-  Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
+  // static Color sky = Color(209, 247, 255, 255.0f) / 255.0f;
+  // Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
   Werwel::GraphicsContext::Clear();
 
-  shader->Bind();
-    canvas->Bind();
-    canvas->GetIndexBuffer()->Bind();
+  canvas->Bind();
+  canvas->GetIndexBuffer()->Bind();
+    sky.shader->Bind();
+      glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+    shader->Bind();
       colorPass->fbo->GetTexture()->Bind(GL_TEXTURE0);
       lightPass->fbo->GetTexture()->Bind(GL_TEXTURE0 + 1);
         glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);

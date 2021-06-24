@@ -64,8 +64,6 @@ ColorPass::ColorPass(int amountOfBlocks) {
 void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks) {
 	FORGIO_PROFILER_SCOPE();
 
-	Werwel::GraphicsContext::ClearColor(0, 0, 0, 0);
-
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
 	fbo->Bind();	

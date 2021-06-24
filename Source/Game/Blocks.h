@@ -3,7 +3,7 @@
 enum class BlockType {
 	Empty = 0,
 	Dirt,
-	Stone
+	Grass
 };
 
 namespace Blocks {

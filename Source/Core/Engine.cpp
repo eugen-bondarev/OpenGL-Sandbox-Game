@@ -47,7 +47,7 @@ void Engine::BeginFrame() {
 static float foo;
 
 void Engine::Control() {	
-	if (Input::KeyDown(Key::Space)) {
+	if (Input::KeyPressed(Key::Space)) {
 		if (character->GetOnGround()) {
 			character->Jump();
 		}
@@ -55,26 +55,16 @@ void Engine::Control() {
 
 	if (Input::KeyDown(Key::A) && character->CanMoveLeft()) {
 		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 75.0f);
-		foo -= 0.25f;
+		foo -= 0.3f * Time::GetDelta() * 75.0f;
 		character->frame = roundf(foo);
 		character->direction = -1;
 	} else if (Input::KeyDown(Key::D) && character->CanMoveRight()) {
 		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 75.0f);
-		foo += 0.25f;
+		foo += 0.3f * Time::GetDelta() * 75.0f;
 		character->frame = roundf(foo);
 		character->direction = 1;
 	} else {
 		character->frame = character->direction == 1 ? 0 : -1;
-	}
-
-	if (Input::KeyDown(Key::W)) {
-		character->SetPosition(character->GetPosition() + Vec2(0, 1) * Time::GetDelta() * 100.0f);
-	}
-
-	if (Input::KeyDown(Key::S)) {
-		if (character->GetOnGround()) {
-			character->SetPosition(character->GetPosition() + Vec2(0, -1) * Time::GetDelta() * 100.0f);
-		}
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
@@ -113,21 +103,10 @@ void Engine::Render() {
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
 
 	ImGui::Begin("Info");
-		ImGui::Text(("OnGround:" + std::to_string(character->GetOnGround())).c_str());
-		ImGui::Text(("Ceiling:" + std::to_string(character->GetCeiling())).c_str());
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());
 		ImGui::Text(("Lights:" + std::to_string(mapRenderer->GetAmountOfRenderedLights())).c_str());
-	ImGui::End();
-	
-	ImGui::Begin("View");
-		ImGui::Text(("x: " + std::to_string(mapRenderer->GetVisibleChunks().x.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().x.end)).c_str());
-		ImGui::Text(("y: " + std::to_string(mapRenderer->GetVisibleChunks().y.start) + " " + std::to_string(mapRenderer->GetVisibleChunks().y.end)).c_str());
-
-		if (ImGui::SliderInt("Frame", &character->frame, 0, 9)) {
-			mapRenderer->rerender = true;
-		}
 	ImGui::End();
 }
 

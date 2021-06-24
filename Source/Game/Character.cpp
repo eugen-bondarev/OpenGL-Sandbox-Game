@@ -28,8 +28,6 @@ void Character::CollectLights(std::vector<Vec2>& lights) const {
 static constexpr bool RENDER_COLLIDERS = false;
 
 void Character::CheckCollisions() {
-  FORGIO_PROFILER_SCOPE();
-
   auto& blocks = map->GetBlocks();
 
   onGround = false;
@@ -102,7 +100,7 @@ void Character::CheckCollisions() {
 
 void Character::Update(float deltaTime) {
   FORGIO_PROFILER_SCOPE();
-
+  
   if (!onGround) {
     SetPosition(position + velocity * Vec2(0, 1) * deltaTime);
     velocity += -Physics::g * deltaTime * velocityFactor;
@@ -120,7 +118,7 @@ void Character::Update(float deltaTime) {
 
 void Character::Jump() {
   SetPositionY(position.y + map->GetBlockSize() - 4.0f - 10.0f);
-  velocity = Vec2(0.0f, 4.0f * velocityFactor);
+  velocity = Vec2(0.0f, 3.25f * velocityFactor);
   onGround = false;
 }
 
