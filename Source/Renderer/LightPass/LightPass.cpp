@@ -30,7 +30,7 @@ LightPass::LightPass() {
       Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
     );
 
-  ImageAsset lightTexture("Assets/Images/LightMask16.png");
+  ImageAsset lightTexture("Assets/Images/LightMask32.png");
   lightMesh.texture = CreateRef<Werwel::Texture>(
     Werwel::Size { lightTexture.GetSize().x, lightTexture.GetSize().y },
     lightTexture.GetData(),

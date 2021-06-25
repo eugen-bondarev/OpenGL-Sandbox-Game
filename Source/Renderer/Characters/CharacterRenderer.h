@@ -10,11 +10,13 @@
 
 class CharacterRenderer {
 public:
-  CharacterRenderer();
-
-  void Render(const std::vector<Ref<Character>>& characters, Ref<Camera>& camera);
+  CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera);
+  void Render();
 
 private:
+  const std::vector<Ref<Character>>& characters;
+  const Ref<Camera>& camera;
+
 	Ref<Werwel::Texture> characterTexture;
 	Ref<Werwel::VAO> characterVAO;
 	Ref<Werwel::Shader> characterShader;

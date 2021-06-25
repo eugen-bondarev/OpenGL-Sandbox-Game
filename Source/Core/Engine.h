@@ -31,6 +31,8 @@ public:
 private:
 	void PopulateBlockData();
 
+	std::vector<Ref<Character>> characters;
+
 	Ref<Map> map;
 	Ref<MapRenderer> mapRenderer;
 

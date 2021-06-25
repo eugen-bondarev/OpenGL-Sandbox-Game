@@ -7,7 +7,7 @@
 
 #include "Core/Window.h"
 
-CharacterRenderer::CharacterRenderer() {
+CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera) : characters { characters }, camera { camera } {
 	const ImageAsset characterTextureAsset("Assets/Images/Characters/Char.png");
 	characterTexture = CreateRef<Werwel::Texture>(
 		Werwel::Size(characterTextureAsset.GetSize().x, characterTextureAsset.GetSize().y),
@@ -34,7 +34,7 @@ CharacterRenderer::CharacterRenderer() {
 	);
 }
 
-void CharacterRenderer::Render(const std::vector<Ref<Character>>& characters, Ref<Camera>& camera) {  
+void CharacterRenderer::Render() {  
 	characterShader->Bind();
 	characterShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
 	characterShader->SetMat4x4("u_View", Math::ToPtr(camera->GetTransform()));

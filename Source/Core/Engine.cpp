@@ -28,7 +28,10 @@ void Engine::InitResources() {
 
 	character = CreateRef<Character>(map);
 	character->SetPosition(camera->GetPosition() + Vec2(0, 250.0f));
-	characterRenderer = CreateRef<CharacterRenderer>();
+
+	characters.push_back(character);
+
+	characterRenderer = CreateRef<CharacterRenderer>(characters, camera);
 }
 
 bool Engine::IsRunning() const {
@@ -93,7 +96,7 @@ void Engine::Render() {
 	camera->SetPosition(character->GetPosition());
 
 	mapRenderer->Render([&]() {
-		characterRenderer->Render({ character }, camera);
+		characterRenderer->Render();
 	});
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
