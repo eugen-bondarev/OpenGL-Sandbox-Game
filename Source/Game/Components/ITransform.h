@@ -3,6 +3,8 @@
 #include "Maths/Maths.h"
 
 class ITransform {
+friend class Rigidbody;
+
 public:
   inline Vec2 GetPosition() const {
     return position;

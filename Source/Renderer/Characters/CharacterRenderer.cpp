@@ -45,8 +45,8 @@ void CharacterRenderer::Render(const std::vector<Ref<Character>>& characters, Re
 
   for (const auto& character : characters) {
     characterShader->SetMat4x4("u_Model", Math::ToPtr(character->GetTransform()));
-    characterShader->SetFloat("u_Frame", static_cast<float>(character->frame));
-    characterShader->SetFloat("u_Direction", static_cast<float>(character->direction));
+    characterShader->SetFloat("u_Frame", truncf(character->GetComponent<Animator>()->GetFrame()));
+    characterShader->SetFloat("u_Direction", static_cast<float>(character->GetComponent<Animator>()->GetDirection()));
 		glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
   }
 }

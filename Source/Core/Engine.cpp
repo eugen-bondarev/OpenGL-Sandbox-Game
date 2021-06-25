@@ -44,27 +44,23 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
-static float foo;
-
 void Engine::Control() {	
 	if (Input::KeyPressed(Key::Space)) {
-		if (character->GetOnGround()) {
-			character->Jump();
+		if (character->rigidbody->GetOnGround()) {
+			character->rigidbody->Jump();
 		}
 	}
 
-	if (Input::KeyDown(Key::A) && character->CanMoveLeft()) {
+	if (Input::KeyDown(Key::A) && character->rigidbody->CanMoveLeft()) {
 		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 75.0f);
-		foo -= 0.3f * Time::GetDelta() * 75.0f;
-		character->frame = roundf(foo);
-		character->direction = -1;
-	} else if (Input::KeyDown(Key::D) && character->CanMoveRight()) {
+		character->GetComponent<Animator>()->SetFrame(character->GetComponent<Animator>()->GetFrame() - 0.3f * Time::GetDelta() * 75.0f);
+		character->GetComponent<Animator>()->SetDirection(-1);
+	} else if (Input::KeyDown(Key::D) && character->rigidbody->CanMoveRight()) {
 		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 75.0f);
-		foo += 0.3f * Time::GetDelta() * 75.0f;
-		character->frame = roundf(foo);
-		character->direction = 1;
+		character->GetComponent<Animator>()->SetFrame(character->GetComponent<Animator>()->GetFrame() + 0.3f * Time::GetDelta() * 75.0f);
+		character->GetComponent<Animator>()->SetDirection(1);
 	} else {
-		character->frame = character->direction == 1 ? 0 : -1;
+		character->GetComponent<Animator>()->SetFrame(character->GetComponent<Animator>()->GetDirection() == 1 ? 0 : -1);
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
@@ -92,7 +88,7 @@ void Engine::Render() {
 		mapRenderer->rerender = true;
 	});
 
-	character->Update(Time::GetDelta());
+	character->rigidbody->Update();
 	character->CollectLights(mapRenderer->GetAdditionalLightData());
 	camera->SetPosition(character->GetPosition());
 

@@ -2,6 +2,7 @@
 
 // #define FORGIO_ENABLE_PROFILING
 // #define FORGIO_ENABLE_GPU_SYNC
+#define LINOW_USE_GLM
 
 #include <functional>
 #include <iostream>

@@ -4,7 +4,7 @@
 
 #include "Core/Window.h"
 
-#include "../ITransform.h"
+#include "../Components/ITransform.h"
 
 class Camera : public ITransform {
 public:
