@@ -20,7 +20,7 @@ Engine::Engine() {
 
 void Engine::InitResources() {
 	NATURAFORGE_PROFILER_SCOPE();
-	map = CreateRef<Map>(Size(5, 5), Size(500, 500));
+	map = CreateRef<Map>(Vec2(5, 5), Vec2(500, 500));
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 	map->CalculateVisibleChunks(camera->GetPosition());

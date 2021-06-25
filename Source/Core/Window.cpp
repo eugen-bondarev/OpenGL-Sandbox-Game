@@ -2,7 +2,7 @@
 
 #include "Werwel/GraphicsContext.h"
 
-void Window::Create(Size size, Mode mode, bool maximize, bool vSync, const std::string &title) {
+void Window::Create(Vec2 size, Mode mode, bool maximize, bool vSync, const std::string &title) {
 	Window::size = size;
 
 	glfwInit();
@@ -64,7 +64,7 @@ void Window::Destroy() {
 	glfwTerminate();
 }
 
-Size Window::GetSize() {
+Vec2 Window::GetSize() {
 	return size;
 }
 

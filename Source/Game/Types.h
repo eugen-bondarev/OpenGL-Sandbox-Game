@@ -29,4 +29,4 @@ using bounds_t = struct __bounds_t {
 
 using chunk_t = bounds_t;
 
-using light_data_t = std::vector<Pos>;
+using light_data_t = std::vector<Vec2>;

@@ -1,51 +1,45 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 				17)
 
-set(PROJECTOR_PROJECT_NAME      Naturaforge)
-set(PROJECTOR_PROJECT_VERSION   0.1.6)
-set(PROJECTOR_APP_NAME          Naturaforge)
-set(PROJECTOR_SRC_DIR_NAME      Source)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(PROJ_PROJECT_VERSION   		0.1.7)
+set(PROJ_PROJECT_NAME      		Naturaforge)
+set(PROJ_APP_NAME          		Naturaforge)
 
-project(${PROJECTOR_PROJECT_NAME} VERSION ${PROJECTOR_PROJECT_VERSION})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 	${CMAKE_BINARY_DIR}/bin)
+set(GLEW_INCLUDE_DIR 								External/glew/include)
+set(PROJ_SRC_DIR_NAME      					Source)
 
-file(GLOB src 
-	${PROJECTOR_SRC_DIR_NAME}/*.cpp
-	${PROJECTOR_SRC_DIR_NAME}/**/*.cpp
-	${PROJECTOR_SRC_DIR_NAME}/**/**/*.cpp
-	${PROJECTOR_SRC_DIR_NAME}/**/**/**/*.cpp
-	${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/*.cpp
-	${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/**/*.cpp
-)
+project(${PROJ_PROJECT_NAME} VERSION ${PROJ_PROJECT_VERSION})
 
-file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
-file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+file(GLOB_RECURSE src ${PROJ_SRC_DIR_NAME}/*.cpp)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+endif()
 
-add_executable(${PROJECTOR_APP_NAME} ${src})
+add_executable(${PROJ_APP_NAME} ${src})
 
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/Source)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/External)
-target_precompile_headers(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/Pch/Pch.h)
+target_precompile_headers(${PROJ_APP_NAME} PUBLIC ${PROJ_SRC_DIR_NAME}/Pch/Pch.h)
 
 add_subdirectory(External/glfw)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glfw/include)
-target_link_libraries(${PROJECTOR_APP_NAME} glfw)
-
-set(GLEW_INCLUDE_DIR External/glew/include)
-add_subdirectory(External/glew/build/cmake)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${GLEW_INCLUDE_DIR})
-target_link_libraries(${PROJECTOR_APP_NAME} glew_s)
-
 add_subdirectory(External/Werwel)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/Werwel/Include)
-target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
-target_link_libraries(Werwel glew_s)
-target_link_libraries(Werwel ole32 oleaut32 imm32)
-target_link_libraries(${PROJECTOR_APP_NAME} Werwel)
+add_subdirectory(External/glew/build/cmake)
 
-add_subdirectory(External/glm)
-target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glm)
+target_include_directories(${PROJ_APP_NAME} PUBLIC 
+	External/glfw/include 
+	External/Werwel/Include 
+	External/glm
+	${GLEW_INCLUDE_DIR} 
+	${CMAKE_SOURCE_DIR}/Source
+	${PROJ_SRC_DIR_NAME}/External
+)
+target_link_libraries(${PROJ_APP_NAME} glfw glew_s Werwel)
+
+target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
+target_link_libraries(Werwel glew_s ole32 oleaut32 imm32)

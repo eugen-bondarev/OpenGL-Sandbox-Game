@@ -14,7 +14,7 @@ public:
 		Windowed
 	};
 
-	static void Create(Size size = { 1920, 1080 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = false, const std::string& title = "Forgio");
+	static void Create(Vec2 size = { 1920, 1080 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = false, const std::string& title = "Forgio");
 	static void Destroy();
 
 	static bool ShouldClose();
@@ -22,7 +22,7 @@ public:
 	static void PollEvents();
 	static void SwapBuffers();
 
-	static Size GetSize();
+	static Vec2 GetSize();
 	static Mat4 GetSpace();
 	static Vec2 GetMousePosition();
 
@@ -34,7 +34,7 @@ public:
 	}
 
 private:
-	inline static Size size;
+	inline static Vec2 size;
 	inline static Mat4 space;
 	inline static void CalculateSpace();
 

@@ -36,7 +36,7 @@ public:
     return transform;
   }
 
-  inline virtual void CalculateTransform() = 0;
+  virtual void CalculateTransform() = 0;
 
 protected:
   Vec2 position;

@@ -7,7 +7,7 @@
 
 class Map {
 public:
-  Map(Size chunkSize, Size amountOfChunks, float blockSize = 16.0f);
+  Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
 
 	struct BlockSettingData {
 		Vec2 block { -1, -1 };
@@ -25,8 +25,8 @@ public:
 	
 	Vec2 WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4& projectionMatrix, const Mat4& viewMatrix) const;
 
-  Size GetChunkSize() const;
-  Size GetAmountOfChunks() const;
+  Vec2 GetChunkSize() const;
+  Vec2 GetAmountOfChunks() const;
 	Vec2 GetCenter() const;
 
 	void CalculateVisibleChunks(Vec2 viewPos);	
@@ -46,9 +46,9 @@ private:
 	blocks_t blocks;
 	walls_t walls;
 
-  Size chunkSize;
-  Size amountOfChunks;
-	Size amountOfBlocks;
+  Vec2 chunkSize;
+  Vec2 amountOfChunks;
+	Vec2 amountOfBlocks;
 
 	float blockSize;
 

@@ -2,6 +2,8 @@
 
 #include "Asset.h"
 
+#include "Maths/Maths.h"
+
 class ImageAsset : public Asset {
 public:
 	ImageAsset(const std::string& path);
@@ -12,11 +14,11 @@ public:
 	virtual void Load(const std::string& path) override;
 
 	const unsigned char* GetData() const;
-	Size GetSize() const;
+	Vec2 GetSize() const;
 	int GetChannels() const;
 
 private:
 	unsigned char* data;
-	Size size;
+	Vec2 size;
 	int amountOfChannels;
 };

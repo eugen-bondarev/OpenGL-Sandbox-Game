@@ -21,7 +21,7 @@ const unsigned char* ImageAsset::GetData() const {
 	return data;
 }
 
-Size ImageAsset::GetSize() const {
+Vec2 ImageAsset::GetSize() const {
 	return size;
 }
 

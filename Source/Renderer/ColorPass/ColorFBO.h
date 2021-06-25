@@ -3,9 +3,11 @@
 #include "Werwel/FBO.h"
 #include "Werwel/Texture.h"
 
+#include "Maths/Maths.h"
+
 class ColorFBO : public Werwel::FBO {
 public:
-  inline ColorFBO(Size size) : Werwel::FBO(Werwel::Size { size.x, size.y }, GL_COLOR_BUFFER_BIT, { GL_COLOR_ATTACHMENT0 }) {
+  inline ColorFBO(Vec2 size) : Werwel::FBO(Werwel::Size { size.x, size.y }, GL_COLOR_BUFFER_BIT, { GL_COLOR_ATTACHMENT0 }) {
     BeginInit();
 
 		attachments[GL_COLOR_ATTACHMENT0] = CreateRef<Werwel::Texture>(

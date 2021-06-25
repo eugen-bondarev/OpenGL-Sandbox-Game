@@ -1,6 +1,6 @@
 #include "Map.h"
 
-Map::Map(Size chunkSize, Size amountOfChunks, float blockSize) : chunkSize { chunkSize }, amountOfChunks { amountOfChunks }, blockSize { blockSize } {
+Map::Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize { chunkSize }, amountOfChunks { amountOfChunks }, blockSize { blockSize } {
 	GenerateMap();
 }
 
@@ -27,8 +27,8 @@ Map::BlockSettingData Map::SetBlock(const Vec2& cameraPosition, BlockType blockT
 	return result;
 }
 
-void Map::CalculateVisibleChunks(Pos viewPos) {	
-	const Pos middle = WhatChunk(GetCenter());
+void Map::CalculateVisibleChunks(Vec2 viewPos) {	
+	const Vec2 middle = WhatChunk(GetCenter());
 	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
 	const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
 	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
@@ -99,11 +99,11 @@ Vec2 Map::WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4& projectionMat
 	return block;
 }
 
-Size Map::GetChunkSize() const {
+Vec2 Map::GetChunkSize() const {
 	return chunkSize;
 }
 
-Size Map::GetAmountOfChunks() const {
+Vec2 Map::GetAmountOfChunks() const {
 	return amountOfChunks;
 }
 
