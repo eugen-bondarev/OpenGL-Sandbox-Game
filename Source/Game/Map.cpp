@@ -1,7 +1,7 @@
 #include "Map.h"
 
 Map::Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize { chunkSize }, amountOfChunks { amountOfChunks }, blockSize { blockSize } {
-	GenerateMap();
+	GenerateMap(DEFAULT_DATA_SET);
 }
 
 Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType blockType) {	
@@ -66,8 +66,8 @@ bool Map::HasEmptyNeighbor(int x, int y) const {
 	return HasNeighbor(x, y, BlockType::Empty);
 }
 
-void Map::GenerateMap() {
-	srand(664);
+void Map::GenerateMap(MapGenerationDataSet generationDataSet) {
+	srand(generationDataSet.seed);
 
 	amountOfBlocks = GetChunkSize() * GetAmountOfChunks();
 	const int amountOfColumns = amountOfBlocks.x;
@@ -82,12 +82,21 @@ void Map::GenerateMap() {
 
 	std::vector<int> points;
 
+	// static int maxHeight = 50;
+	// static int maxDepth = 25;
+	// static int maxSlopeMistake = 2;	
+
+	// static int maxLength = 200;
+	// static int minLength = 15;
+
+	// static int blockProbabilityInPercent = 10;
+
 	for (int x = 0; x < amountOfBlocks.x; x++) {
 		for (int y = 0; y < middle; y++) {
 			blocks[x][y] = BlockType::Dirt;
 		}
 
-		if (rand() % 100 < 10) {
+		if (rand() % 100 < generationDataSet.blockProbabilityInPercent) {
 			points.push_back(x);
 		}
 
@@ -100,10 +109,8 @@ void Map::GenerateMap() {
 	bool lastType = 0;
 
 	for (const int point : points) {
-		int l = rand() % 200 + 15;
+		int l = std::max<int>(rand() % generationDataSet.maxLength, generationDataSet.minLength);
 		int m = middle;
-
-		static int maxSlopeMistake = 2;
 
 		bool type = rand() % 2;
 
@@ -112,17 +119,17 @@ void Map::GenerateMap() {
 			continue;
 		}
 
-		if (type) {			
-			int h = rand() % 25;
-			int currentHeight = h;
+		int h = (type ? 1 : -1) * rand() % (type ? generationDataSet.maxHeight : generationDataSet.maxDepth);
+		int currentHeight = h;
 
+		if (type) {
 			for (int x = point; x < point + l / 2; x++) {
 				for (int y = m; y < m + currentHeight; y++) {
 					SetBlock(x, y, BlockType::Dirt);
 				}
 
 				int slope = currentHeight / (point + l / 2 - x);
-				currentHeight -= slope + rand() % (maxSlopeMistake + 1);
+				currentHeight -= slope + rand() % (generationDataSet.maxSlopeMistake + 1);
 			}
 
 			currentHeight = h;
@@ -133,21 +140,16 @@ void Map::GenerateMap() {
 				}
 
 				int slope = currentHeight / -(point - l / 2 - x);
-				currentHeight -= slope + rand() % (maxSlopeMistake + 1);
+				currentHeight -= slope + rand() % (generationDataSet.maxSlopeMistake + 1);
 			}
-
 		} else {
-			
-			int h = -(rand() % 25);
-			int currentHeight = h;
-
 			for (int x = point; x < point + l / 2; x++) {
 				for (int y = m; y > m + currentHeight; y--) {
 					SetBlock(x, y, BlockType::Empty);
 				}
 
 				int slope = currentHeight / -(point + l / 2 - x);
-				currentHeight += slope + rand() % (maxSlopeMistake + 1);
+				currentHeight += slope + rand() % (generationDataSet.maxSlopeMistake + 1);
 			}
 
 			currentHeight = h;
@@ -158,7 +160,7 @@ void Map::GenerateMap() {
 				}
 
 				int slope = currentHeight / (point - l / 2 - x);
-				currentHeight += slope + rand() % (maxSlopeMistake + 1);
+				currentHeight += slope + rand() % (generationDataSet.maxSlopeMistake + 1);
 			}
 		}
 

@@ -6,7 +6,7 @@ class Entity;
 
 class Animator : public Component {
 public:
-  Animator(const Ref<Entity> entity) : Component(entity) {
+  Animator(Entity* entity) : Component(entity) {
 
   }
 

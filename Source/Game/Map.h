@@ -5,6 +5,21 @@
 #include "Blocks.h"
 #include "Types.h"
 
+struct MapGenerationDataSet {
+	int maxHeight = 50;
+	int maxDepth = 25;
+	int maxSlopeMistake = 2;	
+
+	int maxLength = 200;
+	int minLength = 15;
+
+	int blockProbabilityInPercent = 10;
+
+	int seed = 669;
+};
+
+inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
+
 class Map {
 public:
   Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
@@ -58,7 +73,7 @@ private:
 
 	float blockSize;
 
-	void GenerateMap();
+	void GenerateMap(MapGenerationDataSet generationDataSet);
 
 	bounds_t visibleChunks;
 };

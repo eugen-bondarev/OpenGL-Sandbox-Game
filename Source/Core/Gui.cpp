@@ -6,6 +6,7 @@ void Gui::Create() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = std::string(NATURAFORGE_ROOT + "imgui.ini").c_str();
     io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetGlfwWindow(), true);

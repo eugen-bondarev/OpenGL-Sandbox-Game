@@ -54,15 +54,15 @@ void Engine::Control() {
 		}
 	}
 
-	static float speed = 1500.0f;
+	static float speed = 150.0f;
 
 	if (Input::KeyDown(Key::A) && character->rigidbody->CanMoveLeft()) {
 		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * speed);
-		character->animator->SetFrame(character->animator->GetFrame() - 0.3f * Time::GetDelta() * speed);
+		character->animator->SetFrame(character->animator->GetFrame() - 0.2f * Time::GetDelta() * speed);
 		character->animator->SetDirection(-1);
 	} else if (Input::KeyDown(Key::D) && character->rigidbody->CanMoveRight()) {
 		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * speed);
-		character->animator->SetFrame(character->animator->GetFrame() + 0.3f * Time::GetDelta() * speed);
+		character->animator->SetFrame(character->animator->GetFrame() + 0.2f * Time::GetDelta() * speed);
 		character->animator->SetDirection(1);
 	} else {
 		character->animator->SetFrame(character->animator->GetDirection() == 1 ? 0 : -1);
@@ -101,13 +101,13 @@ void Engine::Render() {
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
 
-	ImGui::Begin("Info");
+	ImGui::SetNextWindowSize(ImVec2(140, 100));
+	ImGui::SetNextWindowPos(ImVec2(20, 20));
+	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());
 		ImGui::Text(("Lights:" + std::to_string(mapRenderer->GetAmountOfRenderedLights())).c_str());
-		ImGui::Text(std::to_string(map->GetVisibleChunks().x.start).c_str());
-		ImGui::Text(std::to_string(map->GetVisibleChunks().x.end).c_str());
 	ImGui::End();
 }
 
