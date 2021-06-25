@@ -8,10 +8,12 @@
 
 #include "Game/Control/Camera.h"
 
-class CharacterRenderer {
+#include "../Renderer.h"
+
+class CharacterRenderer : public IRenderer {
 public:
   CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera);
-  void Render();
+  void Render() override;
 
 private:
   const std::vector<Ref<Character>>& characters;

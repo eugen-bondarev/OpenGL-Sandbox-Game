@@ -6,6 +6,8 @@
 #include "LightPass/LightPass.h"
 #include "CompositionPass/CompositionPass.h"
 
+#include "Renderer.h"
+
 class MapRenderer
 {
 public:
@@ -14,10 +16,10 @@ public:
   void RebuildScene();
   void UpdateScene();
   void CheckVisibleChunks();
-  void PerformRenderPasses(std::function<void()> AddToFBO);
+  void PerformRenderPasses(const std::vector<Ref<IRenderer>>& additionalRenderers);
   void Compose();
 
-  void Render(std::function<void()> AddToFBO);
+  void Render(const std::vector<Ref<IRenderer>>& additionalRenderers);
 
   inline const bounds_t& GetVisibleChunks() const {
     return visibleChunks;

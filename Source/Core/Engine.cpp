@@ -89,15 +89,13 @@ void Engine::Render() {
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
 		mapRenderer->rerender = true;
+		character->CollectLights(mapRenderer->GetAdditionalLightData());
 	});
 
 	character->rigidbody->Update();
-	character->CollectLights(mapRenderer->GetAdditionalLightData());
 	camera->SetPosition(character->GetPosition());
 
-	mapRenderer->Render([&]() {
-		characterRenderer->Render();
-	});
+	mapRenderer->Render({ characterRenderer });
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
 

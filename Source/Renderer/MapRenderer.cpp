@@ -90,9 +90,13 @@ void MapRenderer::CheckVisibleChunks() {
   }
 }
 
-void MapRenderer::PerformRenderPasses(std::function<void()> AddToFBO) {
+void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>>& additionalRenderers) {
   pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size());
-  AddToFBO();
+  
+  for (const auto& renderer : additionalRenderers) {
+    renderer->Render();
+  }
+
   pipeline.lightPass->Perform(camera, lightData.size() + additionalLightData.size());
 }
 
@@ -100,7 +104,7 @@ void MapRenderer::Compose() {
   pipeline.compositionPass->Perform(pipeline.colorPass, pipeline.lightPass);
 }
 
-void MapRenderer::Render(std::function<void()> AddToFBO) {
+void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers) {
   CheckVisibleChunks();
 
   if (rerender) {
@@ -109,7 +113,7 @@ void MapRenderer::Render(std::function<void()> AddToFBO) {
       chunksUpdated = false; 
     }
     UpdateScene();    
-    PerformRenderPasses(AddToFBO);
+    PerformRenderPasses(additionalRenderers);
   }  
   Compose();
 
