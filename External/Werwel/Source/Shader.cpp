@@ -46,7 +46,7 @@ GLuint Shader::CreateShader(const std::string& shaderCode, GLuint shaderType) {
 		log.resize(length);
 		glGetShaderInfoLog(shaderID, length, &length, &log[0]);
 
-		Str errorFunctionName = "--------[ " __FUNCTION__ " ]--------";
+		Str errorFunctionName = "--------[ " "Foo" " ]--------";
 		Str separator; for (size_t i = 0; i < errorFunctionName.size(); i++) separator += "-";
 
 		WERWEL_LOG_OUT(errorFunctionName);

@@ -278,7 +278,7 @@ private:
       log.resize(length);
       glGetShaderInfoLog(shaderID, length, &length, &log[0]);
 
-      Str errorFunctionName = "--------[ " __FUNCTION__ " ]--------";
+      Str errorFunctionName = "--------[ " "Linow shader" " ]--------";
       LINOW_LOG_OUT(errorFunctionName);
       LINOW_LOG_OUT("Error occured while compiling a shader: " << log);
       LINOW_NEW_LINE();

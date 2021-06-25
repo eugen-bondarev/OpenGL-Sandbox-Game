@@ -85,7 +85,7 @@ void Rigidbody::CheckCollisions() {
 }
 
 void Rigidbody::Update() {
-  FORGIO_PROFILER_SCOPE();
+  NATURAFORGE_PROFILER_SCOPE();
   
   if (!onGround) {
     entity->SetPosition(entity->position + velocity * Vec2(0, 1) * Time::GetDelta());

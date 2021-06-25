@@ -22,7 +22,7 @@ static std::map<BlockType, Vec2> texts = {
 };
 
 void MapRenderer::RebuildScene() { 
-  FORGIO_PROFILER_SCOPE();
+  NATURAFORGE_PROFILER_SCOPE();
 
   blocksData.clear();
   wallsData.clear();
@@ -68,7 +68,7 @@ void MapRenderer::RebuildScene() {
 }
 
 void MapRenderer::UpdateScene() {
-  FORGIO_PROFILER_SCOPE();
+  NATURAFORGE_PROFILER_SCOPE();
   pipeline.colorPass->blocks.vbo->Store(blocksData);
   pipeline.colorPass->walls.vbo->Store(wallsData);
 
@@ -78,7 +78,7 @@ void MapRenderer::UpdateScene() {
   }
   
   pipeline.lightPass->vbo->Store(copy);
-  FORGIO_SYNC_GPU();
+  NATURAFORGE_SYNC_GPU();
 }
 
 void MapRenderer::CheckVisibleChunks() {

@@ -50,7 +50,7 @@ LightPass::LightPass() {
 }
 
 void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {  
-  FORGIO_PROFILER_SCOPE();  
+  NATURAFORGE_PROFILER_SCOPE();  
 
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
@@ -64,5 +64,5 @@ void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {
           glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
   fbo->Unbind();
 
-  FORGIO_SYNC_GPU();
+  NATURAFORGE_SYNC_GPU();
 }

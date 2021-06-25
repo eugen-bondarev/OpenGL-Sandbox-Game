@@ -19,7 +19,7 @@ Engine::Engine() {
 }
 
 void Engine::InitResources() {
-	FORGIO_PROFILER_SCOPE();
+	NATURAFORGE_PROFILER_SCOPE();
 	map = CreateRef<Map>(Size(5, 5), Size(500, 500));
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
@@ -64,7 +64,7 @@ void Engine::Control() {
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
-		Map::BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
+		Map::BlockSettingData settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
 			mapRenderer->rerender = true;
@@ -73,7 +73,7 @@ void Engine::Control() {
 	}
 
 	if (Input::MouseButtonDown(Button::Right)) {
-		Map::BlockSettingData& settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
+		Map::BlockSettingData settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
 			mapRenderer->rerender = true;

@@ -12,16 +12,16 @@ std::string DefineRoot(int amountOfArguments, char* arguments[]) {
 }
 
 int main(int amountOfArguments, char* arguments[]) {
-	FORGIO_PROFILER_BEGIN("Forgio");
+	NATURAFORGE_PROFILER_BEGIN("Forgio");
 
-	FORGIO_ROOT = DefineRoot(amountOfArguments, arguments);
+	NATURAFORGE_ROOT = DefineRoot(amountOfArguments, arguments);
 
 	Engine engine;
 
 	engine.InitResources();
 
 	while (engine.IsRunning()) {
-		FORGIO_PROFILER_NAMED_SCOPE("New frame");
+		NATURAFORGE_PROFILER_NAMED_SCOPE("New frame");
 
 		engine.BeginFrame();
 		engine.Control();
@@ -29,7 +29,7 @@ int main(int amountOfArguments, char* arguments[]) {
 		engine.EndFrame();
 	}
 	
-	FORGIO_PROFILER_END();
+	NATURAFORGE_PROFILER_END();
 
 	return 0;
 }

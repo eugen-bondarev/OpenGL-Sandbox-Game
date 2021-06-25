@@ -8,7 +8,7 @@ TextAsset::TextAsset(const std::string& path) {
 
 void TextAsset::Load(const std::string& path) {
 	std::ifstream file;
-	file.open(FORGIO_ROOT + path);
+	file.open(NATURAFORGE_ROOT + path);
 
 	while (!file.eof()) {
 		std::string line;

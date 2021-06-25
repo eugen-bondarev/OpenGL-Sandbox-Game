@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_CXX_STANDARD 17)
+
 set(PROJECTOR_PROJECT_NAME      Naturaforge)
 set(PROJECTOR_PROJECT_VERSION   0.1.6)
 set(PROJECTOR_APP_NAME          Naturaforge)
 set(PROJECTOR_SRC_DIR_NAME      Source)
-set(CMAKE_CXX_FLAGS             "/std:c++17 /EHsc")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 project(${PROJECTOR_PROJECT_NAME} VERSION ${PROJECTOR_PROJECT_VERSION})
 
@@ -17,8 +19,8 @@ file(GLOB src
 	${PROJECTOR_SRC_DIR_NAME}/**/**/**/**/**/*.cpp
 )
 
-file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
+# file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -26,7 +28,7 @@ add_executable(${PROJECTOR_APP_NAME} ${src})
 
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/Source)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/External)
-target_precompile_headers(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/Pch.h)
+target_precompile_headers(${PROJECTOR_APP_NAME} PUBLIC ${PROJECTOR_SRC_DIR_NAME}/Pch/Pch.h)
 
 add_subdirectory(External/glfw)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/glfw/include)
@@ -40,6 +42,8 @@ target_link_libraries(${PROJECTOR_APP_NAME} glew_s)
 add_subdirectory(External/Werwel)
 target_include_directories(${PROJECTOR_APP_NAME} PUBLIC External/Werwel/Include)
 target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
+target_link_libraries(Werwel glew_s)
+target_link_libraries(Werwel ole32 oleaut32 imm32)
 target_link_libraries(${PROJECTOR_APP_NAME} Werwel)
 
 add_subdirectory(External/glm)

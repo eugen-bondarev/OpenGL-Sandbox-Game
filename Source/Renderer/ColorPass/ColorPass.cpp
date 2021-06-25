@@ -24,7 +24,9 @@ ColorPass::ColorPass(int amountOfBlocks) {
 		Werwel::Size(tileMapTexture.GetSize().x, tileMapTexture.GetSize().y),tileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT }
 	);
 
 	const auto& vers = Primitives::Block::Vertices(16, 16);
@@ -62,7 +64,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 }
 
 void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks) {
-	FORGIO_PROFILER_SCOPE();
+	NATURAFORGE_PROFILER_SCOPE();
 
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
@@ -78,5 +80,5 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 				blocks.vao->GetIndexBuffer()->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
 
-	FORGIO_SYNC_GPU();
+	NATURAFORGE_SYNC_GPU();
 }

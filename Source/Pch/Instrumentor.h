@@ -14,7 +14,11 @@
 //
 // You will probably want to macro-fy this, to switch on/off easily and use things like __FUNCSIG__ for the profile name.
 //
+
+
 #pragma once
+
+#ifdef NATURAFORGE_ENABLE_PROFILING
 
 #include <string>
 #include <chrono>
@@ -121,3 +125,14 @@ private:
   std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;
   bool m_Stopped;
 };
+
+# define NATURAFORGE_PROFILER_BEGIN(NAME)        Instrumentor::Get().BeginSession(NAME)
+# define NATURAFORGE_PROFILER_END()              Instrumentor::Get().EndSession()
+# define NATURAFORGE_PROFILER_SCOPE()            InstrumentationTimer timer(NATURAFORGE_FUNC_SIG)
+# define NATURAFORGE_PROFILER_NAMED_SCOPE(NAME)  InstrumentationTimer timer(NAME)
+#else
+# define NATURAFORGE_PROFILER_BEGIN(NAME)        NATURAFORGE_VOID_ASSEMBLY
+# define NATURAFORGE_PROFILER_END()              NATURAFORGE_VOID_ASSEMBLY
+# define NATURAFORGE_PROFILER_SCOPE()            NATURAFORGE_VOID_ASSEMBLY
+# define NATURAFORGE_PROFILER_NAMED_SCOPE(NAME)  NATURAFORGE_VOID_ASSEMBLY
+#endif

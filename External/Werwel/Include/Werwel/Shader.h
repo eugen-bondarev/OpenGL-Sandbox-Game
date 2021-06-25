@@ -23,7 +23,7 @@ public:
 			CreateUniform(uniforms[i]);
 		}
 
-		DEBUG_LOG_OUT("[Call] Shader constructor");
+		WERWEL_DEBUG_LOG_OUT("[Call] Shader constructor");
 	}
 
 	~Shader() override;

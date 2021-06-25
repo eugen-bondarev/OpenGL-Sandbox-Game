@@ -29,7 +29,7 @@ protected:
 
 private:
 	GpuEntity(const GpuEntity&) = delete;
-	GpuEntity operator=(const GpuEntity&) = delete;
+	GpuEntity& operator=(const GpuEntity&) = delete;
 };
 
 }

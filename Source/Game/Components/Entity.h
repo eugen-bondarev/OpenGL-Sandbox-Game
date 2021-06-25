@@ -12,8 +12,14 @@ public:
 
   template <typename T, typename... Args>
   T* AddComponent(Args... args) {
-		std::string rawName = typeid(T).name();
-		std::string prettyName = rawName.substr(rawName.find_first_of(' ') + 1, rawName.size());
+    #ifdef NATURAFORGE_COMPILER_VS
+      std::string rawName = typeid(T).name();
+      std::string prettyName = rawName.substr(rawName.find_first_of(' ') + 1, rawName.size());
+    #else
+      std::string rawName = typeid(T).name();
+      std::string prettyName = rawName.substr(rawName.find_first_of(' ') + 2, rawName.size());
+    #endif
+
     components[prettyName] = CreateRef<T>(Ref<Entity>(this), std::forward<Args>(args)...);
 
     if (prettyName == "Animator") {
@@ -29,9 +35,7 @@ public:
 
   template <typename T>
   T* GetComponent() {
-		std::string rawName = typeid(T).name();
-		std::string prettyName = rawName.substr(rawName.find_first_of(' ') + 1, rawName.size());
-
+    std::string prettyName = NATURAFORGE_CLASS_NAME(T);
     return static_cast<T*>(components[prettyName].get());
   }
 };
