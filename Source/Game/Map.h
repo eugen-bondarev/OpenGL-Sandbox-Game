@@ -20,6 +20,9 @@ public:
 
 	BlockSettingData PlaceBlock(const Vec2& viewMatrix, BlockType blockType);
 
+	bool HasNeighbor(int x, int y, BlockType block) const;
+	bool HasEmptyNeighbor(int x, int y) const;
+
 	bool CheckBounds(int x, int y) const;
 	void SetBlock(int x, int y, BlockType type);
 

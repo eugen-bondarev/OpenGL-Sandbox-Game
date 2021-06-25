@@ -56,6 +56,16 @@ void Map::SetBlock(int x, int y, BlockType type) {
 	}
 }
 
+bool Map::HasNeighbor(int x, int y, BlockType block) const {
+	if (x < 1 || x > blocks.size() - 2) return false;
+
+	return blocks[x - 1][y + 1] == block || blocks[x - 1][y] == block || blocks[x + 1][y] == block || blocks[x][y + 1] == block;
+}
+
+bool Map::HasEmptyNeighbor(int x, int y) const {
+	return HasNeighbor(x, y, BlockType::Empty);
+}
+
 void Map::GenerateMap() {
 	srand(664);
 
@@ -77,9 +87,7 @@ void Map::GenerateMap() {
 			blocks[x][y] = BlockType::Dirt;
 		}
 
-		blocks[x][middle] = BlockType::Grass;
-
-		if (rand() % 100 < 50) {
+		if (rand() % 100 < 10) {
 			points.push_back(x);
 		}
 
@@ -90,11 +98,12 @@ void Map::GenerateMap() {
 
 	int lastChange = 0;
 	bool lastType = 0;
-	middle += 1;
 
 	for (const int point : points) {
 		int l = rand() % 200 + 15;
 		int m = middle;
+
+		static int maxSlopeMistake = 2;
 
 		bool type = rand() % 2;
 
@@ -103,8 +112,7 @@ void Map::GenerateMap() {
 			continue;
 		}
 
-		if (type) {
-			
+		if (type) {			
 			int h = rand() % 25;
 			int currentHeight = h;
 
@@ -114,7 +122,7 @@ void Map::GenerateMap() {
 				}
 
 				int slope = currentHeight / (point + l / 2 - x);
-				currentHeight -= slope + rand() % 2;
+				currentHeight -= slope + rand() % (maxSlopeMistake + 1);
 			}
 
 			currentHeight = h;
@@ -125,7 +133,7 @@ void Map::GenerateMap() {
 				}
 
 				int slope = currentHeight / -(point - l / 2 - x);
-				currentHeight -= slope + rand() % 2;
+				currentHeight -= slope + rand() % (maxSlopeMistake + 1);
 			}
 
 		} else {
@@ -139,7 +147,7 @@ void Map::GenerateMap() {
 				}
 
 				int slope = currentHeight / -(point + l / 2 - x);
-				currentHeight += slope + rand() % 2;
+				currentHeight += slope + rand() % (maxSlopeMistake + 1);
 			}
 
 			currentHeight = h;
@@ -150,12 +158,20 @@ void Map::GenerateMap() {
 				}
 
 				int slope = currentHeight / (point - l / 2 - x);
-				currentHeight += slope + rand() % 2;
+				currentHeight += slope + rand() % (maxSlopeMistake + 1);
 			}
 		}
 
 		lastChange = point + l / 2;
 		lastType = type;
+	}
+
+	for (int x = 0; x < blocks.size(); x++) {
+		for (int y = 0; y < blocks[x].size(); y++) {
+			if (blocks[x][y] == BlockType::Dirt && HasEmptyNeighbor(x, y)) {
+				SetBlock(x, y, BlockType::Grass);
+			}
+		}
 	}
 
 	walls = blocks;
