@@ -38,13 +38,15 @@ void MapRenderer::RebuildScene() {
             const Vec2 tile = texts[map->GetBlocks()[x][y]] + PickRightAngularTile(map->GetBlocks(), x, y);
             blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
 
-            if ((map->BlockIsEmpty(x, y - 1) && !map->WallIsEmpty(x, y - 1))
-            ||  (map->BlockIsEmpty(x - 1, y) && !map->WallIsEmpty(x - 1, y))
-            ||  (map->BlockIsEmpty(x - 1, y - 1) && !map->WallIsEmpty(x - 1, y - 1))
-            ) {
-              if (!map->WallIs(x, y, WallType::Empty)) {
-                const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
-                wallsData.emplace_back(x * map->GetBlockSize() + offset, (y) * map->GetBlockSize() + offset, tile.x, tile.y);
+            if (x > 1 && y > 0) {
+              if ((map->BlockIsEmpty(x, std::max(y - 1, 0)) && !map->WallIsEmpty(x, y - 1))
+              ||  (map->BlockIsEmpty(x - 1, y) && !map->WallIsEmpty(x - 1, y))
+              ||  (map->BlockIsEmpty(x - 1, y - 1) && !map->WallIsEmpty(x - 1, y - 1))
+              ) {
+                if (!map->WallIs(x, y, WallType::Empty)) {
+                  const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
+                  wallsData.emplace_back(x * map->GetBlockSize() + offset, (y) * map->GetBlockSize() + offset, tile.x, tile.y);
+                }
               }
             }
           } else {

@@ -54,20 +54,22 @@ void Engine::Control() {
 		}
 	}
 
+	static float speed = 1500.0f;
+
 	if (Input::KeyDown(Key::A) && character->rigidbody->CanMoveLeft()) {
-		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * 75.0f);
-		character->GetComponent<Animator>()->SetFrame(character->GetComponent<Animator>()->GetFrame() - 0.3f * Time::GetDelta() * 75.0f);
-		character->GetComponent<Animator>()->SetDirection(-1);
+		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * speed);
+		character->animator->SetFrame(character->animator->GetFrame() - 0.3f * Time::GetDelta() * speed);
+		character->animator->SetDirection(-1);
 	} else if (Input::KeyDown(Key::D) && character->rigidbody->CanMoveRight()) {
-		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * 75.0f);
-		character->GetComponent<Animator>()->SetFrame(character->GetComponent<Animator>()->GetFrame() + 0.3f * Time::GetDelta() * 75.0f);
-		character->GetComponent<Animator>()->SetDirection(1);
+		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * speed);
+		character->animator->SetFrame(character->animator->GetFrame() + 0.3f * Time::GetDelta() * speed);
+		character->animator->SetDirection(1);
 	} else {
-		character->GetComponent<Animator>()->SetFrame(character->GetComponent<Animator>()->GetDirection() == 1 ? 0 : -1);
+		character->animator->SetFrame(character->animator->GetDirection() == 1 ? 0 : -1);
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
-		Map::BlockSettingData settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Empty);
+		Map::BlockSettingData settingBlock = map->PlaceBlock(camera->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
 			mapRenderer->rerender = true;
@@ -76,7 +78,7 @@ void Engine::Control() {
 	}
 
 	if (Input::MouseButtonDown(Button::Right)) {
-		Map::BlockSettingData settingBlock = map->SetBlock(camera->GetPosition(), BlockType::Dirt);
+		Map::BlockSettingData settingBlock = map->PlaceBlock(camera->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
 			mapRenderer->rerender = true;
@@ -89,11 +91,11 @@ void Engine::Render() {
 	camera->OnPositionChange([&]() {
 		map->CalculateVisibleChunks(camera->GetPosition());
 		mapRenderer->rerender = true;
-		character->CollectLights(mapRenderer->GetAdditionalLightData());
 	});
 
 	character->rigidbody->Update();
 	camera->SetPosition(character->GetPosition());
+	character->CollectLights(mapRenderer->GetAdditionalLightData());
 
 	mapRenderer->Render({ characterRenderer });
 
@@ -104,6 +106,8 @@ void Engine::Render() {
 		ImGui::Text(("Blocks:" + std::to_string(mapRenderer->GetAmountOfRenderedBlocks())).c_str());
 		ImGui::Text(("Walls:" + std::to_string(mapRenderer->GetAmountOfRenderedWalls())).c_str());
 		ImGui::Text(("Lights:" + std::to_string(mapRenderer->GetAmountOfRenderedLights())).c_str());
+		ImGui::Text(std::to_string(map->GetVisibleChunks().x.start).c_str());
+		ImGui::Text(std::to_string(map->GetVisibleChunks().x.end).c_str());
 	ImGui::End();
 }
 

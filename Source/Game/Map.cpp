@@ -4,7 +4,7 @@ Map::Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize { chu
 	GenerateMap();
 }
 
-Map::BlockSettingData Map::SetBlock(const Vec2& cameraPosition, BlockType blockType) {	
+Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType blockType) {	
 	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
 	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
 	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
@@ -46,7 +46,19 @@ void Map::CalculateVisibleChunks(Vec2 viewPos) {
 	visibleChunks.y.end = std::min(visibleChunks.y.end, static_cast<int>(GetAmountOfChunks().y) - 1);
 }
 
+bool Map::CheckBounds(int x, int y) const {
+	return x >= 0 && x < blocks.size() && y >= 0 && y < blocks[0].size();
+}
+
+void Map::SetBlock(int x, int y, BlockType type) {
+	if (CheckBounds(x, y)) {
+		blocks[x][y] = type;
+	}
+}
+
 void Map::GenerateMap() {
+	srand(664);
+
 	amountOfBlocks = GetChunkSize() * GetAmountOfChunks();
 	const int amountOfColumns = amountOfBlocks.x;
 	const int amountOfRows = amountOfBlocks.y;
@@ -56,7 +68,9 @@ void Map::GenerateMap() {
 		blocks[x].resize(amountOfRows);
 	}
 
-	const int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
+	int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
+
+	std::vector<int> points;
 
 	for (int x = 0; x < amountOfBlocks.x; x++) {
 		for (int y = 0; y < middle; y++) {
@@ -65,9 +79,83 @@ void Map::GenerateMap() {
 
 		blocks[x][middle] = BlockType::Grass;
 
+		if (rand() % 100 < 50) {
+			points.push_back(x);
+		}
+
 		for (int y = middle + 1; y < amountOfBlocks.y; y++) {
 			blocks[x][y] = BlockType::Empty;
 		}
+	}
+
+	int lastChange = 0;
+	bool lastType = 0;
+	middle += 1;
+
+	for (const int point : points) {
+		int l = rand() % 200 + 15;
+		int m = middle;
+
+		bool type = rand() % 2;
+
+		bool possible = point - l / 2 > lastChange;
+		if (!possible && type != lastType) {
+			continue;
+		}
+
+		if (type) {
+			
+			int h = rand() % 25;
+			int currentHeight = h;
+
+			for (int x = point; x < point + l / 2; x++) {
+				for (int y = m; y < m + currentHeight; y++) {
+					SetBlock(x, y, BlockType::Dirt);
+				}
+
+				int slope = currentHeight / (point + l / 2 - x);
+				currentHeight -= slope + rand() % 2;
+			}
+
+			currentHeight = h;
+
+			for (int x = point; x > point - l / 2; x--) {
+				for (int y = m; y < m + currentHeight; y++) {
+					SetBlock(x, y, BlockType::Dirt);
+				}
+
+				int slope = currentHeight / -(point - l / 2 - x);
+				currentHeight -= slope + rand() % 2;
+			}
+
+		} else {
+			
+			int h = -(rand() % 25);
+			int currentHeight = h;
+
+			for (int x = point; x < point + l / 2; x++) {
+				for (int y = m; y > m + currentHeight; y--) {
+					SetBlock(x, y, BlockType::Empty);
+				}
+
+				int slope = currentHeight / -(point + l / 2 - x);
+				currentHeight += slope + rand() % 2;
+			}
+
+			currentHeight = h;
+
+			for (int x = point; x > point - l / 2; x--) {
+				for (int y = m; y > m + currentHeight; y--) {
+					SetBlock(x, y, BlockType::Empty);
+				}
+
+				int slope = currentHeight / (point - l / 2 - x);
+				currentHeight += slope + rand() % 2;
+			}
+		}
+
+		lastChange = point + l / 2;
+		lastType = type;
 	}
 
 	walls = blocks;

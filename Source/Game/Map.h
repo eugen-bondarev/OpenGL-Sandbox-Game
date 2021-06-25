@@ -18,7 +18,10 @@ public:
 		}
 	};
 
-	BlockSettingData SetBlock(const Vec2& viewMatrix, BlockType blockType);
+	BlockSettingData PlaceBlock(const Vec2& viewMatrix, BlockType blockType);
+
+	bool CheckBounds(int x, int y) const;
+	void SetBlock(int x, int y, BlockType type);
 
 	Vec2 WhatChunk(Vec2 block) const;
 	chunk_t WhatBlocks(Vec2 chunk) const;
