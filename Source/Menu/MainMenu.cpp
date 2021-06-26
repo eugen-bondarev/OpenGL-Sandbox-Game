@@ -6,7 +6,7 @@
 #include "imgui/imgui.h"
 
 MainMenu::MainMenu(Ref<Game>& game) : game { game } {
-
+  
 }
 
 void MainMenu::Settings() {
@@ -54,7 +54,7 @@ void MainMenu::Settings() {
 void MainMenu::Main() {
   ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
     ImGui::PushFont(Gui::titleFont);
-      ImGui::Text("Naturaforge");
+      ImGui::Text("NaturaForge");
     ImGui::PopFont();
 
   static int seed = 669;
@@ -73,14 +73,14 @@ void MainMenu::Main() {
       location = MenuLocation::Settings;
     }
 
-  static bool ex = false;
+  static bool exitPopup = false;
   
   ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
     if (ImGui::Button("Exit")) {
-      ex = true;
+      exitPopup = true;
     }
   
-  if (ex) {
+  if (exitPopup) {
     ImGui::SetNextWindowSize(ImVec2(300, 100));
     ImGui::OpenPopup("Are you sure?");
     if (ImGui::BeginPopupModal("Are you sure?", NULL)) {
@@ -90,7 +90,7 @@ void MainMenu::Main() {
 
       ImGui::SameLine();
       if (ImGui::Button("No")) {
-        ex = false;
+        exitPopup = false;
       }
       ImGui::EndPopup();
     }
@@ -99,7 +99,7 @@ void MainMenu::Main() {
 
 void MainMenu::Show() {
   ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
-  // windowFlags |= ImGuiWindowFlags_NoBackground;
+  windowFlags |= ImGuiWindowFlags_NoBackground;
   windowFlags |= ImGuiWindowFlags_NoTitleBar;
   windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
   windowFlags |= ImGuiWindowFlags_NoResize;

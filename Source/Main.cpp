@@ -23,7 +23,7 @@ int main(int amountOfArguments, char* arguments[]) {
 		NATURAFORGE_PROFILER_NAMED_SCOPE("New frame");
 
 		engine.BeginFrame();
-		engine.Render();
+		engine.Run();
 		engine.EndFrame();
 	}
 	

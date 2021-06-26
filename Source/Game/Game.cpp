@@ -41,14 +41,14 @@ Game::Game(int seed) {
 	characterRenderer = CreateRef<CharacterRenderer>(characters, camera);
 }
 
-void Game::Play(bool& runGame) {
-  Logic(runGame);
+void Game::Play(bool& resetGame) {
+  Logic(resetGame);
   Render();
 }
 
-void Game::Logic(bool& runGame) {
+void Game::Logic(bool& resetGame) {
 	if (Input::KeyPressed(Key::Esc)) {
-		runGame = false;
+		resetGame = true;
 	}
 
 	if (Input::KeyPressed(Key::Space)) {
@@ -57,15 +57,15 @@ void Game::Logic(bool& runGame) {
 		}
 	}
 
-	static float speed = 150.0f;
+	static float defaultSpeed = 150.0f;
 
 	if (Input::KeyDown(Key::A) && character->rigidbody->CanMoveLeft()) {
-		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * speed);
-		character->animator->SetFrame(character->animator->GetFrame() - 0.2f * Time::GetDelta() * speed);
+		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * defaultSpeed);
+		character->animator->SetFrame(character->animator->GetFrame() - 0.2f * Time::GetDelta() * defaultSpeed);
 		character->animator->SetDirection(-1);
 	} else if (Input::KeyDown(Key::D) && character->rigidbody->CanMoveRight()) {
-		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * speed);
-		character->animator->SetFrame(character->animator->GetFrame() + 0.2f * Time::GetDelta() * speed);
+		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * defaultSpeed);
+		character->animator->SetFrame(character->animator->GetFrame() + 0.2f * Time::GetDelta() * defaultSpeed);
 		character->animator->SetDirection(1);
 	} else {
 		character->animator->SetFrame(character->animator->GetDirection() == 1 ? 0 : -1);

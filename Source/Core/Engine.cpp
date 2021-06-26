@@ -35,14 +35,14 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
-void Engine::Render() {
-	if (!runGame) {
+void Engine::Run() {
+	if (resetGame) {
 		game.reset();
-		runGame = true;
+		resetGame = false;
 	}
 
 	if (game) {
-		game->Play(runGame);
+		game->Play(resetGame);
 	} else {
 		Werwel::GraphicsContext::Clear();
 		mainMenu->Show();

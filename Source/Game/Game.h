@@ -10,10 +10,10 @@ class Game {
 public:
   Game(int seed = 669);
 
-  void Play(bool& runGame);
+  void Play(bool& resetGame);
 
 private:
-  void Logic(bool& runGame);
+  void Logic(bool& resetGame);
   void Render();
 
 	std::vector<Ref<Character>> characters;

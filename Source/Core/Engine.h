@@ -10,12 +10,12 @@ public:
 	Engine();
 	bool IsRunning() const;
 	void BeginFrame();
-	void Render();
+	void Run();
 	void EndFrame();
 	~Engine();
 
 private:
-	bool runGame { true };
+	bool resetGame { false };
 	Ref<Game> game;
 	Ref<MainMenu> mainMenu;
 
