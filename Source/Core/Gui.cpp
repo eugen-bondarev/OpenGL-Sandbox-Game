@@ -14,7 +14,7 @@ void Gui::Create() {
 
 		io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
 
-	Theme1();
+	Theme0();
 
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetGlfwWindow(), true);
 	ImGui_ImplOpenGL3_Init();

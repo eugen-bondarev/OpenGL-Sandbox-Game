@@ -16,30 +16,19 @@
 
 #include "Linow/Linow.h"
 
+#include "Game/Game.h"
+
 class Engine {
 public:
 	Engine();
-	void InitResources();
 	bool IsRunning() const;
 	void BeginFrame();
-	void Control();
 	void Render();
 	void EndFrame();
 	~Engine();
 
 private:
-	void PopulateBlockData();
-
-	std::vector<Ref<Character>> characters;
-
-	Ref<Map> map;
-	Ref<MapRenderer> mapRenderer;
-
-	Ref<Character> character;
-	Ref<CharacterRenderer> characterRenderer;
-
-	void OnVisibleChunksChange();
-	Ref<Camera> camera;
+	Ptr<Game> game;
 
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;
