@@ -2,6 +2,9 @@
 
 #include "Window.h"
 
+#include "Themes/Theme0.h"
+#include "Themes/Theme1.h"
+
 void Gui::Create() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -10,6 +13,8 @@ void Gui::Create() {
     io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
 		io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
+
+	Theme1();
 
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetGlfwWindow(), true);
 	ImGui_ImplOpenGL3_Init();
