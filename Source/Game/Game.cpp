@@ -7,8 +7,8 @@
 
 #include "imgui/imgui.h"
 
-Game::Game() {
-	map = CreateRef<Map>(Vec2(5, 5), Vec2(500, 500));
+Game::Game(int seed) {
+	map = CreateRef<Map>(seed, Vec2(5, 5), Vec2(500, 500));
 	camera = CreateRef<Camera>();
 	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
 	map->CalculateVisibleChunks(camera->GetPosition());
@@ -16,18 +16,41 @@ Game::Game() {
 
 	character = CreateRef<Character>(map);
 	character->SetPosition(camera->GetPosition() + Vec2(0, 250.0f));
+	
+	character->GetComponent<Rigidbody>()->Update();
+
+	bool posChanged { false };
+
+	while (character->GetComponent<Rigidbody>()->GetCeiling()) {
+		character->SetPositionY(character->GetPosition().y + 16.0f);
+		character->GetComponent<Rigidbody>()->Update();
+		posChanged = true;
+	}
+
+	if (posChanged) {
+		character->SetPositionY(character->GetPosition().y + 128.0f);
+		character->GetComponent<Rigidbody>()->Update();
+	}
+
+	while (!character->GetComponent<Rigidbody>()->GetOnGround()) {
+		character->GetComponent<Rigidbody>()->Update();
+	}
 
 	characters.push_back(character);
 
 	characterRenderer = CreateRef<CharacterRenderer>(characters, camera);
 }
 
-void Game::Play() {
-  Logic();
+void Game::Play(bool& runGame) {
+  Logic(runGame);
   Render();
 }
 
-void Game::Logic() {
+void Game::Logic(bool& runGame) {
+	if (Input::KeyPressed(Key::Esc)) {
+		runGame = false;
+	}
+
 	if (Input::KeyPressed(Key::Space)) {
 		if (character->rigidbody->GetOnGround()) {
 			character->rigidbody->Jump();
@@ -82,7 +105,7 @@ void Game::Render() {
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
 
 	ImGui::SetNextWindowSize(ImVec2(220, 120));
-	ImGui::SetNextWindowPos(ImVec2(140 + 20 + 20, 20));
+	ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + 140 + 20 + 20, Window::GetPosition().y + 20));
 	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
     ImGui::Text(std::string("Area: " + std::to_string(map->GetWidth()) + 'x' + std::to_string(map->GetHeight()) + " = " + std::to_string(map->GetArea())).c_str());
     ImGui::Text(std::string("Size (b): " + std::to_string(map->GetSizeInBytes())).c_str());

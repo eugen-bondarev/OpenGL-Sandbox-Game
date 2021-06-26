@@ -15,6 +15,7 @@ public:
 	~Engine();
 
 private:
+	bool runGame { true };
 	Ref<Game> game;
 	Ref<MainMenu> mainMenu;
 

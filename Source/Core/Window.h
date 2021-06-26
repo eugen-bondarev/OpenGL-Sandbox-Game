@@ -6,16 +6,24 @@
 #include "Util/Structures.h"
 #include "Maths/Maths.h"
 
+enum class WindowMode {
+	Fullscreen,
+	Borderless,
+	Windowed
+};
+
+struct WindowSettings {
+	Vec2 size 			{ 1920, 1080 };
+	WindowMode mode	{ WindowMode::Fullscreen };
+	bool maximize		{ true };
+	bool vSync			{ true };
+};
+
 class Window {
 public:
-	enum class Mode {
-		Fullscreen,
-		Borderless,
-		Windowed
-	};
-
-	static void Create(Vec2 size = { 1920, 1080 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = false, const std::string& title = "Naturaforge");
+	static void Create(WindowSettings windowSettings = {}, bool resizable = false, const std::string& title = "Naturaforge");
 	static void Destroy();
+	static void Shutdown();
 
 	static bool ShouldClose();
 	static void Clear();
@@ -24,6 +32,7 @@ public:
 
 	static void Close();
 
+	static Vec2 GetPosition();
 	static Vec2 GetSize();
 	static Mat4 GetSpace();
 	static Vec2 GetMousePosition();
@@ -35,12 +44,17 @@ public:
 		return glfwWindow;
 	}
 
+	static void Recreate(WindowSettings windowSettings = {});
+
 private:
 	inline static Vec2 size;
 	inline static Mat4 space;
 	inline static void CalculateSpace();
 
 	inline static GLFWwindow *glfwWindow;
+
+	inline static bool recreate { false };
+	inline static WindowSettings newWindowSettings;
 
 	Window(const Window &) = delete;
 	Window operator=(const Window &) = delete;

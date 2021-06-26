@@ -10,11 +10,13 @@
 #include "Werwel/GraphicsContext.h"
 
 Engine::Engine() {
-	Window::Create({ 1920, 1080 }, Window::Mode::Borderless, true, false);
+	Window::Create({
+		{ 1920, 1080 },
+		WindowMode::Borderless
+	});
+
 	Gui::Create();
 	Input::Create(Window::GetGlfwWindow());
-	Primitives::Rect::Create();
-
 	Linow::Init();
 
 	mainMenu = CreateRef<MainMenu>(game);
@@ -34,15 +36,20 @@ void Engine::BeginFrame() {
 }
 
 void Engine::Render() {
+	if (!runGame) {
+		game.reset();
+		runGame = true;
+	}
+
 	if (game) {
-		game->Play();
+		game->Play(runGame);
 	} else {
 		Werwel::GraphicsContext::Clear();
 		mainMenu->Show();
 	}
 
 	ImGui::SetNextWindowSize(ImVec2(140, 120));
-	ImGui::SetNextWindowPos(ImVec2(20, 20));
+	ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + 20, Window::GetPosition().y + 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
 		ImGui::Text(("FPS: " + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();
@@ -58,4 +65,5 @@ void Engine::EndFrame() {
 Engine::~Engine() {
 	Gui::Destroy();
 	Window::Destroy();
+	Window::Shutdown();
 }

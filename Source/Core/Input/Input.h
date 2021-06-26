@@ -12,7 +12,8 @@ enum class Key {
 	A = KEY_A,
 	S = KEY_S,
 	D = KEY_D,
-	Space = KEY_SPACE
+	Space = KEY_SPACE,
+	Esc = KEY_ESCAPE
 };
 
 enum class Button {
@@ -24,6 +25,9 @@ class Input {
 public:
   inline static void Create(GLFWwindow* glfwWindow) {
     Input::glfwWindow = glfwWindow;
+
+		mouseButtons.clear();
+		keys.clear();
 
 		glfwSetMouseButtonCallback(glfwWindow, MouseButtonCallback);
 		glfwSetKeyCallback(glfwWindow, KeyboardKeyCallback);

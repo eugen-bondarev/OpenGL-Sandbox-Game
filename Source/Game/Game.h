@@ -8,12 +8,12 @@
 
 class Game {
 public:
-  Game();
+  Game(int seed = 669);
 
-  void Play();
+  void Play(bool& runGame);
 
 private:
-  void Logic();
+  void Logic(bool& runGame);
   void Render();
 
 	std::vector<Ref<Character>> characters;

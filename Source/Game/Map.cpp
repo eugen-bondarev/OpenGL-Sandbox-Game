@@ -1,7 +1,9 @@
 #include "Map.h"
 
-Map::Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize { chunkSize }, amountOfChunks { amountOfChunks }, blockSize { blockSize } {
-	GenerateMap(DEFAULT_DATA_SET);
+Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize { chunkSize }, amountOfChunks { amountOfChunks }, blockSize { blockSize } {
+	MapGenerationDataSet mapGenerator = {};
+	mapGenerator.seed = seed;
+	GenerateMap(mapGenerator);
 }
 
 Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType blockType) {	

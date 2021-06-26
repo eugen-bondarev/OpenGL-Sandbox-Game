@@ -11,4 +11,7 @@ public:
 
 	static void BeginFrame();
 	static void EndFrame();
+
+	inline static ImFont* defaultFont { nullptr };
+	inline static ImFont* titleFont { nullptr };
 };

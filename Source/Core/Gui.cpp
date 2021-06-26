@@ -5,14 +5,16 @@
 #include "Themes/Theme0.h"
 #include "Themes/Theme1.h"
 
+#include "Input/Input.h"
+
 void Gui::Create() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = nullptr;
     io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
-
-		io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
+		defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
+		titleFont = io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 48);
 
 	Theme0();
 
@@ -21,8 +23,9 @@ void Gui::Create() {
 }
 
 void Gui::Destroy() {
-	ImGui_ImplGlfw_Shutdown();
 	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void Gui::BeginFrame() {

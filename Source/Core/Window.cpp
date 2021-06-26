@@ -2,15 +2,20 @@
 
 #include "Werwel/GraphicsContext.h"
 
-void Window::Create(Vec2 size, Mode mode, bool maximize, bool vSync, const std::string &title) {
-	Window::size = size;
+#include "Input/Input.h"
+#include "Gui.h"
+
+void Window::Create(WindowSettings windowSettings, bool resizable, const std::string &title) {
+	Window::size = windowSettings.size;
 
 	glfwInit();
+
 	glfwDefaultWindowHints();
+	glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
 
 	const GLFWvidmode *videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-	if (mode == Mode::Borderless) {
+	if (windowSettings.mode == WindowMode::Borderless) {
 		glfwWindowHint(GLFW_RED_BITS, videoMode->redBits);
 		glfwWindowHint(GLFW_GREEN_BITS, videoMode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, videoMode->blueBits);
@@ -19,23 +24,22 @@ void Window::Create(Vec2 size, Mode mode, bool maximize, bool vSync, const std::
 		glfwWindow = glfwCreateWindow(videoMode->width, videoMode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
 	}
 
-	if (mode == Mode::Fullscreen) {
+	if (windowSettings.mode == WindowMode::Fullscreen) {
 		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
 	}
 
-	if (mode == Mode::Windowed) {
+	if (windowSettings.mode == WindowMode::Windowed) {
 		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
 	}
 
-	if (maximize) {
+	if (windowSettings.maximize) {
 		glfwMaximizeWindow(glfwWindow);
 	}
 
 	glfwMakeContextCurrent(glfwWindow);
 
 	GLint glewInitResult = glewInit();
-	if (GLEW_OK != glewInitResult)
-	{
+	if (GLEW_OK != glewInitResult) {
 		printf("ERROR: %s", glewGetErrorString(glewInitResult));
 		exit(EXIT_FAILURE);
 	}
@@ -50,7 +54,7 @@ void Window::Create(Vec2 size, Mode mode, bool maximize, bool vSync, const std::
 		Window::CalculateSpace();
 	});
 
-	glfwSwapInterval(vSync);
+	glfwSwapInterval(windowSettings.vSync);
 
 	int currentWidth, currentHeight;
 	glfwGetWindowSize(glfwWindow, &currentWidth, &currentHeight);
@@ -61,7 +65,17 @@ void Window::Create(Vec2 size, Mode mode, bool maximize, bool vSync, const std::
 
 void Window::Destroy() {
 	glfwDestroyWindow(glfwWindow);
+}
+
+void Window::Shutdown() {
 	glfwTerminate();
+}
+
+Vec2 Window::GetPosition() {
+	Vec2i pos;
+	glfwGetWindowPos(glfwWindow, &pos.x, &pos.y);
+
+	return pos;
 }
 
 Vec2 Window::GetSize() {
@@ -100,6 +114,17 @@ void Window::SwapBuffers() {
 
 void Window::BeginFrame() {
 	PollEvents();
+
+	if (recreate) {
+		Gui::Destroy();
+		Window::Destroy();
+
+		Window::Create(newWindowSettings);		
+		Gui::Create();		
+		Input::Create(Window::GetGlfwWindow());
+		
+		recreate = false;
+	}
 }
 
 void Window::EndFrame() {
@@ -108,4 +133,9 @@ void Window::EndFrame() {
 
 void Window::Close() {
 	glfwSetWindowShouldClose(glfwWindow, true);
+}
+
+void Window::Recreate(WindowSettings windowSettings) {
+	recreate = true;
+	Window::newWindowSettings = windowSettings;
 }

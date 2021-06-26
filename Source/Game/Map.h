@@ -22,7 +22,7 @@ inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
 
 class Map {
 public:
-  Map(Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
+  Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
 
 	struct BlockSettingData {
 		Vec2 block { -1, -1 };
