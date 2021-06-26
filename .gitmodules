@@ -8,6 +8,3 @@
 [submodule "External/glfw"]
 	path = External/glfw
 	url = https://github.com/glfw/glfw
-[submodule "External/freetype"]
-	path = External/freetype
-	url = https://github.com/freetype/freetype
