@@ -13,7 +13,7 @@
 
 #include "Maths/Primitive.h"
 
-#include "Game/Control/Camera.h"
+#include "Game/Entities/Camera.h"
 
 class LightPass {
 public:  
@@ -28,6 +28,7 @@ public:
     return vbo;
   }
 
+private:
   Ref<LightFBO> fbo;
   Ref<Werwel::Shader> shader;
   Ref<Werwel::VBO> vbo;
@@ -37,5 +38,4 @@ public:
     Ref<Werwel::Texture> texture;
   } lightMesh;
   std::vector<Vec2> lightPositions;
-private:
 };

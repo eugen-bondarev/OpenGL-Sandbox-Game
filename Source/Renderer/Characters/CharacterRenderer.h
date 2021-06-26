@@ -4,9 +4,8 @@
 #include "Werwel/VAO.h"
 #include "Werwel/Shader.h"
 
-#include "Game/Character.h"
-
-#include "Game/Control/Camera.h"
+#include "Game/Entities/Character.h"
+#include "Game/Entities/Camera.h"
 
 #include "../Renderer.h"
 

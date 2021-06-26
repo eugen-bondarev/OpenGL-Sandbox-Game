@@ -6,7 +6,7 @@
 #include "Werwel/Shader.h"
 #include "Werwel/VAO.h"
 
-#include "Game/Control/Camera.h"
+#include "Game/Entities/Camera.h"
 
 struct BlockData {
   struct {
@@ -46,6 +46,7 @@ public:
     return fbo;
   }
 
+private:
   Ref<ColorFBO> fbo;
   Ref<Werwel::Shader> shader;
 
@@ -60,5 +61,4 @@ public:
   } walls;
 
   Ref<Werwel::Texture> tileMap;
-private:
 };

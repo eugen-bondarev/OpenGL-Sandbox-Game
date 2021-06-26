@@ -24,9 +24,6 @@ public:
   inline const bounds_t& GetVisibleChunks() const {
     return visibleChunks;
   }
-
-  bool rerender { false };
-  bool chunksUpdated { true };
   
   inline int GetAmountOfRenderedBlocks() const {
     return blocksData.size();
@@ -44,7 +41,13 @@ public:
     return additionalLightData;
   }
 
+  void SetRerender(bool value);
+  void SetChunksUpdated(bool value);
+
 private:
+  bool rerender { false };
+  bool chunksUpdated { true };
+
   std::vector<Vec2> additionalLightData;
 
   std::vector<BlockData> blocksData;

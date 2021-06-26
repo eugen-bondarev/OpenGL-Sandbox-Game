@@ -71,15 +71,15 @@ void MapRenderer::RebuildScene() {
 
 void MapRenderer::UpdateScene() {
   NATURAFORGE_PROFILER_SCOPE();
-  pipeline.colorPass->blocks.vbo->Store(blocksData);
-  pipeline.colorPass->walls.vbo->Store(wallsData);
+  pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
+  pipeline.colorPass->GetWallsVBO()->Store(wallsData);
 
   std::vector<Vec2> copy = lightData;
   for (const Vec2& light : additionalLightData) {
     copy.push_back(light);
   }
   
-  pipeline.lightPass->vbo->Store(copy);
+  pipeline.lightPass->GetVBO()->Store(copy);
   NATURAFORGE_SYNC_GPU();
 }
 
@@ -122,4 +122,12 @@ void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers)
 	additionalLightData.clear();
 
   rerender = false;
+}
+
+void MapRenderer::SetRerender(bool value) {
+  rerender = value;
+}
+
+void MapRenderer::SetChunksUpdated(bool value) {
+  chunksUpdated = value;
 }

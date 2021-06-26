@@ -1,5 +1,8 @@
 #include "World.h"
 
-World::World() {
-	map = CreateRef<Map>(669, Vec2(40, 40), Vec2(25, 25), 16.0f);
+World::World(int seed) {
+	map = CreateRef<Map>(seed, Vec2(5, 5), Vec2(500, 500));
+	camera = CreateRef<Camera>();
+	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
+	map->CalculateVisibleChunks(camera->GetPosition());
 }

@@ -1,10 +1,13 @@
 #pragma once
 
-#include "Character.h"
+#include "Entities/Character.h"
 #include "Map.h"
 
 #include "Renderer/MapRenderer.h"
 #include "Renderer/Characters/CharacterRenderer.h"
+
+#include "World.h"
+#include "Renderer/WorldRenderer.h"
 
 class Game {
 public:
@@ -18,13 +21,11 @@ private:
 
 	std::vector<Ref<Character>> characters;
 
-	Ref<Map> map;
-	Ref<MapRenderer> mapRenderer;
+  Ref<World> world;
+  Ref<WorldRenderer> worldRenderer;
 
 	Ref<Character> character;
-	Ref<CharacterRenderer> characterRenderer;
-	
-	Ref<Camera> camera;
+	Ref<CharacterRenderer> characterRenderer;	
 
   Game(const Game&) = delete;
   Game& operator=(const Game&) = delete;

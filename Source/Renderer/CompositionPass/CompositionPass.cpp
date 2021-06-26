@@ -38,8 +38,8 @@ void CompositionPass::Perform(const Ref<ColorPass>& colorPass, const Ref<LightPa
     sky.shader->Bind();
       glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
     shader->Bind();
-      colorPass->fbo->GetTexture()->Bind(GL_TEXTURE0);
-      lightPass->fbo->GetTexture()->Bind(GL_TEXTURE0 + 1);
+      colorPass->GetFBO()->GetTexture()->Bind(GL_TEXTURE0);
+      lightPass->GetFBO()->GetTexture()->Bind(GL_TEXTURE0 + 1);
         glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
       glActiveTexture(GL_TEXTURE0);
 

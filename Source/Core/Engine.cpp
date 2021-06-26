@@ -38,6 +38,7 @@ void Engine::BeginFrame() {
 void Engine::Run() {
 	if (resetGame) {
 		game.reset();
+		Entity::updatableComponents.clear();
 		resetGame = false;
 	}
 

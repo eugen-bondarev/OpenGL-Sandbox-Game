@@ -3,12 +3,13 @@
 #include "Component.h"
 
 #include "ITransform.h"
+#include "IUpdatable.h"
 
 #include "../Map.h"
 
 #include "Entity.h"
 
-class Rigidbody : public Component {
+class Rigidbody : public IUpdatable, public Component {
 public:
   inline static constexpr float velocityFactor = 150.0f;
 
@@ -18,7 +19,7 @@ public:
 
   }
 
-  void Update();
+  void Update() override;
   void CheckCollisions();
   void Jump();
 

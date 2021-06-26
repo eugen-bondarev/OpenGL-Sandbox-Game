@@ -60,7 +60,7 @@ void Rigidbody::CheckCollisions() {
   }
 
   for (int i = 1; i < 5; i++) {
-    Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f), Vec2(1, i));
+    Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f * (onGround ? 1 : -1)), Vec2(1, i));
 
     if (RENDER_COLLIDERS)
       Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
@@ -72,7 +72,7 @@ void Rigidbody::CheckCollisions() {
   }
 
   for (int i = 1; i < 5; i++) {
-    Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f), Vec2(3, i));
+    Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f * (onGround ? 1 : -1)), Vec2(3, i));
 
     if (RENDER_COLLIDERS)
       Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());

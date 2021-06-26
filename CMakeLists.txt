@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 							17)
-set(PROJ_PROJECT_VERSION   					0.2.1)
+set(PROJ_PROJECT_VERSION   					0.2.2)
 set(PROJ_PROJECT_NAME      					Naturaforge)
 set(PROJ_APP_NAME          					Naturaforge)
 
@@ -34,12 +34,10 @@ target_precompile_headers(${PROJ_APP_NAME} PUBLIC ${PROJ_SRC_DIR_NAME}/Pch/Pch.h
 
 add_subdirectory(External/glfw)
 add_subdirectory(External/Werwel)
-add_subdirectory(External/freetype)
 add_subdirectory(External/glew/build/cmake)
 
 target_include_directories(${PROJ_APP_NAME} PUBLIC 
 	External/glfw/include 
-	External/freetype/include
 	External/Werwel/Include 
 	External/glm
 	${GLEW_INCLUDE_DIR} 
@@ -48,6 +46,6 @@ target_include_directories(${PROJ_APP_NAME} PUBLIC
 )
 
 target_link_libraries(Werwel glew_s ole32 oleaut32 imm32)
-target_link_libraries(${PROJ_APP_NAME} freetype glfw glew_s Werwel)
+target_link_libraries(${PROJ_APP_NAME} glfw glew_s Werwel)
 
 target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})

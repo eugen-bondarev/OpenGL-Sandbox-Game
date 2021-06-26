@@ -8,37 +8,13 @@
 #include "imgui/imgui.h"
 
 Game::Game(int seed) {
-	map = CreateRef<Map>(seed, Vec2(5, 5), Vec2(500, 500));
-	camera = CreateRef<Camera>();
-	camera->SetPosition(map->GetCenter() * map->GetBlockSize());
-	map->CalculateVisibleChunks(camera->GetPosition());
-	mapRenderer = CreateRef<MapRenderer>(map, camera);
+	world = CreateRef<World>(669);
+	worldRenderer = CreateRef<WorldRenderer>(world);
 
-	character = CreateRef<Character>(map);
-	character->SetPosition(camera->GetPosition() + Vec2(0, 250.0f));
-	
-	character->GetComponent<Rigidbody>()->Update();
-
-	bool posChanged { false };
-
-	while (character->GetComponent<Rigidbody>()->GetCeiling()) {
-		character->SetPositionY(character->GetPosition().y + 16.0f);
-		character->GetComponent<Rigidbody>()->Update();
-		posChanged = true;
-	}
-
-	if (posChanged) {
-		character->SetPositionY(character->GetPosition().y + 128.0f);
-		character->GetComponent<Rigidbody>()->Update();
-	}
-
-	while (!character->GetComponent<Rigidbody>()->GetOnGround()) {
-		character->GetComponent<Rigidbody>()->Update();
-	}
+	character = CreateRef<Character>(world);
+	characterRenderer = CreateRef<CharacterRenderer>(characters, world->GetCamera());
 
 	characters.push_back(character);
-
-	characterRenderer = CreateRef<CharacterRenderer>(characters, camera);
 }
 
 void Game::Play(bool& resetGame) {
@@ -51,65 +27,41 @@ void Game::Logic(bool& resetGame) {
 		resetGame = true;
 	}
 
-	if (Input::KeyPressed(Key::Space)) {
-		if (character->rigidbody->GetOnGround()) {
-			character->rigidbody->Jump();
-		}
-	}
-
-	static float defaultSpeed = 150.0f;
-
-	if (Input::KeyDown(Key::A) && character->rigidbody->CanMoveLeft()) {
-		character->SetPosition(character->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * defaultSpeed);
-		character->animator->SetFrame(character->animator->GetFrame() - 0.2f * Time::GetDelta() * defaultSpeed);
-		character->animator->SetDirection(-1);
-	} else if (Input::KeyDown(Key::D) && character->rigidbody->CanMoveRight()) {
-		character->SetPosition(character->GetPosition() + Vec2(1, 0) * Time::GetDelta() * defaultSpeed);
-		character->animator->SetFrame(character->animator->GetFrame() + 0.2f * Time::GetDelta() * defaultSpeed);
-		character->animator->SetDirection(1);
-	} else {
-		character->animator->SetFrame(character->animator->GetDirection() == 1 ? 0 : -1);
-	}
-
 	if (Input::MouseButtonDown(Button::Left)) {
-		Map::BlockSettingData settingBlock = map->PlaceBlock(camera->GetPosition(), BlockType::Empty);
+		Map::BlockSettingData settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), BlockType::Empty);
 
 		if (settingBlock.IsSet()) {
-			mapRenderer->rerender = true;
-			mapRenderer->chunksUpdated = true;
+			worldRenderer->GetMapRenderer()->SetRerender(true);
+			worldRenderer->GetMapRenderer()->SetChunksUpdated(true);
 		}
 	}
 
 	if (Input::MouseButtonDown(Button::Right)) {
-		Map::BlockSettingData settingBlock = map->PlaceBlock(camera->GetPosition(), BlockType::Dirt);
+		Map::BlockSettingData settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), BlockType::Dirt);
 
 		if (settingBlock.IsSet()) {
-			mapRenderer->rerender = true;
-			mapRenderer->chunksUpdated = true;
+			worldRenderer->GetMapRenderer()->SetRerender(true);
+			worldRenderer->GetMapRenderer()->SetChunksUpdated(true);
 		}
 	}
 }
 
 void Game::Render() {
-	camera->OnPositionChange([&]() {
-		map->CalculateVisibleChunks(camera->GetPosition());
-		mapRenderer->rerender = true;
-	});
+	Entity::UpdateComponents();
 
-	character->rigidbody->Update();
-	camera->SetPosition(character->GetPosition());
-	character->CollectLights(mapRenderer->GetAdditionalLightData());
+	world->GetCamera()->SetPosition(character->GetPosition());
+	character->CollectLights(worldRenderer->GetMapRenderer()->GetAdditionalLightData());
 
-	mapRenderer->Render({ characterRenderer });
+	worldRenderer->Render({ characterRenderer });
 
-	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
+	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 
 	ImGui::SetNextWindowSize(ImVec2(220, 120));
 	ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + 140 + 20 + 20, Window::GetPosition().y + 20));
 	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
-    ImGui::Text(std::string("Area: " + std::to_string(map->GetWidth()) + 'x' + std::to_string(map->GetHeight()) + " = " + std::to_string(map->GetArea())).c_str());
-    ImGui::Text(std::string("Size (b): " + std::to_string(map->GetSizeInBytes())).c_str());
-    ImGui::Text(std::string("Size (kb): " + std::to_string(map->GetSizeInKilobytes())).c_str());
-    ImGui::Text(std::string("Size (mb): " + std::to_string(map->GetSizeInMegabytes())).c_str());
+    ImGui::Text(std::string("Area: " + std::to_string(world->GetMap()->GetWidth()) + 'x' + std::to_string(world->GetMap()->GetHeight()) + " = " + std::to_string(world->GetMap()->GetArea())).c_str());
+    ImGui::Text(std::string("Size (b): " + std::to_string(world->GetMap()->GetSizeInBytes())).c_str());
+    ImGui::Text(std::string("Size (kb): " + std::to_string(world->GetMap()->GetSizeInKilobytes())).c_str());
+    ImGui::Text(std::string("Size (mb): " + std::to_string(world->GetMap()->GetSizeInMegabytes())).c_str());
 	ImGui::End();
 }
