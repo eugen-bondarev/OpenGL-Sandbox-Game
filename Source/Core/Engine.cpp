@@ -34,15 +34,21 @@ void Engine::BeginFrame() {
 void Engine::Render() {
 	if (game) {
 		game->Play();
+	} else {
+		Werwel::GraphicsContext::Clear();
 	}
 
 	ImGui::SetNextWindowSize(ImVec2(140, 120));
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
-		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());
+		ImGui::Text(("FPS: " + std::to_string(Time::GetFps())).c_str());
 
 		if (ImGui::Button("Start game")) {
 			game = CreatePtr<Game>();
+		}
+
+		if (ImGui::Button("Stop game")) {
+			game.reset();
 		}
 	ImGui::End();
 }

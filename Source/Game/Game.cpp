@@ -5,6 +5,8 @@
 #include "Core/Input/Input.h"
 #include "Core/Time.h"
 
+#include "imgui/imgui.h"
+
 Game::Game() {
 	map = CreateRef<Map>(Vec2(5, 5), Vec2(500, 500));
 	camera = CreateRef<Camera>();
@@ -78,4 +80,13 @@ void Game::Render() {
 	mapRenderer->Render({ characterRenderer });
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
+
+	ImGui::SetNextWindowSize(ImVec2(220, 120));
+	ImGui::SetNextWindowPos(ImVec2(140 + 20 + 20, 20));
+	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
+    ImGui::Text(std::string("Area: " + std::to_string(map->GetWidth()) + 'x' + std::to_string(map->GetHeight()) + " = " + std::to_string(map->GetArea())).c_str());
+    ImGui::Text(std::string("Size (b): " + std::to_string(map->GetSizeInBytes())).c_str());
+    ImGui::Text(std::string("Size (kb): " + std::to_string(map->GetSizeInKilobytes())).c_str());
+    ImGui::Text(std::string("Size (mb): " + std::to_string(map->GetSizeInMegabytes())).c_str());
+	ImGui::End();
 }

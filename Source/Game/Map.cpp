@@ -248,3 +248,27 @@ bool Map::BlockIsEmpty(int x, int y) const {
 bool Map::WallIsEmpty(int x, int y) const {
 	return WallIs(x, y, WallType::Empty);
 }
+
+int Map::GetWidth() const {
+	return blocks.size();
+}
+
+int Map::GetHeight() const {
+	return blocks[0].size();
+}
+
+int Map::GetArea() const {
+	return GetWidth() * GetHeight();
+}
+
+int Map::GetSizeInBytes() const {
+	return GetArea() * sizeof(BlockType);
+}
+
+int Map::GetSizeInKilobytes() const {
+	return BytesTo(GetSizeInBytes(), SizeUnits::Kilobyte);
+}
+
+int Map::GetSizeInMegabytes() const {
+	return BytesTo(GetSizeInBytes(), SizeUnits::Megabyte);
+}

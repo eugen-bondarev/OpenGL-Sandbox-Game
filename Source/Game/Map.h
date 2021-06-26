@@ -63,6 +63,13 @@ public:
   bool BlockIsEmpty(int x, int y) const;
   bool WallIsEmpty(int x, int y) const;
 
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetArea() const;
+	int GetSizeInBytes() const;
+	int GetSizeInKilobytes() const;
+	int GetSizeInMegabytes() const;
+
 private:
 	blocks_t blocks;
 	walls_t walls;
