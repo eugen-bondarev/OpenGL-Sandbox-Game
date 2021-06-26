@@ -1,22 +1,9 @@
 #pragma once
 
-#include "Game/World.h"
-#include "Game/Control/Camera.h"
-
-#include "Renderer/Characters/CharacterRenderer.h"
-
-#include "Werwel/Texture.h"
-#include "Werwel/Shader.h"
-#include "Werwel/VAO.h"
-
-#include "Renderer/MapRenderer.h"
-
-#include "Game/Character.h"
-#include "Renderer/Characters/CharacterRenderer.h"
-
 #include "Linow/Linow.h"
 
 #include "Game/Game.h"
+#include "Menu/MainMenu.h"
 
 class Engine {
 public:
@@ -28,7 +15,8 @@ public:
 	~Engine();
 
 private:
-	Ptr<Game> game;
+	Ref<Game> game;
+	Ref<MainMenu> mainMenu;
 
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;

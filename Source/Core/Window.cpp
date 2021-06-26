@@ -105,3 +105,7 @@ void Window::BeginFrame() {
 void Window::EndFrame() {
 	SwapBuffers();
 }
+
+void Window::Close() {
+	glfwSetWindowShouldClose(glfwWindow, true);
+}

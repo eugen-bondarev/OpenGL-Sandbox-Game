@@ -9,7 +9,7 @@ void Gui::Create() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
-		io.IniFilename = std::string(NATURAFORGE_ROOT + "imgui.ini").c_str();
+		io.IniFilename = nullptr;
     io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
 		io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);

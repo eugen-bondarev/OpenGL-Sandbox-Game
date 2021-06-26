@@ -22,6 +22,8 @@ public:
 	static void PollEvents();
 	static void SwapBuffers();
 
+	static void Close();
+
 	static Vec2 GetSize();
 	static Mat4 GetSpace();
 	static Vec2 GetMousePosition();

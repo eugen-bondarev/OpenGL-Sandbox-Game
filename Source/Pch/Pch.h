@@ -1,9 +1,5 @@
 #pragma once
 
-// #define NATURAFORGE_ENABLE_PROFILING
-// #define NATURAFORGE_ENABLE_GPU_SYNC
-// #define LINOW_USE_GLM
-
 #include <functional>
 #include <iostream>
 #include <vector>
