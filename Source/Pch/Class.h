@@ -2,14 +2,18 @@
 
 #include <string>
 
+namespace Class {
+
 template <typename T, int skipLetters = 1>
-std::string GetClassName() {
+std::string GetName() {
 	std::string type = typeid(T).name();
 	return type.substr(type.find_first_of(' ') + skipLetters, type.size());
 }
 
+}
+
 #if defined(NATURAFORGE_COMPILER_GCC) || defined(NATURAFORGE_COMPILER_CLANG)
-# define NATURAFORGE_CLASS_NAME(Class) GetClassName<Class, 2>();
+# define NATURAFORGE_CLASS_NAME(T) ::Class::GetName<T, 2>();
 #else
-# define NATURAFORGE_CLASS_NAME(Class) GetClassName<Class, 1>();
+# define NATURAFORGE_CLASS_NAME(T) ::Class::GetName<T, 1>();
 #endif

@@ -2,7 +2,7 @@
 
 // #define NATURAFORGE_ENABLE_PROFILING
 // #define NATURAFORGE_ENABLE_GPU_SYNC
-#define LINOW_USE_GLM
+// #define LINOW_USE_GLM
 
 #include <functional>
 #include <iostream>
@@ -24,3 +24,5 @@
 #include "GPU.h"
 #include "Build.h"
 #include "Log.h"
+#include "Platform.h"
+#include "Console.h"

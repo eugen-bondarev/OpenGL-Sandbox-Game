@@ -10,7 +10,7 @@
 #include "Werwel/GraphicsContext.h"
 
 Engine::Engine() {
-	Window::Create();
+	Window::Create({ 1920, 1080 }, Window::Mode::Borderless, true, false);
 	Gui::Create();
 	Input::Create(Window::GetGlfwWindow());
 	Primitives::Rect::Create();
@@ -101,7 +101,7 @@ void Engine::Render() {
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(camera->GetTransform()));
 
-	ImGui::SetNextWindowSize(ImVec2(140, 100));
+	ImGui::SetNextWindowSize(ImVec2(140, 120));
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
 		ImGui::Text(("FPS:" + std::to_string(Time::GetFps())).c_str());

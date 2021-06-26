@@ -14,7 +14,6 @@
 #include "Game/Character.h"
 #include "Renderer/Characters/CharacterRenderer.h"
 
-#define LINOW_USE_GLM
 #include "Linow/Linow.h"
 
 class Engine {

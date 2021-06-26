@@ -14,7 +14,7 @@ public:
 		Windowed
 	};
 
-	static void Create(Vec2 size = { 1920, 1080 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = true, const std::string& title = "Forgio");
+	static void Create(Vec2 size = { 1920, 1080 }, Mode mode = Mode::Borderless, bool maximize = true, bool vSync = false, const std::string& title = "Naturaforge");
 	static void Destroy();
 
 	static bool ShouldClose();

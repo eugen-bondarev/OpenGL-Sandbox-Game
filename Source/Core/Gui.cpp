@@ -9,6 +9,8 @@ void Gui::Create() {
 		io.IniFilename = std::string(NATURAFORGE_ROOT + "imgui.ini").c_str();
     io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
+		io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
+
 	ImGui_ImplGlfw_InitForOpenGL(Window::GetGlfwWindow(), true);
 	ImGui_ImplOpenGL3_Init();
 }

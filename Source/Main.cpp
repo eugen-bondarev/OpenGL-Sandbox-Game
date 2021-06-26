@@ -12,6 +12,7 @@ std::string DefineRoot(int amountOfArguments, char* arguments[]) {
 }
 
 int main(int amountOfArguments, char* arguments[]) {
+	NATURAFORGE_CONSOLE_HIDE();
 	NATURAFORGE_PROFILER_BEGIN("Forgio");
 
 	NATURAFORGE_ROOT = DefineRoot(amountOfArguments, arguments);
