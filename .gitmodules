@@ -8,6 +8,3 @@
 [submodule "External/glfw"]
 	path = External/glfw
 	url = https://github.com/glfw/glfw
-[submodule "External/spdlog"]
-	path = External/spdlog
-	url = https://github.com/gabime/spdlog
