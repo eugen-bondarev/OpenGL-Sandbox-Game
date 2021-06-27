@@ -10,3 +10,9 @@ namespace {
 
 using KeyState    = State;
 using ButtonState = State;
+
+enum class MouseWheelState {
+  Idle = 0,
+  Up,
+  Down
+};

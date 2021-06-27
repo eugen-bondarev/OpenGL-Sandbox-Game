@@ -63,13 +63,28 @@ void InterfaceRenderer::RenderInventory() {
       ImVec2 uv0 = ImVec2(1.0f / amountOfTilesX * tileX, 1.0f / amountOfTilesY * tileY);
       ImVec2 uv1 = ImVec2(1.0f / amountOfTilesX * (tileX + 1), 1.0f / amountOfTilesY * (tileY + 1));
 
-      ImGui::ImageButton((void*)(intptr_t) tileMap->GetHandle(), ImVec2(buttonSize.x, buttonSize.y), uv0, uv1);
+      if (inventory.selectedItem == index) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8, 0.8, 0.8, 1));
+          ImGui::ImageButton((void*)(intptr_t) tileMap->GetHandle(), ImVec2(buttonSize.x, buttonSize.y), uv0, uv1, -1);
+        ImGui::PopStyleColor();
+      } else {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4, 0.4, 0.4, 0.4));
+          ImGui::ImageButton((void*)(intptr_t) tileMap->GetHandle(), ImVec2(buttonSize.x, buttonSize.y), uv0, uv1);
+        ImGui::PopStyleColor();
+      }
 
       ImGui::SetCursorPosY(posY);
       ImGui::SetCursorPosX(Window::GetSize().x / 2.0f + posX + i * (fullButtonSize.x - padding.x));
       ImGui::Text(std::to_string(inventory.cells[index].quantity).c_str());
 
     } else {
+      if (inventory.selectedItem == index) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8, 0.8, 0.8, 1));
+      }
+      else {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.4, 0.4, 0.4, 0.4));
+      }
+
       ImGui::ImageButton(
         (void*)(intptr_t) tileMap->GetHandle(), 
         ImVec2(buttonSize.x, buttonSize.y), 
@@ -79,6 +94,7 @@ void InterfaceRenderer::RenderInventory() {
         ImVec4(0, 0, 0, 0),
         ImVec4(0, 0, 0, 0)
       );
+      ImGui::PopStyleColor();
     }
   }
 

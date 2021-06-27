@@ -10,12 +10,25 @@ void Input::KeyboardKeyCallback(GLFWwindow* glfwWindow, int key, int scancode, i
 	if (action == GLFW_PRESS)   keys[key] = State::Pressed;
 }
 
+void Input::MouseWheelCallback(GLFWwindow* glfwWindow, double xOffset, double yOffset) {
+	if (yOffset > 0) {
+		mouseWheelState = MouseWheelState::Up;
+	} else if (yOffset < 0) {
+		mouseWheelState = MouseWheelState::Down;
+	}
+}
+
 void Input::BeginFrame() {
 }
 
 void Input::EndFrame() {
 	mouseButtons.clear();
 	keys.clear();
+	mouseWheelState = MouseWheelState::Idle;
+}
+
+MouseWheelState Input::GetMouseWheelState() {
+	return mouseWheelState;
 }
 
 bool Input::MouseButtonPressed(int button) {

@@ -12,7 +12,7 @@
 Engine::Engine() {
 	Window::Create({
 		{ 1920, 1080 },
-		WindowMode::Fullscreen
+		WindowMode::Borderless
 	});
 
 	Gui::Create();

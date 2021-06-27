@@ -37,7 +37,11 @@ public:
 
 		glfwSetMouseButtonCallback(glfwWindow, MouseButtonCallback);
 		glfwSetKeyCallback(glfwWindow, KeyboardKeyCallback);
+
+		glfwSetScrollCallback(glfwWindow, MouseWheelCallback);
   }
+
+	static void MouseWheelCallback(GLFWwindow* glfwWindow, double xOffset, double yOffset);
 
 	static void MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods);
 	static bool MouseButtonPressed(int button);
@@ -60,11 +64,15 @@ public:
 	static void BeginFrame();
 	static void EndFrame();
 
+	static MouseWheelState GetMouseWheelState();
+
 private:
 	inline static GLFWwindow* glfwWindow;
 
 	inline static std::map<int, State> mouseButtons;
 	inline static std::map<int, State> keys;
+
+	inline static MouseWheelState mouseWheelState;
 
   Input();
 };
