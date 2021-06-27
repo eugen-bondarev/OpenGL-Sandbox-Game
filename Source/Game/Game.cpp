@@ -32,7 +32,7 @@ void Game::Logic(bool& resetGame) {
 void Game::Render() {
 	Component::UpdateComponents();
 
-	world->GetCamera()->SetPosition(character->GetPosition());
+	world->GetCamera()->SetPosition(character->GetPosition() + Vec2(24, 24));
 	character->CollectLights(worldRenderer->GetMapRenderer()->GetAdditionalLightData());
 
 	worldRenderer->Render({ characterRenderer });
