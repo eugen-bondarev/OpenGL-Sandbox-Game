@@ -17,8 +17,11 @@ LightPass::LightPass() {
   /**
    * Empirical constant.
    */
-  const float lightTextureGradientConstant = 1.35f;
-  const auto& vertices = Primitives::Block::Vertices(16 * (lightBlocks * lightTextureGradientConstant) * 2, 16 * (lightBlocks * lightTextureGradientConstant) * 2);
+  const float lightTextureGradientConstant = 1.55f;
+  const auto& vertices = Primitives::Block::Vertices(
+    16 * (lightBlocks * lightTextureGradientConstant) * 2, 
+    16 * (lightBlocks * lightTextureGradientConstant) * 2
+  );
   const auto& indices = Primitives::Block::indices;
 
   lightMesh.vao = CreateRef<Werwel::VAO>();
