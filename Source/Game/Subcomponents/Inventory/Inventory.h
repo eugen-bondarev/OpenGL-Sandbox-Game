@@ -4,6 +4,7 @@
 
 class Inventory {
 friend class Player;
+friend class InterfaceRenderer;
 
 public:
   Inventory();

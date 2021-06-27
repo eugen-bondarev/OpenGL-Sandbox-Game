@@ -8,6 +8,11 @@
 
 #include "Renderer.h"
 
+inline static std::map<BlockType, Vec2> blocksTextureDictionary = {
+  { BlockType::Dirt, Vec2(1, 1) },
+  { BlockType::Grass, Vec2(1, 7) },
+};
+
 class MapRenderer
 {
 public:
