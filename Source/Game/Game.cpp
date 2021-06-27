@@ -8,7 +8,7 @@
 #include "imgui/imgui.h"
 
 Game::Game(int seed) {
-	world = CreateRef<World>(669);
+	world = CreateRef<World>(seed);
 	worldRenderer = CreateRef<WorldRenderer>(world);
 
 	character = CreateRef<Character>(world);
