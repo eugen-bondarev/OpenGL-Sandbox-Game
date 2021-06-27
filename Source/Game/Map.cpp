@@ -6,7 +6,7 @@ Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunk
 	GenerateMap(mapGenerator);
 }
 
-Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType blockType) {	
+Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType, blocks_t& array) {
 	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
 	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
 	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
@@ -16,7 +16,7 @@ Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType bloc
 
 	blockPos = round(blockPos);
 
-	auto& block = blocks[blockPos.x][blockPos.y];
+	auto& block = array[blockPos.x][blockPos.y];
 
 	BlockSettingData result;
 	if ((blockType == BlockType::Empty && blockType != block) || (blockType != BlockType::Empty && block == BlockType::Empty)) {
@@ -34,6 +34,14 @@ Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType bloc
 	}
 
 	return result;
+}
+
+Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType blockType) {	
+	return Place(cameraPosition, blockType, blocks);
+}
+
+Map::BlockSettingData Map::PlaceWall(const Vec2& cameraPosition, WallType wallType) {	
+	return Place(cameraPosition, wallType, walls);
 }
 
 void Map::CalculateVisibleChunks(Vec2 viewPos) {	
@@ -90,15 +98,6 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet) {
 	int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
 
 	std::vector<int> points;
-
-	// static int maxHeight = 50;
-	// static int maxDepth = 25;
-	// static int maxSlopeMistake = 2;	
-
-	// static int maxLength = 200;
-	// static int minLength = 15;
-
-	// static int blockProbabilityInPercent = 10;
 
 	for (int x = 0; x < amountOfBlocks.x; x++) {
 		for (int y = 0; y < middle; y++) {
@@ -181,6 +180,12 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet) {
 		for (int y = 0; y < blocks[x].size(); y++) {
 			if (blocks[x][y] == BlockType::Dirt && HasEmptyNeighbor(x, y)) {
 				SetBlock(x, y, BlockType::Grass);
+			}
+
+			if (blocks[x][y] == BlockType::Dirt || blocks[x][y] == BlockType::Grass) {
+				if (rand() % 100 < 10) {
+					blocks[x][y] = BlockType::Stone;
+				}
 			}
 		}
 	}

@@ -4,6 +4,8 @@
 
 #include "imgui/imgui.h"
 
+#include "../MapRenderer.h"
+
 InterfaceRenderer::InterfaceRenderer(const Inventory& inventory, const Ref<Werwel::Texture> tileMap) : inventory { inventory }, tileMap { tileMap } {
 
 }
@@ -30,6 +32,8 @@ void InterfaceRenderer::RenderInventory() {
   windowFlags |= ImGuiWindowFlags_NoTitleBar;
   windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
   windowFlags |= ImGuiWindowFlags_NoResize;
+  windowFlags |= ImGuiWindowFlags_NoScrollbar;
+  windowFlags |= ImGuiWindowFlags_NoScrollWithMouse;
 
   ImGui::Begin("Inventory", nullptr, windowFlags);
   
@@ -39,10 +43,6 @@ void InterfaceRenderer::RenderInventory() {
   for (int i = -amountOfButtons.x / 2.0f; i < amountOfButtons.x / 2.0f; i++) {
     int amountOfTilesX = tileMap->GetSize().x * 2.0f / 16.0f;
     int amountOfTilesY = tileMap->GetSize().y * 2.0f / 16.0f;
-    int tileX = 2;
-    int tileY = 3;
-    ImVec2 uv0 = ImVec2(1.0f / amountOfTilesX * tileX, 1.0f / amountOfTilesY * tileY);
-    ImVec2 uv1 = ImVec2(1.0f / amountOfTilesX * (tileX + 1), 1.0f / amountOfTilesY * (tileY + 1));
 
     int index = i + amountOfButtons.x / 2.0f;
 
@@ -50,6 +50,19 @@ void InterfaceRenderer::RenderInventory() {
     ImGui::SetCursorPosX(Window::GetSize().x / 2.0f + posX + i * (fullButtonSize.x - padding.x));
 
     if (!inventory.cells[index].IsEmpty() && inventory.cells[index].quantity) {
+      int tileX, tileY;
+
+      if (inventory.cells[index].type == ItemType::Block) {
+        tileX = blocksTextureDictionary[inventory.cells[index].data.blockType].x + 1;
+        tileY = blocksTextureDictionary[inventory.cells[index].data.blockType].y + 2;
+      } else {
+        tileX = blocksTextureDictionary[inventory.cells[index].data.wallType].x + 4;
+        tileY = blocksTextureDictionary[inventory.cells[index].data.wallType].y + 2;
+      }
+
+      ImVec2 uv0 = ImVec2(1.0f / amountOfTilesX * tileX, 1.0f / amountOfTilesY * tileY);
+      ImVec2 uv1 = ImVec2(1.0f / amountOfTilesX * (tileX + 1), 1.0f / amountOfTilesY * (tileY + 1));
+
       ImGui::ImageButton((void*)(intptr_t) tileMap->GetHandle(), ImVec2(buttonSize.x, buttonSize.y), uv0, uv1);
 
       ImGui::SetCursorPosY(posY);

@@ -35,7 +35,9 @@ public:
 		}
 	};
 
-	BlockSettingData PlaceBlock(const Vec2& viewMatrix, BlockType blockType);
+	BlockSettingData Place(const Vec2& cameraPosition, BlockType blockType, blocks_t& array);
+	BlockSettingData PlaceBlock(const Vec2& cameraPosition, BlockType blockType);
+	BlockSettingData PlaceWall(const Vec2& cameraPosition, WallType wallType);
 
 	bool HasNeighbor(int x, int y, BlockType block) const;
 	bool HasEmptyNeighbor(int x, int y) const;

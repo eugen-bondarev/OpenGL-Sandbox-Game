@@ -7,7 +7,6 @@ WorldRenderer::WorldRenderer(const Ref<World>& world) : world { world } {
 void WorldRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderers) {
 	world->GetCamera()->OnPositionChange([&]() {
 		world->GetMap()->CalculateVisibleChunks(world->GetCamera()->GetPosition());
-		// mapRenderer->SetRerender(true);
 		world->GetMap()->blocksUpdated = true;
 	});
 

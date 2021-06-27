@@ -11,6 +11,8 @@
 inline static std::map<BlockType, Vec2> blocksTextureDictionary = {
   { BlockType::Dirt, Vec2(1, 1) },
   { BlockType::Grass, Vec2(1, 7) },
+  { BlockType::Stone, Vec2(7, 1) },
+  { BlockType::Wood, Vec2(13, 1) },
 };
 
 class MapRenderer
@@ -47,19 +49,19 @@ public:
   }
 
   const Ref<Werwel::Texture>& GetTileMap();
-
+  
 private:
-  std::vector<Vec2> additionalLightData;
-
-  std::vector<BlockData> blocksData;
-  std::vector<WallData> wallsData;
-  std::vector<Vec2> lightData;
-
   struct {
     Ref<ColorPass> colorPass;
     Ref<LightPass> lightPass;
     Ref<CompositionPass> compositionPass;
   } pipeline;
+
+  std::vector<Vec2> additionalLightData;
+
+  std::vector<BlockData> blocksData;
+  std::vector<WallData> wallsData;
+  std::vector<Vec2> lightData;
 
   const Ref<Map>& map;
   const Ref<Camera>& camera;

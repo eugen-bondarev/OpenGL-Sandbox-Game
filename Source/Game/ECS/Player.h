@@ -24,5 +24,7 @@ public:
 private:
   const Ref<World> world;
 
+	int selectedItem = 0;
+
   Inventory inventory;
 };

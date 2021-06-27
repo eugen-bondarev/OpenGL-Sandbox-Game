@@ -38,15 +38,15 @@ void MapRenderer::RebuildScene() {
               ||  (map->BlockIsEmpty(x - 1, y) && !map->WallIsEmpty(x - 1, y))
               ||  (map->BlockIsEmpty(x - 1, y - 1) && !map->WallIsEmpty(x - 1, y - 1))
               ) {
-                if (!map->WallIs(x, y, WallType::Empty)) {
-                  const Vec2 tile = Vec2(1, 1) + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
-                  wallsData.emplace_back(x * map->GetBlockSize() + offset, (y) * map->GetBlockSize() + offset, tile.x, tile.y);
+                if (!map->WallIsEmpty(x, y)) {
+                  const Vec2 tile = blocksTextureDictionary[map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]] + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
+                  wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
                 }
               }
             }
           } else {
             if (!map->WallIsEmpty(x, y)) {
-              const Vec2 tile = Vec2(4, 1) + PickRightAngularTile(map->GetWalls(), x, y);
+              const Vec2 tile = blocksTextureDictionary[map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]] + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
               wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
             } else {
               if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {

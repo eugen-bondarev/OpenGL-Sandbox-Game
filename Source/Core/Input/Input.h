@@ -12,8 +12,14 @@ enum class Key {
 	A = KEY_A,
 	S = KEY_S,
 	D = KEY_D,
+
 	Space = KEY_SPACE,
-	Esc = KEY_ESCAPE
+	Esc = KEY_ESCAPE,
+
+	Num1 = KEY_1,
+	Num2 = KEY_2,
+	Num3 = KEY_3,
+	Num4 = KEY_4,
 };
 
 enum class Button {
