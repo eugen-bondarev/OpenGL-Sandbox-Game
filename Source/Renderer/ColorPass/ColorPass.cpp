@@ -82,3 +82,7 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 
 	NATURAFORGE_SYNC_GPU();
 }
+
+const Ref<Werwel::Texture>& ColorPass::GetTileMap() const {
+	return tileMap;
+}

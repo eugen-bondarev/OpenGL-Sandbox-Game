@@ -15,7 +15,7 @@ Game::Game(int seed) {
 	characterRenderer = CreateRef<CharacterRenderer>(characters, world->GetCamera());
 	characters.push_back(character);
 
-	interfaceRenderer = CreateRef<InterfaceRenderer>(character->GetComponent<Player>()->GetInventory());
+	interfaceRenderer = CreateRef<InterfaceRenderer>(character->GetComponent<Player>()->GetInventory(), worldRenderer->GetMapRenderer()->GetTileMap());
 }
 
 void Game::Play(bool& resetGame) {

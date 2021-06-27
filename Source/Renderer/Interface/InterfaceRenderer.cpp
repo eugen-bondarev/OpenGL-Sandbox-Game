@@ -4,7 +4,7 @@
 
 #include "imgui/imgui.h"
 
-InterfaceRenderer::InterfaceRenderer(const Inventory& inventory) : inventory { inventory } {
+InterfaceRenderer::InterfaceRenderer(const Inventory& inventory, const Ref<Werwel::Texture> tileMap) : inventory { inventory }, tileMap { tileMap } {
 
 }
 
@@ -41,7 +41,7 @@ void InterfaceRenderer::RenderInventory() {
       int tileY = 3;
       ImVec2 uv0 = ImVec2(1.0f / amountOfTilesX * tileX, 1.0f / amountOfTilesY * tileY);
       ImVec2 uv1 = ImVec2(1.0f / amountOfTilesX * (tileX + 1), 1.0f / amountOfTilesY * (tileY + 1));
-      ImGui::ImageButton((void*)(intptr_t) 3, ImVec2(buttonSize.x, buttonSize.y + 4), uv0, uv1);
+      ImGui::ImageButton((void*)(intptr_t) tileMap->GetHandle(), ImVec2(buttonSize.x, buttonSize.y + 4), uv0, uv1);
     }
   ImGui::End();
 }

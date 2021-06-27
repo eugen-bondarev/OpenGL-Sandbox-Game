@@ -124,3 +124,7 @@ void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers)
   map->blocksUpdated = false;
   map->chunksUpdated = false;
 }
+
+const Ref<Werwel::Texture>& MapRenderer::GetTileMap() {
+  return pipeline.colorPass->GetTileMap();
+}

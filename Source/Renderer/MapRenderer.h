@@ -41,6 +41,8 @@ public:
     return additionalLightData;
   }
 
+  const Ref<Werwel::Texture>& GetTileMap();
+
 private:
   std::vector<Vec2> additionalLightData;
 

@@ -46,6 +46,8 @@ public:
     return fbo;
   }
 
+  const Ref<Werwel::Texture>& GetTileMap() const;
+
 private:
   Ref<ColorFBO> fbo;
   Ref<Werwel::Shader> shader;
