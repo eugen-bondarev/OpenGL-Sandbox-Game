@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Maths/Maths.h"
+
 enum class BlockType {
 	Empty = 0,
 	Dirt,

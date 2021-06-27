@@ -27,6 +27,8 @@ public:
 	struct BlockSettingData {
 		Vec2 block { -1, -1 };
 		Vec2 chunk { -1, -1 };
+		
+		BlockType blockType;
 
 		inline bool IsSet() const {
 			return chunk != Vec2 { -1, -1 };
@@ -69,6 +71,9 @@ public:
 	int GetSizeInBytes() const;
 	int GetSizeInKilobytes() const;
 	int GetSizeInMegabytes() const;
+
+	bool blocksUpdated { true };
+	bool chunksUpdated { true };
 
 private:
 	blocks_t blocks;

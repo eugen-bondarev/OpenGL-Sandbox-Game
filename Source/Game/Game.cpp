@@ -13,8 +13,9 @@ Game::Game(int seed) {
 
 	character = CreateRef<Character>(world);
 	characterRenderer = CreateRef<CharacterRenderer>(characters, world->GetCamera());
-
 	characters.push_back(character);
+
+	interfaceRenderer = CreateRef<InterfaceRenderer>(character->GetComponent<Player>()->GetInventory());
 }
 
 void Game::Play(bool& resetGame) {
@@ -26,33 +27,17 @@ void Game::Logic(bool& resetGame) {
 	if (Input::KeyPressed(Key::Esc)) {
 		resetGame = true;
 	}
-
-	if (Input::MouseButtonDown(Button::Left)) {
-		Map::BlockSettingData settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), BlockType::Empty);
-
-		if (settingBlock.IsSet()) {
-			worldRenderer->GetMapRenderer()->SetRerender(true);
-			worldRenderer->GetMapRenderer()->SetChunksUpdated(true);
-		}
-	}
-
-	if (Input::MouseButtonDown(Button::Right)) {
-		Map::BlockSettingData settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), BlockType::Dirt);
-
-		if (settingBlock.IsSet()) {
-			worldRenderer->GetMapRenderer()->SetRerender(true);
-			worldRenderer->GetMapRenderer()->SetChunksUpdated(true);
-		}
-	}
 }
 
 void Game::Render() {
-	Entity::UpdateComponents();
+	Component::UpdateComponents();
 
 	world->GetCamera()->SetPosition(character->GetPosition());
 	character->CollectLights(worldRenderer->GetMapRenderer()->GetAdditionalLightData());
 
 	worldRenderer->Render({ characterRenderer });
+
+	interfaceRenderer->Render();
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 

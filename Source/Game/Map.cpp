@@ -20,10 +20,17 @@ Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType bloc
 
 	BlockSettingData result;
 	if ((blockType == BlockType::Empty && blockType != block) || (blockType != BlockType::Empty && block == BlockType::Empty)) {
+		result.blockType = block;
+
 		block = blockType;
 
 		result.block = blockPos;
 		result.chunk = blockPos / GetChunkSize();
+	}
+
+	if (result.IsSet()) {
+		blocksUpdated = true;
+		chunksUpdated = true;
 	}
 
 	return result;

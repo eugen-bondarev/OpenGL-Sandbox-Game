@@ -27,4 +27,30 @@ void Player::Update() {
 	} else {
 		entity->animator->SetFrame(entity->animator->GetDirection() == 1 ? 0 : -1);
 	}
+
+	static int selectedItem = 0;
+
+	if (Input::MouseButtonDown(Button::Left)) {
+		Map::BlockSettingData settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), BlockType::Empty);
+
+		if (settingBlock.IsSet()) {
+			inventory.cells[selectedItem].quantity += 1;
+			inventory.cells[selectedItem].data.blockType = settingBlock.blockType;
+			inventory.cells[selectedItem].type = ItemType::Block;
+		}
+	}
+
+	if (Input::MouseButtonDown(Button::Right)) {
+		if (!inventory.cells[selectedItem].IsEmpty() && inventory.cells[selectedItem].quantity) {
+			Map::BlockSettingData settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), inventory.cells[selectedItem].data.blockType);
+
+			if (settingBlock.IsSet()) {
+				inventory.cells[selectedItem].quantity -= 1;
+			}
+		}
+	}
+}
+
+const Inventory& Player::GetInventory() const {
+	return inventory;
 }

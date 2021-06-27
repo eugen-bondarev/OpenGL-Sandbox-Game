@@ -1,21 +1,13 @@
 #pragma once
 
+#include "IUpdatable.h"
+
 class Animator;
 class Rigidbody;
 class ITransform;
 
-#include "IUpdatable.h"
-
 class Entity : public ITransform {
-public:  
-  inline static std::vector<IUpdatable*> updatableComponents;
-
-  inline static void UpdateComponents() {
-    for (auto& component : updatableComponents) {
-      component->Update();
-    }
-  }
-
+public:
   inline Entity() {
     static unsigned int ids = 0;
 
@@ -52,7 +44,7 @@ public:
     }
 
     if (IUpdatable* updatable = dynamic_cast<IUpdatable*>(r.get())) {
-      updatableComponents.push_back(updatable);
+      Component::updatableComponents.push_back(updatable);
     }
 
     return r.get();

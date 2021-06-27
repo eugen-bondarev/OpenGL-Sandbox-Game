@@ -3,7 +3,7 @@
 Character::Character(const Ref<World>& world) : world { world } {
   AddComponent<Animator>();
   AddComponent<Rigidbody>(world->GetMap());
-  AddComponent<Player>();
+  AddComponent<Player>(world);
 
 	SetPosition(world->GetCamera()->GetPosition());
 	Land();

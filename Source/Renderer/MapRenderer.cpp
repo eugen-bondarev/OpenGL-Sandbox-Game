@@ -88,7 +88,7 @@ void MapRenderer::CheckVisibleChunks() {
 
   if (visibleChunks != lastVisibleChunks) {
     lastVisibleChunks = visibleChunks;
-    chunksUpdated = true;
+    map->chunksUpdated = true;
   }
 }
 
@@ -109,10 +109,10 @@ void MapRenderer::Compose() {
 void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers) {
   CheckVisibleChunks();
 
-  if (rerender) {
-    if (chunksUpdated) {
+  if (map->blocksUpdated) {
+    if (map->chunksUpdated) {
       RebuildScene();
-      chunksUpdated = false; 
+      map->chunksUpdated = false; 
     }
     UpdateScene();    
     PerformRenderPasses(additionalRenderers);
@@ -121,13 +121,6 @@ void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers)
 
 	additionalLightData.clear();
 
-  rerender = false;
-}
-
-void MapRenderer::SetRerender(bool value) {
-  rerender = value;
-}
-
-void MapRenderer::SetChunksUpdated(bool value) {
-  chunksUpdated = value;
+  map->blocksUpdated = false;
+  map->chunksUpdated = false;
 }

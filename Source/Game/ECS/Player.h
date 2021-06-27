@@ -5,15 +5,24 @@
 #include "ITransform.h"
 #include "IUpdatable.h"
 
-#include "../Map.h"
+#include "../World.h"
 
 #include "Entity.h"
 
+#include "../Subcomponents/Inventory/Inventory.h"
+
 class Player : public IUpdatable, public Component {
 public:
-  Player(Entity* entity) : Component(entity) {
+  Player(Entity* entity, Ref<World> world) : Component(entity), world { world } {
 
   }
 
   void Update() override;
+
+  const Inventory& GetInventory() const;
+
+private:
+  const Ref<World> world;
+
+  Inventory inventory;
 };
