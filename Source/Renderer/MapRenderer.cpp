@@ -7,7 +7,6 @@
 #include "Util/ImGuiHelper.h"
 
 MapRenderer::MapRenderer(const Ref<Map>& map, const Ref<Camera>& camera) : map { map }, camera { camera } {
-
   visibleChunks = map->GetVisibleChunks();
   lastVisibleChunks = visibleChunks;
 

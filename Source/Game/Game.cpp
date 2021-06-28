@@ -48,6 +48,5 @@ void Game::Render() {
     ImGui::Text(std::string("Size (b): " + std::to_string(world->GetMap()->GetSizeInBytes())).c_str());
     ImGui::Text(std::string("Size (kb): " + std::to_string(world->GetMap()->GetSizeInKilobytes())).c_str());
     ImGui::Text(std::string("Size (mb): " + std::to_string(world->GetMap()->GetSizeInMegabytes())).c_str());
-		ImGui::Text(std::to_string(worldRenderer->GetMapRenderer()->GetAmountOfRenderedLights()).c_str());
 	ImGui::End();
 }

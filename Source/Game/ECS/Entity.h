@@ -24,13 +24,7 @@ public:
 
   template <typename T, typename... Args>
   T* AddComponent(Args... args) {
-    #ifdef NATURAFORGE_COMPILER_VS
-      std::string rawName = typeid(T).name();
-      std::string prettyName = rawName.substr(rawName.find_first_of(' ') + 1, rawName.size());
-    #else
-      std::string rawName = typeid(T).name();
-      std::string prettyName = rawName.substr(rawName.find_first_of(' ') + 2, rawName.size());
-    #endif
+    std::string prettyName = NATURAFORGE_CLASS_NAME(T);
 
     Ref<T> r = CreateRef<T>(this, std::forward<Args>(args)...);
     components[prettyName] = r;
@@ -48,11 +42,19 @@ public:
     }
 
     return r.get();
-  }  
+  }
+
+  template <typename T>
+  void DeleteComponent() {
+    std::string prettyName = NATURAFORGE_CLASS_NAME(T);
+    
+    components.erase(components.find(prettyName));
+  }
 
   template <typename T>
   T* GetComponent() {
     std::string prettyName = NATURAFORGE_CLASS_NAME(T);
+
     return dynamic_cast<T*>(components[prettyName].get());
   }
 

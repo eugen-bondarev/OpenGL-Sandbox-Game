@@ -7,7 +7,6 @@ class Entity;
 class Animator : public Component {
 public:
   Animator(Entity* entity) : Component(entity) {
-
   }
 
   void SetFrame(float frame) {
