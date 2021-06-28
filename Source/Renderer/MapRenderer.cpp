@@ -46,6 +46,10 @@ void MapRenderer::RebuildScene() {
             }
           } else {
             if (!map->WallIsEmpty(x, y)) {
+              if (map->BlockIsEmpty(x, y + 6) && map->WallIsEmpty(x, y + 6)) {
+                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+              }
+
               const Vec2 tile = blocksTextureDictionary[map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]] + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
               wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
             } else {
