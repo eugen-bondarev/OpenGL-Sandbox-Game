@@ -56,6 +56,14 @@ void MapRenderer::RebuildScene() {
               if (!map->BlockIsEmpty(x, y + 1) || !map->WallIsEmpty(x, y - 1)) {
                 lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
               }
+
+              if (!map->BlockIsEmpty(x - 1, y) || !map->WallIsEmpty(x - 1, y)) {
+                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+              }
+
+              if (!map->BlockIsEmpty(x + 1, y) || !map->WallIsEmpty(x + 1, y)) {
+                lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
+              }
             }
           }
         }

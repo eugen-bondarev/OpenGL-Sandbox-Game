@@ -29,8 +29,6 @@ CompositionPass::CompositionPass() {
 void CompositionPass::Perform(const Ref<ColorPass>& colorPass, const Ref<LightPass>& lightPass) {   
   NATURAFORGE_PROFILER_SCOPE();
 
-  // static Color sky = Color(209, 247, 255, 255.0f) / 255.0f;
-  // Werwel::GraphicsContext::ClearColor(sky.r, sky.g, sky.b, sky.a);
   Werwel::GraphicsContext::Clear();
 
   canvas->Bind();

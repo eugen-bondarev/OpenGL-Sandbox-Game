@@ -69,7 +69,7 @@ void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {
           glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
   fbo->Unbind();
 
-  glViewport(0, 0, 1920, 1080);
+  glViewport(0, 0, Window::GetSize().x, Window::GetSize().y);
 
   NATURAFORGE_SYNC_GPU();
 }
