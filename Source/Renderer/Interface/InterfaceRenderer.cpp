@@ -4,7 +4,7 @@
 
 #include "imgui/imgui.h"
 
-#include "Renderer/Map/MapRenderer.h"
+#include "Renderer/World/Map/MapRenderer.h"
 
 InterfaceRenderer::InterfaceRenderer(const Inventory& inventory) : inventory { inventory } {
 
@@ -48,13 +48,14 @@ void InterfaceRenderer::RenderInventory() {
     ImGui::SetCursorPosY(posY);
     ImGui::SetCursorPosX(Window::GetSize().x / 2.0f + posX + i * (fullButtonSize.x - padding.x));
 
+
     if (!inventory.items[index]->IsEmpty() && inventory.items[index]->GetCurrentAmount()) {
       Icon& icon = inventory.items[index]->GetIcon();
       TileMap* tileMap = icon.first;
       Vec2 tile = icon.second;      
 
-      ImVec2 uv0 = ImVec2(Vec2(1.0f / Vec2(tileMap->GetAmountOfTilesX(), tileMap->GetAmountOfTilesY()) * tile));
-      ImVec2 uv1 = ImVec2(Vec2(1.0f / Vec2(tileMap->GetAmountOfTilesX(), tileMap->GetAmountOfTilesY()) * (tile + 1.0f)));
+      ImVec2 uv0 = ImVec2(Vec2(1.0f / tileMap->GetAmountOfTiles() * tile));
+      ImVec2 uv1 = ImVec2(Vec2(1.0f / tileMap->GetAmountOfTiles() * (tile + 1.0f)));
 
       if (inventory.selectedItem == index) {
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8, 0.8, 0.8, 1));

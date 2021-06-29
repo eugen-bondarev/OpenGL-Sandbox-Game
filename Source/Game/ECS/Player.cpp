@@ -61,7 +61,7 @@ void Player::Update() {
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
-		inventory.items[inventory.selectedItem]->Use(GameState(world.get()));
+		inventory.items[inventory.selectedItem]->Use(GameState(world.get(), this));
 
 		if (!inventory.items[inventory.selectedItem]->GetCurrentAmount()) {
 			inventory.items[inventory.selectedItem].reset(new Empty());
@@ -69,6 +69,6 @@ void Player::Update() {
 	}
 }
 
-const Inventory& Player::GetInventory() const {
+Inventory& Player::GetInventory() {
 	return inventory;
 }

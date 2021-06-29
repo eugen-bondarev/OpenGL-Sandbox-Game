@@ -18,6 +18,8 @@ public:
 private:
   void Logic(bool& resetGame);
   void Render();
+  
+  Ref<ToolsTileMap> toolsTileMap;
 
 	std::vector<Ref<Character>> characters;
 

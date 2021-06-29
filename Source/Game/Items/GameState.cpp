@@ -1,5 +1,5 @@
 #include "GameState.h"
 
-GameState::GameState(World* world) : world { world } {
+GameState::GameState(World* world, Player* player) : world { world }, player { player } {
 
 }

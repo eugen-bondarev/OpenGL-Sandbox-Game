@@ -17,7 +17,7 @@ public:
 
   void Update() override;
 
-  const Inventory& GetInventory() const;
+  Inventory& GetInventory();
 
 private:
   const Ref<World> world;

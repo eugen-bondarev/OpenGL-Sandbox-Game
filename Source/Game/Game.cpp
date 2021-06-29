@@ -8,6 +8,19 @@
 #include "imgui/imgui.h"
 
 Game::Game(int seed) {
+	const ImageAsset toolsTileMapTexture("Assets/Images/Tools.png");
+	toolsTileMap = TextureAtlas::Add<ToolsTileMap>(TextureAtlasType::Tools, CreateRef<ToolsTileMap>(
+		Vec2(16.0f),
+		toolsTileMapTexture.GetSize(),
+		toolsTileMapTexture.GetData(),
+		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT },
+		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT }
+	));
+  toolsTileMap->Add(ToolType::BronzePickaxe, Vec2(0));
+
 	world = CreateRef<World>(seed);
 	worldRenderer = CreateRef<WorldRenderer>(world);
 
@@ -16,6 +29,7 @@ Game::Game(int seed) {
 	characters.push_back(character);
 
 	interfaceRenderer = CreateRef<InterfaceRenderer>(character->GetComponent<Player>()->GetInventory());
+
 }
 
 Game::~Game() {

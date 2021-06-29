@@ -3,26 +3,21 @@
 #include "Werwel/Texture.h"
 
 #include "Game/Blocks.h"
+#include "Game/Tools.h"
 
 class TileMap : public Werwel::Texture {
 public:
   template <typename... Args>
-  TileMap(Args&&... args) : Werwel::Texture(std::forward<Args>(args)...) {
-    amountOfTilesX = static_cast<int>(size.x / 8.0f);
-    amountOfTilesY = static_cast<int>(size.y / 8.0f);
+  TileMap(Vec2 tileSize, Args&&... args) : Werwel::Texture(std::forward<Args>(args)...) {
+    amountOfTiles = size / tileSize;
   }
 
-  inline int TileMap::GetAmountOfTilesX() const {
-    return amountOfTilesX;
-  }
-
-  inline int TileMap::GetAmountOfTilesY() const {
-    return amountOfTilesY;
+  inline Vec2 GetAmountOfTiles() const {
+    return amountOfTiles;
   }
 
 private:
-  int amountOfTilesX { 0 };
-  int amountOfTilesY { 0 };
+  Vec2 amountOfTiles;
 };
 
 template <typename T>
@@ -41,7 +36,7 @@ public:
     return dictionary.at(t);
   }
 
-private:
+public:
   std::map<T, Vec2> dictionary;
 };
 
@@ -49,4 +44,10 @@ class BlocksTileMap : public TileMap, public ITileMapDictionary<BlockType> {
 public:
   template <typename... Args>
   BlocksTileMap(Args&&... args) : TileMap(std::forward<Args>(args)...) {}
+};
+
+class ToolsTileMap : public TileMap, public ITileMapDictionary<ToolType> {
+public:
+  template <typename... Args>
+  ToolsTileMap(Args&&... args) : TileMap(std::forward<Args>(args)...) {}
 };

@@ -1,7 +1,7 @@
 #include "Wall.h"
 
-Wall::Wall(WallType type, int amount) : type { type }, Item(999, amount) {
-  
+Wall::Wall(WallType type, int amount) : type { type }, Item(256, amount) {
+  TYPE = static_cast<int>(type);  
 }
 
 void Wall::Use(GameState state) {

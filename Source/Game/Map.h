@@ -29,6 +29,7 @@ public:
 		Vec2 chunk { -1, -1 };
 		
 		BlockType blockType;
+		BlockType oldBlock;
 
 		inline bool IsSet() const {
 			return chunk != Vec2 { -1, -1 };

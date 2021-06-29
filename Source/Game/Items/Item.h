@@ -25,6 +25,8 @@ public:
     };
   }
 
+  int TYPE { -1 };
+
 protected:
   int stack { 0 };
 

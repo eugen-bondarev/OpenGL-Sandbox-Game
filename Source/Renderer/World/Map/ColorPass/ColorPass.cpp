@@ -22,6 +22,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 	const ImageAsset tileMapTexture("Assets/Images/Map.png");
 
 	tileMap = TextureAtlas::Add<BlocksTileMap>(TextureAtlasType::Map, CreateRef<BlocksTileMap>(
+		Vec2(8.0f),
 		tileMapTexture.GetSize(),
 		tileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,

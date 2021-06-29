@@ -21,6 +21,7 @@ Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType
 	BlockSettingData result;
 	if ((blockType == BlockType::Empty && blockType != block) || (blockType != BlockType::Empty && block == BlockType::Empty)) {
 		result.blockType = block;
+		result.oldBlock = block;
 
 		block = blockType;
 
