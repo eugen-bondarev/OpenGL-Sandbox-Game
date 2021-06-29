@@ -19,7 +19,9 @@ Game::Game(int seed) {
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT }
 	));
-  toolsTileMap->Add(ToolType::BronzePickaxe, Vec2(0));
+  toolsTileMap->Add(ToolType::BronzePickaxe, Vec2(0, 0));
+  toolsTileMap->Add(ToolType::BronzeAxe, Vec2(1, 0));
+  toolsTileMap->Add(ToolType::BronzeShovel, Vec2(2, 0));
 
 	world = CreateRef<World>(seed);
 	worldRenderer = CreateRef<WorldRenderer>(world);

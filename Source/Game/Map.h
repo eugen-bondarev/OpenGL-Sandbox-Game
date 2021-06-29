@@ -36,6 +36,10 @@ public:
 		}
 	};
 
+	TileType GetTileUnderCursor(const Vec2& cameraPosition, const tiles_t& tiles) const;
+	BlockType GetBlockUnderCursor(const Vec2& cameraPosition) const;
+	WallType GetWallUnderCursor(const Vec2& cameraPosition) const;
+
 	BlockSettingData Place(const Vec2& cameraPosition, BlockType blockType, blocks_t& array);
 	BlockSettingData PlaceBlock(const Vec2& cameraPosition, BlockType blockType);
 	BlockSettingData PlaceWall(const Vec2& cameraPosition, WallType wallType);

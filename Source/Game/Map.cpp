@@ -6,6 +6,25 @@ Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunk
 	GenerateMap(mapGenerator);
 }
 
+TileType Map::GetTileUnderCursor(const Vec2& cameraPosition, const tiles_t& tiles) const {
+	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
+	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
+	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
+	Vec2 tilePos = mousePosWorldSpace / Vec2(GetBlockSize());
+
+	tilePos = round(tilePos);
+
+	return tiles[tilePos.x][tilePos.y];
+}
+
+BlockType Map::GetBlockUnderCursor(const Vec2& cameraPosition) const {
+	return GetTileUnderCursor(cameraPosition, blocks);
+}
+
+WallType Map::GetWallUnderCursor(const Vec2& cameraPosition) const {
+	return GetTileUnderCursor(cameraPosition, walls);
+}
+
 Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType, blocks_t& array) {
 	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
 	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;

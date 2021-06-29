@@ -5,10 +5,11 @@
 
 #include <vector>
 
-using blocks_row_t = std::vector<BlockType>;
-using blocks_t = std::vector<blocks_row_t>;
+using tiles_row_t = std::vector<TileType>;
+using tiles_t = std::vector<tiles_row_t>;
 
-using walls_t = blocks_t;
+using blocks_t = tiles_t;
+using walls_t  = tiles_t;
 
 using bounds_t = struct __bounds_t {
   Period<> x;

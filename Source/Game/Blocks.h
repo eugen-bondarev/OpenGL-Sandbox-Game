@@ -2,7 +2,7 @@
 
 #include "Maths/Maths.h"
 
-enum class BlockType {
+enum class TileType {
 	Empty = 0,
 	Dirt,
 	Grass,
@@ -21,4 +21,5 @@ struct IndexAndPosition {
 }
 }
 
-using WallType = BlockType;
+using BlockType = TileType;
+using WallType  = TileType;

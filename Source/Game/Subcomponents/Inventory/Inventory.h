@@ -3,6 +3,9 @@
 #include "../../Items/Block.h"
 #include "../../Items/Wall.h"
 #include "../../Items/Tool.h"
+#include "../../Items/Subtypes/Pickaxe.h"
+#include "../../Items/Subtypes/Shovel.h"
+#include "../../Items/Subtypes/Axe.h"
 
 class Inventory {
 friend class Player;

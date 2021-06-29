@@ -17,3 +17,7 @@ std::string GetName() {
 #else
 # define NATURAFORGE_CLASS_NAME(T) ::Class::GetName<T, 1>();
 #endif
+
+#define NATURAFORGE_INHERIT_CONSTRUCTOR(Derived, Parent) \
+template<typename... Args> \
+Derived(Args&&... args) : Parent(std::forward<Args>(args)...)

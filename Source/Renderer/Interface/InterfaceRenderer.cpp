@@ -48,7 +48,6 @@ void InterfaceRenderer::RenderInventory() {
     ImGui::SetCursorPosY(posY);
     ImGui::SetCursorPosX(Window::GetSize().x / 2.0f + posX + i * (fullButtonSize.x - padding.x));
 
-
     if (!inventory.items[index]->IsEmpty() && inventory.items[index]->GetCurrentAmount()) {
       Icon& icon = inventory.items[index]->GetIcon();
       TileMap* tileMap = icon.first;
@@ -67,9 +66,11 @@ void InterfaceRenderer::RenderInventory() {
         ImGui::PopStyleColor();
       }
 
-      ImGui::SetCursorPosY(posY);
-      ImGui::SetCursorPosX(Window::GetSize().x / 2.0f + posX + i * (fullButtonSize.x - padding.x));
-      ImGui::Text(std::to_string(inventory.items[index]->GetCurrentAmount()).c_str());
+      if (inventory.items[index]->GetStack() != 1) {
+        ImGui::SetCursorPosY(posY);
+        ImGui::SetCursorPosX(Window::GetSize().x / 2.0f + posX + i * (fullButtonSize.x - padding.x));
+        ImGui::Text(std::to_string(inventory.items[index]->GetCurrentAmount()).c_str());
+      }
 
     } else {
       if (inventory.selectedItem == index) {
