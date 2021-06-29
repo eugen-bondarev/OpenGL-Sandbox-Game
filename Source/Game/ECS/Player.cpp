@@ -38,14 +38,6 @@ void Player::Update() {
 		}
 	}
 
-	if (Input::KeyPressed(Key::Num1)) {
-		inventory.selectedItem = 0;
-	}
-
-	if (Input::KeyPressed(Key::Num2)) {
-		inventory.selectedItem = 1;
-	}
-
 	if (Input::GetMouseWheelState() == MouseWheelState::Up) {
 		inventory.selectedItem -= 1;
 		if (inventory.selectedItem < 0) {
