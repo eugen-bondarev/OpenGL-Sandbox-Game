@@ -4,13 +4,14 @@
 #include "Renderer/Characters/CharacterRenderer.h"
 
 #include "World.h"
-#include "Renderer/WorldRenderer.h"
+#include "Renderer/World/WorldRenderer.h"
 
 #include "Renderer/Interface/InterfaceRenderer.h"
 
 class Game {
 public:
   Game(int seed = 669);
+  ~Game();
 
   void Play(bool& resetGame);
 

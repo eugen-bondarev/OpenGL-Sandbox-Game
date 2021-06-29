@@ -20,5 +20,8 @@ file(GLOB src
 
 add_library(Werwel STATIC ${src})
 
+target_precompile_headers(Werwel PUBLIC include/Werwel/Common.h)
+
 target_include_directories(Werwel PUBLIC include/Werwel)
 target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
+target_include_directories(Werwel PUBLIC ${GLM_INCLUDE_DIR})

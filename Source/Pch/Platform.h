@@ -5,3 +5,5 @@
 #else
 # define NATURAFORGE_PLATFORM_LINUX
 #endif
+
+#define NATURAFORGE_ERROR_EXIT() exit(1)

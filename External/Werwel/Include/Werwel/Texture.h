@@ -62,13 +62,14 @@ public:
 		return this == boundTexture;
 	}
 	
-private:
+protected:
 	Size size;
 
 	GLint internalFormat;
 	GLuint format;
 	GLuint type;
 
+private:
 	Texture(const Texture&) = delete;
 	Texture operator=(const Texture&) = delete;
 };

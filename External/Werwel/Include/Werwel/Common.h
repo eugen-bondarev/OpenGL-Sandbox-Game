@@ -8,6 +8,10 @@
 #include <tuple>
 #include <map>
 
+#ifdef WERWEL_USE_GLM
+# include <glm/vec2.hpp>
+#endif
+
 #ifdef NDEBUG
 # define WERWEL_RELEASE
 #else
@@ -25,6 +29,20 @@
 #endif
 
 namespace Werwel {
+
+#ifdef WERWEL_USE_GLM
+  using Vec2 = glm::vec2;
+#else
+  struct Vec2 {
+    float x;
+    float y;
+
+    Vec2(float x, float y) {
+      this->x = x;
+      this->y = y;
+    }
+  };
+#endif
 
 namespace Mem {
 
@@ -47,17 +65,6 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 }
 
 using Str = std::string;
-
-struct Vec2 {
-  float x;
-  float y;
-
-  Vec2(float x, float y) {
-    this->x = x;
-    this->y = y;
-  }
-};
-
 using Size = Vec2;
 using Pos  = Vec2;
 

@@ -2,9 +2,9 @@
 
 #include "Game/World.h"
 
-#include "MapRenderer.h"
+#include "Map/MapRenderer.h"
 
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 
 class WorldRenderer {
 public:

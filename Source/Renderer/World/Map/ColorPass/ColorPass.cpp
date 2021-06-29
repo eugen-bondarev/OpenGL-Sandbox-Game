@@ -20,14 +20,20 @@ ColorPass::ColorPass(int amountOfBlocks) {
 	);
 
 	const ImageAsset tileMapTexture("Assets/Images/Map.png");
-	tileMap = CreateRef<Werwel::Texture>(
-		Werwel::Size(tileMapTexture.GetSize().x, tileMapTexture.GetSize().y),tileMapTexture.GetData(),
+
+	tileMap = TextureAtlas::Add<BlocksTileMap>(TextureAtlasType::Map, CreateRef<BlocksTileMap>(
+		tileMapTexture.GetSize(),
+		tileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT }
-	);
+	));
+  tileMap->Add(BlockType::Dirt, Vec2(1, 1));
+  tileMap->Add(BlockType::Grass, Vec2(1, 7));
+  tileMap->Add(BlockType::Stone, Vec2(7, 1));
+  tileMap->Add(BlockType::Wood, Vec2(13, 1));
 
 	const auto& vers = Primitives::Block::Vertices(16, 16);
 	const auto& inds = Primitives::Block::indices;
@@ -81,8 +87,4 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 					glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
 
 	NATURAFORGE_SYNC_GPU();
-}
-
-const Ref<Werwel::Texture>& ColorPass::GetTileMap() const {
-	return tileMap;
 }

@@ -29,7 +29,8 @@ public:
 	static void Clear();
 	static void PollEvents();
 	static void SwapBuffers();
-
+	
+	static void Minimize();
 	static void Close();
 
 	static Vec2 GetPosition();

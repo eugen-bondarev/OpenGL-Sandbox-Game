@@ -15,9 +15,7 @@ public:
 
   Blocks::Representations::IndexAndPosition GetBlockNearby(Vec2 fix, Vec2 offset = Vec2(0, 0)) const;
 
-  Rigidbody(Entity* entity, const Ref<Map> map) : Component(entity), map { map } {
-
-  }
+  Rigidbody(Entity* entity, const Ref<Map> map);
 
   void Update() override;
   void CheckCollisions();

@@ -4,6 +4,10 @@
 
 #include "Linow/Linow.h"
 
+Rigidbody::Rigidbody(Entity* entity, const Ref<Map> map) : Component(entity), map { map } {
+
+}
+
 Blocks::Representations::IndexAndPosition Rigidbody::GetBlockNearby(Vec2 fix, Vec2 offset) const {
   Blocks::Representations::IndexAndPosition block;
   block.worldPosition = ToInt((entity->position + fix + offset * map->GetBlockSize()) / map->GetBlockSize()) * map->GetBlockSize() - 8.0f;

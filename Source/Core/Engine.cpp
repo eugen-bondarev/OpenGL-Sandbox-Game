@@ -5,8 +5,6 @@
 #include "Core/Time.h"
 #include "Core/Gui.h"
 
-#include "Renderer/Entities/RectVao.h"
-
 #include "Werwel/GraphicsContext.h"
 
 Engine::Engine() {
@@ -38,7 +36,6 @@ void Engine::BeginFrame() {
 void Engine::Run() {
 	if (resetGame) {
 		game.reset();
-		Component::updatableComponents.clear();
 		resetGame = false;
 	}
 

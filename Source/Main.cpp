@@ -1,6 +1,8 @@
 #include "Core/Window.h"
 #include "Core/Engine.h"
 
+#include <boxer/boxer.h>
+
 std::string DefineRoot(int amountOfArguments, char* arguments[]) {
 	std::string root = std::string(arguments[0]);
 	int slash0 = root.find_last_of('\\');

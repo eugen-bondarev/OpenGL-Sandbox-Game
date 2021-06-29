@@ -2,7 +2,7 @@
 
 namespace Werwel {
 
-FBO::FBO(Size size, GLbitfield buffersToClear, const std::vector<GLuint>& drawBuffers)
+FBO::FBO(Size size, GLbitfield buffersToClear, std::vector<GLuint> drawBuffers)
 	: size { size }, buffersToClear{ buffersToClear }, drawBuffers{ drawBuffers }
 {
 }

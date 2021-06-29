@@ -2,13 +2,23 @@
 
 #include <fstream>
 
+#include "Core/Window.h"
+
 TextAsset::TextAsset(const std::string& path) {
 	Load(path);
 }
 
 void TextAsset::Load(const std::string& path) {
 	std::ifstream file;
-	file.open(NATURAFORGE_ROOT + path);
+	std::string fullPath = NATURAFORGE_ROOT + path;
+
+	file.open(fullPath);
+
+	if (!file.is_open()) {
+		Window::Minimize();
+		NATURAFORGE_ERROR_POPUP("Could not load a text asset: " + fullPath, "TextAsset::Load()");
+		NATURAFORGE_ERROR_EXIT();
+	}
 
 	while (!file.eof()) {
 		std::string line;

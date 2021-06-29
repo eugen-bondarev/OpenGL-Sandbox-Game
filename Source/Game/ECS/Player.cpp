@@ -7,6 +7,12 @@
 #include "Rigidbody.h"
 #include "Animator.h"
 
+#include "../Items/Empty.h"
+
+Player::Player(Entity* entity, Ref<World> world) : Component(entity), world { world } {
+
+}
+
 void Player::Update() {
 	if (Input::KeyPressed(Key::Space)) {
 		if (entity->rigidbody->GetOnGround()) {
@@ -55,35 +61,10 @@ void Player::Update() {
 	}
 
 	if (Input::MouseButtonDown(Button::Left)) {
-		Map::BlockSettingData settingBlock;
-			
-		if (inventory.cells[inventory.selectedItem].type == ItemType::Block) {
-			settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), BlockType::Empty);
-		} else if (inventory.cells[inventory.selectedItem].type == ItemType::Wall) {
-			settingBlock = world->GetMap()->PlaceWall(world->GetCamera()->GetPosition(), WallType::Empty);
-		}
+		inventory.items[inventory.selectedItem]->Use(GameState(world.get()));
 
-		if (settingBlock.IsSet()) {
-			inventory.cells[inventory.selectedItem].quantity += 1;
-			inventory.cells[inventory.selectedItem].data.blockType = settingBlock.blockType;
-
-			// inventory.cells[selectedItem].type = ItemType::Block;
-		}
-	}
-
-	if (Input::MouseButtonDown(Button::Right)) {
-		if (!inventory.cells[inventory.selectedItem].IsEmpty() && inventory.cells[inventory.selectedItem].quantity) {
-			Map::BlockSettingData settingBlock;
-
-			if (inventory.cells[inventory.selectedItem].type == ItemType::Block) {
-				settingBlock = world->GetMap()->PlaceBlock(world->GetCamera()->GetPosition(), inventory.cells[inventory.selectedItem].data.blockType);
-			} else if (inventory.cells[inventory.selectedItem].type == ItemType::Wall) {
-				settingBlock = world->GetMap()->PlaceWall(world->GetCamera()->GetPosition(), inventory.cells[inventory.selectedItem].data.wallType);
-			}
-
-			if (settingBlock.IsSet()) {
-				inventory.cells[inventory.selectedItem].quantity -= 1;
-			}
+		if (!inventory.items[inventory.selectedItem]->GetCurrentAmount()) {
+			inventory.items[inventory.selectedItem].reset(new Empty());
 		}
 	}
 }

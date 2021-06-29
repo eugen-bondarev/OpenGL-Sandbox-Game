@@ -10,7 +10,7 @@
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera) : characters { characters }, camera { camera } {
 	const ImageAsset characterTextureAsset("Assets/Images/Characters/Char.png");
 	characterTexture = CreateRef<Werwel::Texture>(
-		Werwel::Size(characterTextureAsset.GetSize().x, characterTextureAsset.GetSize().y),
+		characterTextureAsset.GetSize(),
 		characterTextureAsset.GetData(),
 		GL_RGBA,
 		GL_RGBA,

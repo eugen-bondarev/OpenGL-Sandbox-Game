@@ -4,16 +4,16 @@
 
 #include "Game/Blocks.h"
 
-struct ItemCell {
-  ItemType type { ItemType::Empty };
-  int quantity  { 0 };
+// struct ItemCell {
+//   ItemType type { ItemType::Empty };
+//   int quantity  { 0 };
 
-  struct {
-    BlockType blockType;
-    WallType wallType;
-  } data;
+//   struct {
+//     BlockType blockType;
+//     WallType wallType;
+//   } data;
 
-  bool IsEmpty() const {
-    return type == ItemType::Empty;
-  }
-};
+//   bool IsEmpty() const {
+//     return type == ItemType::Empty;
+//   }
+// };

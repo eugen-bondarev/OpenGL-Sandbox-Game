@@ -38,7 +38,7 @@ public:
     }
 
     if (IUpdatable* updatable = dynamic_cast<IUpdatable*>(r.get())) {
-      Component::updatableComponents.push_back(updatable);
+      IUpdatable::updatableComponents.push_back(updatable);
     }
 
     return r.get();

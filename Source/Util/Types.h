@@ -3,7 +3,8 @@
 /**
  * Math implementation
  */
-// #include "../Maths/Maths.h"
+#include "Maths/Maths.h"
 
-// using Vec2 = Vec2;
-// using Vec2  = Vec2;
+#define IM_VEC2_CLASS_EXTRA                                               \
+        ImVec2(const Vec2& f) { x = f.x; y = f.y; }                       \
+        operator Vec2() const { return Vec2(x,y); }

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ItemCell.h"
+#include "../../Items/Block.h"
+#include "../../Items/Wall.h"
 
 class Inventory {
 friend class Player;
@@ -12,5 +13,5 @@ public:
 	int selectedItem = 0;
 
 private:
-  std::vector<ItemCell> cells;
+  std::vector<Ref<Item>> items;
 };

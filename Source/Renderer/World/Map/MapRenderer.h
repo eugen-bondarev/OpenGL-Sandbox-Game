@@ -6,14 +6,14 @@
 #include "LightPass/LightPass.h"
 #include "CompositionPass/CompositionPass.h"
 
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 
-inline static std::map<BlockType, Vec2> blocksTextureDictionary = {
-  { BlockType::Dirt, Vec2(1, 1) },
-  { BlockType::Grass, Vec2(1, 7) },
-  { BlockType::Stone, Vec2(7, 1) },
-  { BlockType::Wood, Vec2(13, 1) },
-};
+// inline static std::map<BlockType, Vec2> blocksTextureDictionary = {
+//   { BlockType::Dirt, Vec2(1, 1) },
+//   { BlockType::Grass, Vec2(1, 7) },
+//   { BlockType::Stone, Vec2(7, 1) },
+//   { BlockType::Wood, Vec2(13, 1) },
+// };
 
 class MapRenderer
 {
@@ -47,8 +47,6 @@ public:
   inline std::vector<Vec2>& GetAdditionalLightData() {
     return additionalLightData;
   }
-
-  const Ref<Werwel::Texture>& GetTileMap();
   
 private:
   struct {

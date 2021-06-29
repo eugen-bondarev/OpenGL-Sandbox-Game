@@ -13,9 +13,7 @@
 
 class Player : public IUpdatable, public Component {
 public:
-  Player(Entity* entity, Ref<World> world) : Component(entity), world { world } {
-
-  }
+  Player(Entity* entity, Ref<World> world);
 
   void Update() override;
 

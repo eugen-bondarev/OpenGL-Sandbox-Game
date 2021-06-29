@@ -5,7 +5,6 @@
 #include "Werwel/GraphicsContext.h"
 
 #include "Assets/TextAsset.h"
-
 #include "../ColorPass/ColorPass.h"
 #include "../LightPass/LightPass.h"
 

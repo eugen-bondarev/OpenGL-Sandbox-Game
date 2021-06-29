@@ -3,7 +3,7 @@
 #include "Core/Window.h"
 
 LightPass::LightPass() {
-  fbo = CreateRef<LightFBO>(Window::GetSize());
+  fbo = CreateRef<LightFBO>(Vec2(300, 168));
 
   TextAsset vsCode("Assets/Shaders/Terrain/LightPassShader.vs");
   TextAsset fsCode("Assets/Shaders/Terrain/LightPassShader.fs");
@@ -35,7 +35,7 @@ LightPass::LightPass() {
 
   ImageAsset lightTexture("Assets/Images/LightMask32.png");
   lightMesh.texture = CreateRef<Werwel::Texture>(
-    Werwel::Size { lightTexture.GetSize().x, lightTexture.GetSize().y },
+    lightTexture.GetSize(),
     lightTexture.GetData(),
     GL_RGBA,
     GL_RGBA,

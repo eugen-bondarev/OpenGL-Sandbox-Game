@@ -131,6 +131,10 @@ void Window::EndFrame() {
 	SwapBuffers();
 }
 
+void Window::Minimize() {
+	glfwIconifyWindow(glfwWindow);
+}
+
 void Window::Close() {
 	glfwSetWindowShouldClose(glfwWindow, true);
 }

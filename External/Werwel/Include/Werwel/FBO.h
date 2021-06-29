@@ -10,7 +10,7 @@ namespace Werwel {
 
 class FBO : public GpuEntity {
 public:
-	FBO(Werwel::Size size, GLbitfield buffersToClear, const std::vector<GLuint> &drawBuffers = {});
+	FBO(Size size, GLbitfield buffersToClear, std::vector<GLuint> drawBuffers = {});
 	virtual ~FBO();
 
 	inline static void UnbindStatic() {
@@ -21,7 +21,7 @@ public:
 	void Unbind() const override;
 
 	void Clear() const;
-	virtual void Resize(Werwel::Size size);
+	virtual void Resize(Size size);
 
 	template <int size>
 	std::array<unsigned char, size> GetPixel(GLenum attachment, Pos pos) const {
@@ -33,10 +33,10 @@ public:
 		return pixel;
 	}
 
-	Werwel::Size GetSize() const;
+	Size GetSize() const;
 
 protected:
-	Werwel::Size size;
+	Size size;
 
 	std::map<GLuint, std::shared_ptr<Texture>> attachments;
 

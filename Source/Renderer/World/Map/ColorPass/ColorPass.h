@@ -8,6 +8,8 @@
 
 #include "Game/Entities/Camera.h"
 
+#include "Renderer/Atlas/TextureAtlas.h"
+
 struct BlockData {
   struct {
     float x { 0 }, y { 0 };
@@ -46,8 +48,6 @@ public:
     return fbo;
   }
 
-  const Ref<Werwel::Texture>& GetTileMap() const;
-
 private:
   Ref<ColorFBO> fbo;
   Ref<Werwel::Shader> shader;
@@ -62,5 +62,5 @@ private:
     Ref<Werwel::VBO> vbo;    
   } walls;
 
-  Ref<Werwel::Texture> tileMap;
+  Ref<BlocksTileMap> tileMap;
 };

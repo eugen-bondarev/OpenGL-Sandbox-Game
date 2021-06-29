@@ -6,24 +6,13 @@ class Entity;
 
 class Animator : public Component {
 public:
-  Animator(Entity* entity) : Component(entity) {
-  }
+  Animator(Entity* entity);
 
-  void SetFrame(float frame) {
-    this->frame = frame;
-  }
+  void SetFrame(float frame);
+  void SetDirection(int direction);
 
-  void SetDirection(int direction) {
-    this->direction = direction;
-  }
-
-  float GetFrame() const {
-    return frame;
-  }
-
-  int GetDirection() const {
-    return direction;
-  }
+  float GetFrame() const;
+  int GetDirection() const;
 
 private:
   float frame { 0 };

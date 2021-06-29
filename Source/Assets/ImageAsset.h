@@ -18,7 +18,7 @@ public:
 	int GetChannels() const;
 
 private:
-	unsigned char* data;
+	unsigned char* data { nullptr };
 	Vec2 size;
 	int amountOfChannels;
 };

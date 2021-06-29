@@ -8,3 +8,6 @@
 [submodule "External/glfw"]
 	path = External/glfw
 	url = https://github.com/glfw/glfw
+[submodule "External/boxer"]
+	path = External/boxer
+	url = https://github.com/aaronmjacobs/Boxer

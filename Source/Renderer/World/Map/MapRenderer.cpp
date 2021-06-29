@@ -2,8 +2,6 @@
 
 #include "Tiles.h"
 
-#include <algorithm>
-
 #include "Util/ImGuiHelper.h"
 
 MapRenderer::MapRenderer(const Ref<Map>& map, const Ref<Camera>& camera) : map { map }, camera { camera } {
@@ -24,12 +22,14 @@ void MapRenderer::RebuildScene() {
 
   static int offset = -4.0f;
 
+  BlocksTileMap* blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+
   for (int chunkX = visibleChunks.x.start; chunkX < visibleChunks.x.end; chunkX++) {
     for (int chunkY = visibleChunks.y.start; chunkY < visibleChunks.y.end; chunkY++) {
       for (int x = chunkX * map->GetChunkSize().x; x < (chunkX + 1) * map->GetChunkSize().y; x++) {
         for (int y = chunkY * map->GetChunkSize().y; y < (chunkY + 1) * map->GetChunkSize().y; y++) {
           if (!map->BlockIsEmpty(x, y)) {
-            const Vec2 tile = blocksTextureDictionary[map->GetBlocks()[x][y]] + PickRightAngularTile(map->GetBlocks(), x, y);
+            const Vec2 tile = blocksTileMap->Get(map->GetBlocks()[x][y]) + PickRightAngularTile(map->GetBlocks(), x, y);
             blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
 
             if (x > 1 && y > 0) {
@@ -38,7 +38,7 @@ void MapRenderer::RebuildScene() {
               ||  (map->BlockIsEmpty(x - 1, y - 1) && !map->WallIsEmpty(x - 1, y - 1))
               ) {
                 if (!map->WallIsEmpty(x, y)) {
-                  const Vec2 tile = blocksTextureDictionary[map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]] + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
+                  const Vec2 tile = blocksTileMap->Get(map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]) + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
                   wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
                 }
               }
@@ -49,7 +49,7 @@ void MapRenderer::RebuildScene() {
                 lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
               }
 
-              const Vec2 tile = blocksTextureDictionary[map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]] + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
+                const Vec2 tile = blocksTileMap->Get(map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]) + PickRightAngularTile(map->GetWalls(), x, y) + Vec2(3, 0);
               wallsData.emplace_back(x * map->GetBlockSize() + offset, y * map->GetBlockSize() + offset, tile.x, tile.y);
             } else {
               if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {
@@ -129,8 +129,4 @@ void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers)
 
   map->blocksUpdated = false;
   map->chunksUpdated = false;
-}
-
-const Ref<Werwel::Texture>& MapRenderer::GetTileMap() {
-  return pipeline.colorPass->GetTileMap();
 }

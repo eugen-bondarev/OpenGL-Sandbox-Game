@@ -15,7 +15,12 @@ Game::Game(int seed) {
 	characterRenderer = CreateRef<CharacterRenderer>(characters, world->GetCamera());
 	characters.push_back(character);
 
-	interfaceRenderer = CreateRef<InterfaceRenderer>(character->GetComponent<Player>()->GetInventory(), worldRenderer->GetMapRenderer()->GetTileMap());
+	interfaceRenderer = CreateRef<InterfaceRenderer>(character->GetComponent<Player>()->GetInventory());
+}
+
+Game::~Game() {
+	IUpdatable::updatableComponents.clear();
+	TextureAtlas::Clear();
 }
 
 void Game::Play(bool& resetGame) {
@@ -30,7 +35,7 @@ void Game::Logic(bool& resetGame) {
 }
 
 void Game::Render() {
-	Component::UpdateComponents();
+	IUpdatable::UpdateComponents();
 
 	world->GetCamera()->SetPosition(character->GetPosition() + Vec2(24, 24));
 	character->CollectLights(worldRenderer->GetMapRenderer()->GetAdditionalLightData());
