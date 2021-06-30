@@ -6,14 +6,17 @@
 
 class InterfaceRenderer {
 public:
-  InterfaceRenderer(const Inventory& inventory);
-
+  InterfaceRenderer(Inventory& inventory);
   void Render();
 
 private:
+  void RenderSideMenu();
+  void RenderBottomBar();
   void RenderInventory();
 
-  const Inventory& inventory;
+  Inventory& inventory;
+
+  bool inventoryOpen { false };
 
   InterfaceRenderer(const InterfaceRenderer&) = delete;
   InterfaceRenderer& operator=(const InterfaceRenderer&) = delete;

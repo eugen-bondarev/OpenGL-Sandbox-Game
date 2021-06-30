@@ -1,6 +1,6 @@
 #include "Block.h"
 
-Block::Block(BlockType type, int amount) : type { type }, Item(256, amount) {
+Block::Block(BlockType type, int amount) : type { type }, Item(64, amount) {
   TYPE = static_cast<int>(type);  
 }
 

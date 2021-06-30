@@ -1,5 +1,7 @@
 #include "Input.h"
 
+#include "imgui/imgui.h"
+
 void Input::MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods) {
 	if (action == GLFW_RELEASE) mouseButtons[button] = State::Released;
 	if (action == GLFW_PRESS)   mouseButtons[button] = State::Pressed;
@@ -71,7 +73,8 @@ bool Input::MouseButtonReleased(Button button) {
 
 bool Input::MouseButtonDown(Button button) {
 	int buttonCode = static_cast<int>(button);
-	return glfwGetMouseButton(glfwWindow, buttonCode);
+
+	return !ImGui::GetIO().WantCaptureMouse && glfwGetMouseButton(glfwWindow, buttonCode);
 }
 
 bool Input::KeyPressed(int key) {

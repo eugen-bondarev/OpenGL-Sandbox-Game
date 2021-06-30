@@ -16,6 +16,8 @@ public:
 
 	int selectedItem = 0;
 
+  void Swap(int a, int b);
+
   template <typename TItemType, typename TType>
   void GiveItem(TType type, int amount) {
     TItemType* t = new TItemType(type, 1);

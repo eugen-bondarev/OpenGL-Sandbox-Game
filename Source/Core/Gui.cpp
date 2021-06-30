@@ -12,7 +12,7 @@ void Gui::Create() {
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = nullptr;
-    io.ConfigFlags = ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
 		defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
 		titleFont = io.Fonts->AddFontFromFileTTF(std::string(NATURAFORGE_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 48);
 
