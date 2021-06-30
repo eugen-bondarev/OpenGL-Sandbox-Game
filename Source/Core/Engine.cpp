@@ -47,7 +47,7 @@ void Engine::Run() {
 	}
 
 	ImGui::SetNextWindowSize(ImVec2(140, 120));
-	ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + 20, Window::GetPosition().y + 20));
+	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
 		ImGui::Text(("FPS: " + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();

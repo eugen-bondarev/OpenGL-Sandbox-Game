@@ -63,7 +63,7 @@ void Game::Render() {
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 
 	ImGui::SetNextWindowSize(ImVec2(220, 120));
-	ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + 140 + 20 + 20, Window::GetPosition().y + 20));
+	ImGui::SetNextWindowPos(ImVec2(140 + 20 + 20, 20));
 	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
     ImGui::Text(std::string("Area: " + std::to_string(world->GetMap()->GetWidth()) + 'x' + std::to_string(world->GetMap()->GetHeight()) + " = " + std::to_string(world->GetMap()->GetArea())).c_str());
     ImGui::Text(std::string("Size (b): " + std::to_string(world->GetMap()->GetSizeInBytes())).c_str());

@@ -105,7 +105,7 @@ void MainMenu::Show() {
   windowFlags |= ImGuiWindowFlags_NoResize;
   
   ImGui::SetNextWindowSize(ImVec2(Window::GetSize().x, Window::GetSize().y));
-  ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x, Window::GetPosition().y));
+  ImGui::SetNextWindowPos(ImVec2(0, 0));
   ImGui::Begin("Menu", nullptr, windowFlags);
 
   ImGui::SetCursorPosY(Window::GetSize().y / 2.0f - 100);

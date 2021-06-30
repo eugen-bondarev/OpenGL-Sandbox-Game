@@ -47,7 +47,8 @@ void InterfaceRenderer::RenderBottomBar(const std::string& windowID, Vec2 positi
   windowFlags |= ImGuiWindowFlags_NoScrollbar;
   windowFlags |= ImGuiWindowFlags_NoScrollWithMouse;
 
-  ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + barPosition.x, barPosition.y));
+  // ImGui::SetNextWindowPos(ImVec2(Window::GetPosition().x + barPosition.x, barPosition.y));
+  ImGui::SetNextWindowPos(ImVec2(barPosition.x, barPosition.y));
   ImGui::SetNextWindowSize(ImVec2(barSize.x, barSize.y));
 
   ImGui::Begin(windowID.c_str(), nullptr, windowFlags);
