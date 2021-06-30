@@ -11,8 +11,7 @@ public:
 
 private:
   void RenderSideMenu();
-  void RenderBottomBar();
-  void RenderInventory();
+  void RenderBottomBar(const std::string& windowID, Vec2 position, Vec2 amountOfButtons, int startingIndex = 0);
 
   Inventory& inventory;
 

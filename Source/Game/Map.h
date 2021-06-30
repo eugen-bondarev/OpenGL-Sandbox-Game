@@ -55,8 +55,8 @@ public:
 	
 	Vec2 WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4& projectionMatrix, const Mat4& viewMatrix) const;
 
-  Vec2 GetChunkSize() const;
-  Vec2 GetAmountOfChunks() const;
+	Vec2 GetChunkSize() const;
+	Vec2 GetAmountOfChunks() const;
 	Vec2 GetCenter() const;
 
 	void CalculateVisibleChunks(Vec2 viewPos);	
@@ -69,8 +69,8 @@ public:
 
 	bool BlockIs(int x, int y, BlockType type) const;
 	bool WallIs(int x, int y, WallType type) const;
-  bool BlockIsEmpty(int x, int y) const;
-  bool WallIsEmpty(int x, int y) const;
+  	bool BlockIsEmpty(int x, int y) const;
+  	bool WallIsEmpty(int x, int y) const;
 
 	int GetWidth() const;
 	int GetHeight() const;
