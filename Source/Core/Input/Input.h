@@ -15,23 +15,23 @@ inline static std::map<int, State> keys;
 inline static MouseWheelState mouseWheelState;
 
 enum class Key {
-	W = KEY_W,
-	A = KEY_A,
-	S = KEY_S,
-	D = KEY_D,
+	W = NF_KEY_W,
+	A = NF_KEY_A,
+	S = NF_KEY_S,
+	D = NF_KEY_D,
 
-	Space = KEY_SPACE,
-	Esc = KEY_ESCAPE,
+	Space = NF_KEY_SPACE,
+	Esc = NF_KEY_ESCAPE,
 
-	Num1 = KEY_1,
-	Num2 = KEY_2,
-	Num3 = KEY_3,
-	Num4 = KEY_4,
+	Num1 = NF_KEY_1,
+	Num2 = NF_KEY_2,
+	Num3 = NF_KEY_3,
+	Num4 = NF_KEY_4,
 };
 
 enum class Button {
-	Left = MOUSE_BUTTON_LEFT,
-	Right = MOUSE_BUTTON_RIGHT
+	Left = NF_MOUSE_BUTTON_LEFT,
+	Right = NF_MOUSE_BUTTON_RIGHT
 };
 
 void MouseWheelCallback(GLFWwindow* glfwWindow, double xOffset, double yOffset);

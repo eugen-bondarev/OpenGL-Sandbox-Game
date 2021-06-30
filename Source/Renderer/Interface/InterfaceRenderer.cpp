@@ -25,7 +25,7 @@ void InterfaceRenderer::RenderSideMenu() {
   ImGui::SetNextWindowSize(ImVec2(100, 100));
 
   ImGui::Begin("Side menu");
-    if (ImGui::Button("Inventory (E)")) {
+    if (NF_KEY_PRESSED(NF_KEY_E) || ImGui::Button("Inventory (E)")) {
       inventoryOpen = !inventoryOpen;
     }
   ImGui::End();

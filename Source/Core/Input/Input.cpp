@@ -46,7 +46,7 @@ MouseWheelState Input::GetMouseWheelState() {
 
 bool Input::MouseButtonPressed(int button) {
 	if (mouseButtons.find(button) != mouseButtons.end()) {
-		return mouseButtons.at(button) == State::Pressed;
+		return !ImGui::GetIO().WantCaptureMouse && mouseButtons.at(button) == State::Pressed;
 	}
 
 	return false;
@@ -54,38 +54,29 @@ bool Input::MouseButtonPressed(int button) {
 
 bool Input::MouseButtonReleased(int button) {
 	if (mouseButtons.find(button) != mouseButtons.end()) {
-		return mouseButtons.at(button) == State::Released;
+		return !ImGui::GetIO().WantCaptureMouse && mouseButtons.at(button) == State::Released;
 	}
 
 	return false;
 }
 
 bool Input::MouseButtonDown(int button) {
-	return glfwGetMouseButton(glfwWindow, button);
+	return !ImGui::GetIO().WantCaptureMouse && glfwGetMouseButton(glfwWindow, button);
 }
 
 bool Input::MouseButtonPressed(Button button) {
 	int buttonCode = static_cast<int>(button);
-	if (mouseButtons.find(buttonCode) != mouseButtons.end()) {
-		return mouseButtons.at(buttonCode) == State::Pressed;
-	}
-
-	return false;
+	return MouseButtonPressed(buttonCode);
 }
 
 bool Input::MouseButtonReleased(Button button) {
 	int buttonCode = static_cast<int>(button);
-	if (mouseButtons.find(buttonCode) != mouseButtons.end()) {
-		return mouseButtons.at(buttonCode) == State::Released;
-	}
-
-	return false;
+	return MouseButtonReleased(buttonCode);
 }
 
 bool Input::MouseButtonDown(Button button) {
 	int buttonCode = static_cast<int>(button);
-
-	return !ImGui::GetIO().WantCaptureMouse && glfwGetMouseButton(glfwWindow, buttonCode);
+	return MouseButtonDown(buttonCode);
 }
 
 bool Input::KeyPressed(int key) {
@@ -110,23 +101,15 @@ bool Input::KeyDown(int key) {
 
 bool Input::KeyPressed(Key key) {
 	int keyCode = static_cast<int>(key);
-	if (keys.find(keyCode) != keys.end()) {
-		return keys.at(keyCode) == State::Pressed;
-	}
-
-	return false;
+	return KeyPressed(keyCode);
 }
 
 bool Input::KeyReleased(Key key) {
 	int keyCode = static_cast<int>(key);
-	if (keys.find(keyCode) != keys.end()) {
-		return keys.at(keyCode) == State::Released;
-	}
-
-	return false;
+	return KeyReleased(keyCode);
 }
 
 bool Input::KeyDown(Key key) {
 	int keyCode = static_cast<int>(key);
-	return glfwGetKey(glfwWindow, keyCode);
+	return KeyDown(keyCode);
 }
