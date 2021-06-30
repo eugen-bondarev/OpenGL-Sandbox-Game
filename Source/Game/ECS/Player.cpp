@@ -14,7 +14,7 @@ Player::Player(Entity* entity, Ref<World> world) : Component(entity), world { wo
 }
 
 void Player::Update() {
-	if (Input::KeyPressed(Key::Space)) {
+	if (Input::KeyPressed(Input::Key::Space)) {
 		if (entity->rigidbody->GetOnGround()) {
 			entity->rigidbody->Jump();
 		}
@@ -22,11 +22,11 @@ void Player::Update() {
 
 	static float defaultSpeed = 150.0f;
 
-	if (Input::KeyDown(Key::A) && entity->rigidbody->CanMoveLeft()) {
+	if (Input::KeyDown(Input::Key::A) && entity->rigidbody->CanMoveLeft()) {
 		entity->SetPosition(entity->GetPosition() + Vec2(-1, 0) * Time::GetDelta() * defaultSpeed);
 		entity->animator->SetFrame(entity->animator->GetFrame() - 0.2f * Time::GetDelta() * defaultSpeed);
 		entity->animator->SetDirection(-1);
-	} else if (Input::KeyDown(Key::D) && entity->rigidbody->CanMoveRight()) {
+	} else if (Input::KeyDown(Input::Key::D) && entity->rigidbody->CanMoveRight()) {
 		entity->SetPosition(entity->GetPosition() + Vec2(1, 0) * Time::GetDelta() * defaultSpeed);
 		entity->animator->SetFrame(entity->animator->GetFrame() + 0.2f * Time::GetDelta() * defaultSpeed);
 		entity->animator->SetDirection(1);
@@ -52,7 +52,7 @@ void Player::Update() {
 		}
 	}
 
-	if (Input::MouseButtonDown(Button::Left)) {
+	if (Input::MouseButtonDown(Input::Button::Left)) {
 		inventory.items[inventory.selectedItem]->Use(GameState(world.get(), this));
 
 		if (!inventory.items[inventory.selectedItem]->GetCurrentAmount()) {

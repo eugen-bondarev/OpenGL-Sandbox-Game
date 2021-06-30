@@ -2,6 +2,17 @@
 
 #include "imgui/imgui.h"
 
+void Input::Create(GLFWwindow* window) {
+	glfwWindow = window;
+
+	mouseButtons.clear();
+	keys.clear();
+
+	glfwSetMouseButtonCallback(glfwWindow, MouseButtonCallback);
+	glfwSetKeyCallback(glfwWindow, KeyboardKeyCallback);
+	glfwSetScrollCallback(glfwWindow, MouseWheelCallback);
+}
+
 void Input::MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods) {
 	if (action == GLFW_RELEASE) mouseButtons[button] = State::Released;
 	if (action == GLFW_PRESS)   mouseButtons[button] = State::Pressed;

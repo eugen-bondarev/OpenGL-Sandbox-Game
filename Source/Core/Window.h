@@ -6,57 +6,50 @@
 #include "Util/Structures.h"
 #include "Maths/Maths.h"
 
-enum class WindowMode {
+namespace Window {
+
+enum class Mode {
 	Fullscreen,
 	Borderless,
 	Windowed
 };
 
-struct WindowSettings {
-	Vec2 size 			{ 1920, 1080 };
-	WindowMode mode	{ WindowMode::Fullscreen };
-	bool maximize		{ true };
-	bool vSync			{ true };
+struct Settings {
+	Vec2 size 								{ 1920, 1080 };
+	Mode mode								{ Mode::Fullscreen };
+	bool maximize							{ true };
+	bool vSync								{ true };
 };
 
-class Window {
-public:
-	static void Create(WindowSettings windowSettings = {}, bool resizable = false, const std::string& title = "Naturaforge");
-	static void Destroy();
-	static void Shutdown();
+inline static GLFWwindow* glfwWindow 		{ nullptr };
+inline static Vec2 size 					{ 0 };
+inline static Mat4 space 					{ 0 };
+inline static bool recreate 				{ false };
+inline static Settings newWindowSettings 	{};
 
-	static bool ShouldClose();
-	static void Clear();
-	static void PollEvents();
-	static void SwapBuffers();
-	
-	static void Minimize();
-	static void Close();
+void Create(Settings windowSettings = {}, bool resizable = false, const std::string& title = "Naturaforge");
+void Recreate(Settings windowSettings = {});
 
-	static Vec2 GetPosition();
-	static Vec2 GetSize();
-	static Mat4 GetSpace();
-	static Vec2 GetMousePosition();
+void Destroy();
+void Shutdown();
 
-	static void BeginFrame();
-	static void EndFrame();
+bool ShouldClose();
+void Clear();
+void PollEvents();
+void SwapBuffers();
 
-	inline static GLFWwindow *GetGlfwWindow() {
-		return glfwWindow;
-	}
+void BeginFrame();
+void EndFrame();
 
-	static void Recreate(WindowSettings windowSettings = {});
+void Minimize();
+void Close();
 
-private:
-	inline static Vec2 size;
-	inline static Mat4 space;
-	inline static void CalculateSpace();
+void CalculateSpace();
 
-	inline static GLFWwindow *glfwWindow;
+Vec2 GetSize();
+Vec2 GetPosition();
+Vec2 GetMousePosition();
+Mat4 GetSpace();
+GLFWwindow *GetGlfwWindow();
 
-	inline static bool recreate { false };
-	inline static WindowSettings newWindowSettings;
-
-	Window(const Window &) = delete;
-	Window operator=(const Window &) = delete;
-};
+}

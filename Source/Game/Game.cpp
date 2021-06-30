@@ -45,7 +45,7 @@ void Game::Play(bool& resetGame) {
 }
 
 void Game::Logic(bool& resetGame) {
-	if (Input::KeyPressed(Key::Esc)) {
+	if (Input::KeyPressed(Input::Key::Esc)) {
 		resetGame = true;
 	}
 }

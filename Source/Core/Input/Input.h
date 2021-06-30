@@ -7,6 +7,13 @@
 #include "Keys.h"
 #include "Buttons.h"
 
+namespace Input {
+
+inline static GLFWwindow* glfwWindow { nullptr };
+inline static std::map<int, State> mouseButtons;
+inline static std::map<int, State> keys;
+inline static MouseWheelState mouseWheelState;
+
 enum class Key {
 	W = KEY_W,
 	A = KEY_A,
@@ -27,52 +34,33 @@ enum class Button {
 	Right = MOUSE_BUTTON_RIGHT
 };
 
-class Input {
-public:
-  inline static void Create(GLFWwindow* glfwWindow) {
-    Input::glfwWindow = glfwWindow;
+void MouseWheelCallback(GLFWwindow* glfwWindow, double xOffset, double yOffset);
+void MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods);
+void KeyboardKeyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
 
-		mouseButtons.clear();
-		keys.clear();
+void Create(GLFWwindow* window);
 
-		glfwSetMouseButtonCallback(glfwWindow, MouseButtonCallback);
-		glfwSetKeyCallback(glfwWindow, KeyboardKeyCallback);
+bool MouseButtonPressed(int button);
+bool MouseButtonReleased(int button);
+bool MouseButtonDown(int button);
 
-		glfwSetScrollCallback(glfwWindow, MouseWheelCallback);
-  }
+bool MouseButtonPressed(Button button);
+bool MouseButtonReleased(Button button);
+bool MouseButtonDown(Button button);
 
-	static void MouseWheelCallback(GLFWwindow* glfwWindow, double xOffset, double yOffset);
+bool KeyPressed(int button);
+bool KeyReleased(int button);
+bool KeyDown(int button);
 
-	static void MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods);
-	static bool MouseButtonPressed(int button);
-	static bool MouseButtonReleased(int button);
-	static bool MouseButtonDown(int button);
+bool KeyPressed(Key button);
+bool KeyReleased(Key button);
+bool KeyDown(Key button);
 
-	static bool MouseButtonPressed(Button button);
-	static bool MouseButtonReleased(Button button);
-	static bool MouseButtonDown(Button button);
+void BeginFrame();
+void EndFrame();
 
-	static void KeyboardKeyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
-	static bool KeyPressed(int button);
-	static bool KeyReleased(int button);
-	static bool KeyDown(int button);
-	
-	static bool KeyPressed(Key button);
-	static bool KeyReleased(Key button);
-	static bool KeyDown(Key button);
+MouseWheelState GetMouseWheelState();
 
-	static void BeginFrame();
-	static void EndFrame();
 
-	static MouseWheelState GetMouseWheelState();
 
-private:
-	inline static GLFWwindow* glfwWindow;
-
-	inline static std::map<int, State> mouseButtons;
-	inline static std::map<int, State> keys;
-
-	inline static MouseWheelState mouseWheelState;
-
-  Input();
-};
+}

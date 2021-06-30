@@ -15,7 +15,7 @@ void MainMenu::Settings() {
       ImGui::Text("Settings");
     ImGui::PopFont();
 
-  static WindowSettings windowSettings = {};
+  static Window::Settings windowSettings = {};
 
   static Vec2i s = { Window::GetSize().x, Window::GetSize().y };
   
@@ -35,7 +35,7 @@ void MainMenu::Settings() {
 
     ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
       if (ImGui::Combo("Window mode", &item_current, items, 3)) {
-        windowSettings.mode = static_cast<WindowMode>(item_current);
+        windowSettings.mode = static_cast<Window::Mode>(item_current);
       }
 
     ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);

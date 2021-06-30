@@ -5,8 +5,10 @@
 #include "Input/Input.h"
 #include "Gui.h"
 
-void Window::Create(WindowSettings windowSettings, bool resizable, const std::string &title) {
-	Window::size = windowSettings.size;
+namespace Window {
+
+void Create(Settings windowSettings, bool resizable, const std::string &title) {
+	size = windowSettings.size;
 
 	glfwInit();
 
@@ -15,7 +17,7 @@ void Window::Create(WindowSettings windowSettings, bool resizable, const std::st
 
 	const GLFWvidmode *videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-	if (windowSettings.mode == WindowMode::Borderless) {
+	if (windowSettings.mode == Mode::Borderless) {
 		glfwWindowHint(GLFW_RED_BITS, videoMode->redBits);
 		glfwWindowHint(GLFW_GREEN_BITS, videoMode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, videoMode->blueBits);
@@ -24,11 +26,11 @@ void Window::Create(WindowSettings windowSettings, bool resizable, const std::st
 		glfwWindow = glfwCreateWindow(videoMode->width, videoMode->height, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
 	}
 
-	if (windowSettings.mode == WindowMode::Fullscreen) {
+	if (windowSettings.mode == Mode::Fullscreen) {
 		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), glfwGetPrimaryMonitor(), nullptr);
 	}
 
-	if (windowSettings.mode == WindowMode::Windowed) {
+	if (windowSettings.mode == Mode::Windowed) {
 		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
 	}
 
@@ -49,97 +51,103 @@ void Window::Create(WindowSettings windowSettings, bool resizable, const std::st
 	glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow *window, int width, int height) {
 		if (width == 0 || height == 0) return;
 
-		Window::size.x = width;
-		Window::size.y = height;		
-		Window::CalculateSpace();
+		size.x = width;
+		size.y = height;		
+		CalculateSpace();
 	});
 
 	glfwSwapInterval(windowSettings.vSync);
 
 	int currentWidth, currentHeight;
 	glfwGetWindowSize(glfwWindow, &currentWidth, &currentHeight);
-	Window::size = { currentWidth, currentHeight };
+	size = { currentWidth, currentHeight };
 
 	CalculateSpace();
 }
 
-void Window::Destroy() {
+void Destroy() {
 	glfwDestroyWindow(glfwWindow);
 }
 
-void Window::Shutdown() {
+void Shutdown() {
 	glfwTerminate();
 }
 
-Vec2 Window::GetPosition() {
+Vec2 GetPosition() {
 	Vec2i pos;
 	glfwGetWindowPos(glfwWindow, &pos.x, &pos.y);
 
 	return pos;
 }
 
-Vec2 Window::GetSize() {
+Vec2 GetSize() {
 	return size;
 }
 
-Mat4 Window::GetSpace() {
+Mat4 GetSpace() {
 	return space;
 }
 
-Vec2 Window::GetMousePosition() {
+Vec2 GetMousePosition() {
 	double x, y;
-	glfwGetCursorPos(Window::GetGlfwWindow(), &x, &y);
+	glfwGetCursorPos(GetGlfwWindow(), &x, &y);
 	return {x, y};
 }
 
-void Window::CalculateSpace() {
+void CalculateSpace() {
 	space = Math::Ortho(-size.x / 2.0f, size.x / 2.0f, -size.y / 2.0f, size.y / 2.0f);
 }
 
-bool Window::ShouldClose() {
+bool ShouldClose() {
 	return glfwWindowShouldClose(glfwWindow);
 }
 
-void Window::Clear() {
+void Clear() {
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Window::PollEvents() {
+void PollEvents() {
 	glfwPollEvents();
 }
 
-void Window::SwapBuffers() {
+void SwapBuffers() {
 	glfwSwapBuffers(glfwWindow);
 }
 
-void Window::BeginFrame() {
+void BeginFrame() {
 	PollEvents();
 
 	if (recreate) {
 		Gui::Destroy();
-		Window::Destroy();
+		Destroy();
 
-		Window::Create(newWindowSettings);		
+		Create(newWindowSettings);		
 		Gui::Create();		
-		Input::Create(Window::GetGlfwWindow());
+		Input::Create(GetGlfwWindow());
 		
 		recreate = false;
 	}
 }
 
-void Window::EndFrame() {
+void EndFrame() {
 	SwapBuffers();
 }
 
-void Window::Minimize() {
+void Minimize() {
 	glfwIconifyWindow(glfwWindow);
 }
 
-void Window::Close() {
+void Close() {
 	glfwSetWindowShouldClose(glfwWindow, true);
 }
 
-void Window::Recreate(WindowSettings windowSettings) {
+void Recreate(Settings windowSettings) {
 	recreate = true;
-	Window::newWindowSettings = windowSettings;
+	newWindowSettings = windowSettings;
+}
+
+GLFWwindow* GetGlfwWindow() {
+	return glfwWindow;
+}
+
 }
