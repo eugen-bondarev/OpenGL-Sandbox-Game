@@ -15,8 +15,10 @@ public:
 
   void PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap* blocksTileMap);
   void PrepareTiles();
+
   void RebuildScene();
   void UpdateScene();
+  
   void CheckVisibleChunks();
   void PerformRenderPasses(const std::vector<Ref<IRenderer>>& additionalRenderers);
   void Compose();
