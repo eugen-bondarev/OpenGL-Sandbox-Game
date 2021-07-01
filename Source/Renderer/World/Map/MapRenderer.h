@@ -8,18 +8,13 @@
 
 #include "Renderer/Renderer.h"
 
-// inline static std::map<BlockType, Vec2> blocksTextureDictionary = {
-//   { BlockType::Dirt, Vec2(1, 1) },
-//   { BlockType::Grass, Vec2(1, 7) },
-//   { BlockType::Stone, Vec2(7, 1) },
-//   { BlockType::Wood, Vec2(13, 1) },
-// };
-
 class MapRenderer
 {
 public:
   MapRenderer(const Ref<Map> &map, const Ref<Camera>& camera);
 
+  void PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap* blocksTileMap);
+  void PrepareTiles();
   void RebuildScene();
   void UpdateScene();
   void CheckVisibleChunks();
@@ -60,6 +55,7 @@ private:
   std::vector<BlockData> blocksData;
   std::vector<WallData> wallsData;
   std::vector<Vec2> lightData;
+  std::vector<Vec2> unlitData;
 
   const Ref<Map>& map;
   const Ref<Camera>& camera;

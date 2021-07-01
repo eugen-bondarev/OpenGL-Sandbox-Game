@@ -14,7 +14,7 @@ TileType Map::GetTileUnderCursor(const Vec2& cameraPosition, const tiles_t& tile
 
 	tilePos = round(tilePos);
 
-	return tiles[tilePos.x][tilePos.y];
+	return tiles[tilePos.x][tilePos.y].type;
 }
 
 BlockType Map::GetBlockUnderCursor(const Vec2& cameraPosition) const {
@@ -25,7 +25,7 @@ WallType Map::GetWallUnderCursor(const Vec2& cameraPosition) const {
 	return GetTileUnderCursor(cameraPosition, walls);
 }
 
-Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType, blocks_t& array) {
+Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType, TilePos tilePos) {
 	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
 	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
 	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
@@ -35,14 +35,14 @@ Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType
 
 	blockPos = round(blockPos);
 
-	auto& block = array[blockPos.x][blockPos.y];
+	auto& block = (tilePos == TilePos::Foreground ? blocks : walls)[blockPos.x][blockPos.y];
 
 	BlockSettingData result;
-	if ((blockType == BlockType::Empty && blockType != block) || (blockType != BlockType::Empty && block == BlockType::Empty)) {
-		result.blockType = block;
-		result.oldBlock = block;
+	if ((blockType == BlockType::Empty && blockType != block.type) || (blockType != BlockType::Empty && block.type == BlockType::Empty)) {
+		result.blockType = block.type;
+		result.oldBlock = block.type;
 
-		block = blockType;
+		block.type = blockType;
 
 		result.block = blockPos;
 		result.chunk = blockPos / GetChunkSize();
@@ -51,17 +51,23 @@ Map::BlockSettingData Map::Place(const Vec2& cameraPosition, BlockType blockType
 	if (result.IsSet()) {
 		blocksUpdated = true;
 		chunksUpdated = true;
+
+		if (tilePos == TilePos::Foreground) {
+			blockToUpdate = blockPos;
+		} else {
+			wallToUpdate = blockPos;
+		}
 	}
 
 	return result;
 }
 
 Map::BlockSettingData Map::PlaceBlock(const Vec2& cameraPosition, BlockType blockType) {	
-	return Place(cameraPosition, blockType, blocks);
+	return Place(cameraPosition, blockType, TilePos::Foreground);
 }
 
 Map::BlockSettingData Map::PlaceWall(const Vec2& cameraPosition, WallType wallType) {	
-	return Place(cameraPosition, wallType, walls);
+	return Place(cameraPosition, wallType, TilePos::Background);
 }
 
 void Map::CalculateVisibleChunks(Vec2 viewPos) {	
@@ -89,14 +95,14 @@ bool Map::CheckBounds(int x, int y) const {
 
 void Map::SetBlock(int x, int y, BlockType type) {
 	if (CheckBounds(x, y)) {
-		blocks[x][y] = type;
+		blocks[x][y].type = type;
 	}
 }
 
 bool Map::HasNeighbor(int x, int y, BlockType block) const {
 	if (x < 1 || x > blocks.size() - 2) return false;
 
-	return blocks[x - 1][y + 1] == block || blocks[x - 1][y] == block || blocks[x + 1][y] == block || blocks[x][y + 1] == block;
+	return blocks[x - 1][y + 1].type == block || blocks[x - 1][y].type == block || blocks[x + 1][y].type == block || blocks[x][y + 1].type == block;
 }
 
 bool Map::HasEmptyNeighbor(int x, int y) const {
@@ -121,7 +127,7 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet) {
 
 	for (int x = 0; x < amountOfBlocks.x; x++) {
 		for (int y = 0; y < middle; y++) {
-			blocks[x][y] = BlockType::Dirt;
+			blocks[x][y].type = BlockType::Dirt;
 		}
 
 		if (rand() % 100 < generationDataSet.blockProbabilityInPercent) {
@@ -129,7 +135,7 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet) {
 		}
 
 		for (int y = middle + 1; y < amountOfBlocks.y; y++) {
-			blocks[x][y] = BlockType::Empty;
+			blocks[x][y].type = BlockType::Empty;
 		}
 	}
 
@@ -198,13 +204,13 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet) {
 
 	for (int x = 0; x < blocks.size(); x++) {
 		for (int y = 0; y < blocks[x].size(); y++) {
-			if (blocks[x][y] == BlockType::Dirt && HasEmptyNeighbor(x, y)) {
+			if (blocks[x][y].type == BlockType::Dirt && HasEmptyNeighbor(x, y)) {
 				SetBlock(x, y, BlockType::Grass);
 			}
 
-			if (blocks[x][y] == BlockType::Dirt || blocks[x][y] == BlockType::Grass) {
+			if (blocks[x][y].type == BlockType::Dirt || blocks[x][y].type == BlockType::Grass) {
 				if (rand() % 100 < 10) {
-					blocks[x][y] = BlockType::Stone;
+					blocks[x][y].type = BlockType::Stone;
 				}
 			}
 		}
@@ -263,16 +269,16 @@ blocks_t& Map::GetBlocks() {
 	return blocks;
 }
 
-const walls_t& Map::GetWalls() const {
+walls_t& Map::GetWalls() {
 	return walls;
 }
 
 bool Map::BlockIs(int x, int y, BlockType type) const {
-	return blocks[x][y] == type;
+	return blocks[x][y].type == type;
 }
 
 bool Map::WallIs(int x, int y, WallType type) const {
-	return walls[x][y] == type;
+	return walls[x][y].type == type;
 }
 
 bool Map::BlockIsEmpty(int x, int y) const {
@@ -296,7 +302,7 @@ int Map::GetArea() const {
 }
 
 int Map::GetSizeInBytes() const {
-	return GetArea() * sizeof(BlockType);
+	return GetArea() * sizeof(Tile) * 2 /* blocks AND walls */;
 }
 
 int Map::GetSizeInKilobytes() const {

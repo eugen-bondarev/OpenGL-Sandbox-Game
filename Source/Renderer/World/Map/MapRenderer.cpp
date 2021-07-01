@@ -11,6 +11,35 @@ MapRenderer::MapRenderer(const Ref<Map>& map, const Ref<Camera>& camera) : map {
   pipeline.colorPass = CreateRef<ColorPass>(visibleChunks.GetArea() * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y);
   pipeline.lightPass = CreateRef<LightPass>();
   pipeline.compositionPass = CreateRef<CompositionPass>();
+
+  PrepareTiles();
+}
+
+void MapRenderer::PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap* blocksTileMap) {
+  if (tilePos == TilePos::Foreground) {
+    if (!map->BlockIsEmpty(x, y)) {
+      const TileFunction& Function = PickTileFunction(map->GetBlocks()[x][y].type);
+
+      const Vec2 tile = blocksTileMap->Get(map->GetBlocks()[x][y].type) + Function(map->GetBlocks(), x, y);
+      map->GetBlocks()[x][y].texture = tile;
+    }
+  } else {
+    if (!map->WallIsEmpty(x, y)) {
+      const Vec2 tile = blocksTileMap->Get(map->GetWalls()[x][y].type == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y].type) + PickRightAngularWall(map->GetWalls(), x, y) + Vec2(3, 0);
+      map->GetWalls()[x][y].texture = tile;
+    }
+  }
+}
+
+void MapRenderer::PrepareTiles() {
+  BlocksTileMap* blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+
+  for (int x = 0; x < map->GetBlocks().size(); x++) {
+    for (int y = 0; y < map->GetBlocks()[x].size(); y++) {
+      PrepareTile(TilePos::Foreground, x, y, blocksTileMap);
+      PrepareTile(TilePos::Background, x, y, blocksTileMap);
+    }
+  }
 }
 
 void MapRenderer::RebuildScene() { 
@@ -20,7 +49,7 @@ void MapRenderer::RebuildScene() {
   wallsData.clear();
   lightData.clear();
 
-  static Vec2 offset = { 0.0f, -4.0f };
+  static Vec2 offset = { -4.0f, -4.0f };
 
   BlocksTileMap* blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 
@@ -29,18 +58,16 @@ void MapRenderer::RebuildScene() {
       for (int x = chunkX * map->GetChunkSize().x; x < (chunkX + 1) * map->GetChunkSize().y; x++) {
         for (int y = chunkY * map->GetChunkSize().y; y < (chunkY + 1) * map->GetChunkSize().y; y++) {
           if (!map->BlockIsEmpty(x, y)) {
-            const Vec2 tile = blocksTileMap->Get(map->GetBlocks()[x][y]) + PickRightAngularTile(map->GetBlocks(), x, y);
-            blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), tile.x, tile.y);
+            blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), map->GetBlocks()[x][y].texture.x, map->GetBlocks()[x][y].texture.y);
 
             if (x > 1 && y > 0) {
-              // if ((map->BlockIsEmpty(x, std::max(y - 1, 0)) && !map->WallIsEmpty(x, y - 1))
-              // ||  (map->BlockIsEmpty(x - 1, y) && !map->WallIsEmpty(x - 1, y))
-              // ||  (map->BlockIsEmpty(x - 1, y - 1) && !map->WallIsEmpty(x - 1, y - 1))
-              // ) {
-              // }
               if (!map->WallIsEmpty(x, y)) {
-                const Vec2 tile = blocksTileMap->Get(map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]) + PickRightAngularTile1(map->GetWalls(), x, y) + Vec2(3, 0);
-                wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, tile.x, tile.y);
+                if ((!map->BlockIs(x, y, map->GetBlocks()[x - 1][y].type))
+                 || (!map->BlockIs(x, y, map->GetBlocks()[x][y - 1].type))
+                 || (!map->BlockIs(x, y, map->GetBlocks()[x - 1][y - 1].type))
+                ) {
+                  wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, map->GetWalls()[x][y].texture.x, map->GetWalls()[x][y].texture.y);
+                }
               }
             }
           } else {
@@ -57,8 +84,7 @@ void MapRenderer::RebuildScene() {
                 lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
               }
 
-              const Vec2 tile = blocksTileMap->Get(map->GetWalls()[x][y] == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y]) + PickRightAngularTile1(map->GetWalls(), x, y) + Vec2(3, 0);
-              wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, tile.x, tile.y);
+              wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, map->GetWalls()[x][y].texture.x, map->GetWalls()[x][y].texture.y);
             } else {
               if (!map->BlockIsEmpty(x, y - 1) || !map->WallIsEmpty(x, y - 1)) {
                 lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
@@ -85,6 +111,7 @@ void MapRenderer::RebuildScene() {
 
 void MapRenderer::UpdateScene() {
   NATURAFORGE_PROFILER_SCOPE();
+
   pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
   pipeline.colorPass->GetWallsVBO()->Store(wallsData);
 
@@ -121,14 +148,38 @@ void MapRenderer::Compose() {
 }
 
 void MapRenderer::Render(const std::vector<Ref<IRenderer>>& additionalRenderers) {
-  CheckVisibleChunks();
+  CheckVisibleChunks();  
+
+  if (map->blockToUpdate != Vec2(-1)) {
+    BlocksTileMap* blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+
+    PrepareTile(TilePos::Foreground, map->blockToUpdate.x - 1, map->blockToUpdate.y, blocksTileMap);
+    PrepareTile(TilePos::Foreground, map->blockToUpdate.x + 1, map->blockToUpdate.y, blocksTileMap);
+    PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y, blocksTileMap);
+    PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y - 1, blocksTileMap);
+    PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y + 1, blocksTileMap);
+
+    map->blockToUpdate = Vec2(-1);
+  }
+
+  if (map->wallToUpdate != Vec2(-1)) {
+    BlocksTileMap* blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+
+    PrepareTile(TilePos::Background, map->wallToUpdate.x - 1, map->wallToUpdate.y, blocksTileMap);
+    PrepareTile(TilePos::Background, map->wallToUpdate.x + 1, map->wallToUpdate.y, blocksTileMap);
+    PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y, blocksTileMap);
+    PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y - 1, blocksTileMap);
+    PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y + 1, blocksTileMap);
+
+    map->wallToUpdate = Vec2(-1);
+  }
 
   if (map->blocksUpdated) {
     if (map->chunksUpdated) {
       RebuildScene();
       map->chunksUpdated = false; 
     }
-    UpdateScene();    
+    UpdateScene();
     PerformRenderPasses(additionalRenderers);
   }  
   Compose();

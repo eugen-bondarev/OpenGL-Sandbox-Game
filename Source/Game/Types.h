@@ -5,7 +5,17 @@
 
 #include <vector>
 
-using tiles_row_t = std::vector<TileType>;
+struct Tile {
+  TileType type { TileType::Empty };
+  Vec2 texture  { -1 };
+};
+
+enum class TilePos {
+  Background,
+  Foreground
+};
+
+using tiles_row_t = std::vector<Tile>;
 using tiles_t = std::vector<tiles_row_t>;
 
 using blocks_t = tiles_t;

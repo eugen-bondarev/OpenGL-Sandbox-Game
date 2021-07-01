@@ -31,14 +31,14 @@ void Rigidbody::CheckCollisions() {
     if (RENDER_COLLIDERS)
       Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
-    if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+    if (blocks[block.index.x][block.index.y].type != BlockType::Empty) {
       entity->SetPositionY(block.worldPosition.y + map->GetBlockSize() - 4.0f);
 
       if (velocity.y < 0) {
         // We don't want to test if we fell through a couple of blocks, if velocity is low.
         int amountOfBlocksToTest = std::max<float>(sqrt(abs(velocity.y)) - 25.0f, 0.0f);
         for (int j = amountOfBlocksToTest; j >= 1; j--) {
-          if (blocks[block.index.x][block.index.y + j] != BlockType::Empty) {
+          if (blocks[block.index.x][block.index.y + j].type != BlockType::Empty) {
             entity->SetPositionY(block.worldPosition.y + map->GetBlockSize() * j + map->GetBlockSize() - 4.0f);
             break;
           }
@@ -56,7 +56,7 @@ void Rigidbody::CheckCollisions() {
     if (RENDER_COLLIDERS)
       Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
-    if (blocks[block.index.x][block.index.y - 1] != BlockType::Empty) {
+    if (blocks[block.index.x][block.index.y - 1].type != BlockType::Empty) {
       entity->SetPositionY(block.worldPosition.y - 5 * map->GetBlockSize());
       ceiling = true;
       break;
@@ -69,7 +69,7 @@ void Rigidbody::CheckCollisions() {
     if (RENDER_COLLIDERS)
       Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
-    if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+    if (blocks[block.index.x][block.index.y].type != BlockType::Empty) {
       canMoveLeft = false;
       break;
     }
@@ -81,7 +81,7 @@ void Rigidbody::CheckCollisions() {
     if (RENDER_COLLIDERS)
       Linow::AddQuad(block.worldPosition, block.worldPosition + map->GetBlockSize());
 
-    if (blocks[block.index.x][block.index.y] != BlockType::Empty) {
+    if (blocks[block.index.x][block.index.y].type != BlockType::Empty) {
       canMoveRight = false;
       break;
     }

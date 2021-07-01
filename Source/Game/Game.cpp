@@ -65,6 +65,8 @@ void Game::Render() {
 	ImGui::SetNextWindowSize(ImVec2(220, 120));
 	ImGui::SetNextWindowPos(ImVec2(140 + 20 + 20, 20));
 	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
+    ImGui::Text(std::string("Blocks: " + std::to_string(worldRenderer->GetMapRenderer()->GetAmountOfRenderedBlocks())).c_str());
+    ImGui::Text(std::string("Walls: " + std::to_string(worldRenderer->GetMapRenderer()->GetAmountOfRenderedWalls())).c_str());
     ImGui::Text(std::string("Area: " + std::to_string(world->GetMap()->GetWidth()) + 'x' + std::to_string(world->GetMap()->GetHeight()) + " = " + std::to_string(world->GetMap()->GetArea())).c_str());
     ImGui::Text(std::string("Size (b): " + std::to_string(world->GetMap()->GetSizeInBytes())).c_str());
     ImGui::Text(std::string("Size (kb): " + std::to_string(world->GetMap()->GetSizeInKilobytes())).c_str());

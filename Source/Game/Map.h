@@ -20,6 +20,8 @@ struct MapGenerationDataSet {
 
 inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
 
+using TileToUpdate = Vec2;
+
 class Map {
 public:
   Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
@@ -40,7 +42,7 @@ public:
 	BlockType GetBlockUnderCursor(const Vec2& cameraPosition) const;
 	WallType GetWallUnderCursor(const Vec2& cameraPosition) const;
 
-	BlockSettingData Place(const Vec2& cameraPosition, BlockType blockType, blocks_t& array);
+	BlockSettingData Place(const Vec2& cameraPosition, BlockType blockType, TilePos tilePos);
 	BlockSettingData PlaceBlock(const Vec2& cameraPosition, BlockType blockType);
 	BlockSettingData PlaceWall(const Vec2& cameraPosition, WallType wallType);
 
@@ -65,12 +67,12 @@ public:
 	float GetBlockSize() const;
 
 	blocks_t& GetBlocks();
-	const walls_t& GetWalls() const;
+	walls_t& GetWalls();
 
 	bool BlockIs(int x, int y, BlockType type) const;
 	bool WallIs(int x, int y, WallType type) const;
-  	bool BlockIsEmpty(int x, int y) const;
-  	bool WallIsEmpty(int x, int y) const;
+	bool BlockIsEmpty(int x, int y) const;
+	bool WallIsEmpty(int x, int y) const;
 
 	int GetWidth() const;
 	int GetHeight() const;
@@ -81,6 +83,9 @@ public:
 
 	bool blocksUpdated { true };
 	bool chunksUpdated { true };
+
+	TileToUpdate blockToUpdate { -1 };
+	TileToUpdate wallToUpdate { -1 };
 
 private:
 	blocks_t blocks;
@@ -95,4 +100,5 @@ private:
 	void GenerateMap(MapGenerationDataSet generationDataSet);
 
 	bounds_t visibleChunks;
+	bounds_t lastVisibleChunks;
 };
