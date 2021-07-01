@@ -2,7 +2,7 @@
 
 #include "Werwel/Texture.h"
 
-#include "Game/Blocks.h"
+#include "Game/World/Blocks.h"
 #include "Game/Tools.h"
 
 class TileMap : public Werwel::Texture {

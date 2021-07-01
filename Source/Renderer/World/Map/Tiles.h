@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Types.h"
+#include "Game/World/Types.h"
 
 bool TopBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type = BlockType::Empty);
 bool LeftBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type = BlockType::Empty);
@@ -23,7 +23,7 @@ inline static std::map<BlockType, TileFunction> tileFunctions = {
   },
 };
 
-const TileFunction& PickTileFunction(TileType type);
+TileFunction PickTileFunction(TileType type);
 
 Vec2 PickRightAngularBlock(const blocks_t &blocks, int x, int y);
 Vec2 PickRightAngularWall(const blocks_t &blocks, int x, int y);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Map.h"
-#include "Entities/Camera.h"
+#include "Game/Entities/Camera.h"
 
 class World {
 public:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Map.h"
+#include "Game/World/Map.h"
 
 #include "ColorPass/ColorPass.h"
 #include "LightPass/LightPass.h"

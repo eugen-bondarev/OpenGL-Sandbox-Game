@@ -105,7 +105,7 @@ Vec2 PickRightAngularWall(const blocks_t &blocks, int x, int y) {
   CHECK_NEIGHBOURS(TOP, LEFT, BOTTOM, RIGHT);
 }
 
-const TileFunction& PickTileFunction(TileType type) {
+TileFunction PickTileFunction(TileType type) {
   bool special = tileFunctions.find(type) != tileFunctions.end();
   return special ? tileFunctions[type] : PickRightAngularBlock;
 }
