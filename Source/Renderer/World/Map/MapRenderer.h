@@ -55,7 +55,6 @@ private:
   std::vector<BlockData> blocksData;
   std::vector<WallData> wallsData;
   std::vector<Vec2> lightData;
-  std::vector<Vec2> unlitData;
 
   const Ref<Map>& map;
   const Ref<Camera>& camera;
