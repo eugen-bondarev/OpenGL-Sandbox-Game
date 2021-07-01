@@ -12,7 +12,7 @@ LightPass::LightPass() {
   /**
    * Amount of blocks that each light reaches.
    */
-  float lightBlocks = 2.5f;
+  float lightBlocks = 3.5f;
 
   /**
    * Empirical constant.
