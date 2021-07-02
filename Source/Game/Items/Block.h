@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Blocks.h"
+#include "Game/World/Blocks.h"
 
 #include "Item.h"
 

@@ -12,6 +12,7 @@ Inventory::Inventory() {
 
   GiveItem<Block>(BlockType::Wood, 32);
   GiveItem<Wall>(WallType::Wood, 32);
+  GiveItem<Block>(BlockType::Grass, 512);
 }
 
 void Inventory::Swap(int a, int b) {

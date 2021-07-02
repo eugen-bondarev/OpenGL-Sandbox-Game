@@ -70,19 +70,27 @@ ColorPass::ColorPass(int amountOfBlocks) {
 		);
 }
 
-void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks) {
+void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>>& additionalRenderers) {
 	NATURAFORGE_PROFILER_SCOPE();
 
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
 	fbo->Bind();	
 	fbo->Clear();
+
 		shader->Bind();
 		shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
 			tileMap->Bind();
 				walls.vao->Bind();
 				walls.vao->GetIndexBuffer()->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfWalls);
+
+		for (const auto& renderer : additionalRenderers) {
+			renderer->Render();
+		}
+
+		shader->Bind();
+			tileMap->Bind();
 				blocks.vao->Bind();
 				blocks.vao->GetIndexBuffer()->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);

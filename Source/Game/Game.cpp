@@ -55,8 +55,15 @@ void Game::Render() {
 
 	world->GetCamera()->SetPosition(character->GetPosition() + Vec2(24, 24));
 	character->CollectLights(worldRenderer->GetMapRenderer()->GetAdditionalLightData());
+	for (int i = 0; i < worldRenderer->GetWoodsRenderer()->visibleTrees.size(); i++) {
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, 32));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, 0));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, -32));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, -80));
+	}
 
-	worldRenderer->Render({ characterRenderer });
+	worldRenderer->Render({ worldRenderer->GetWoodsRenderer(), characterRenderer });
 
 	interfaceRenderer->Render();
 

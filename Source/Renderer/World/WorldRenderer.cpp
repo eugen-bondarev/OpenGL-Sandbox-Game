@@ -2,6 +2,7 @@
 
 WorldRenderer::WorldRenderer(const Ref<World>& world) : world { world } {
 	mapRenderer = CreateRef<MapRenderer>(world->GetMap(), world->GetCamera());
+	woodsRenderer = CreateRef<WoodsRenderer>(world->GetWoods(), world->GetCamera());
 }
 
 void WorldRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderers) {
@@ -10,9 +11,14 @@ void WorldRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderer
 		world->GetMap()->blocksUpdated = true;
 	});
 
+	// woodsRenderer->Render();
   mapRenderer->Render(additionalRenderers);
 }
 
 Ref<MapRenderer>& WorldRenderer::GetMapRenderer() {
   return mapRenderer;
+}
+
+Ref<WoodsRenderer>& WorldRenderer::GetWoodsRenderer() {
+	return woodsRenderer;
 }

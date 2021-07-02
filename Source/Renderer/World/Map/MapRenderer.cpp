@@ -134,11 +134,11 @@ void MapRenderer::CheckVisibleChunks() {
 }
 
 void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>>& additionalRenderers) {
-  pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size());
+  pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
   
-  for (const auto& renderer : additionalRenderers) {
-    renderer->Render();
-  }
+  // for (const auto& renderer : additionalRenderers) {
+  //   renderer->Render();
+  // }
 
   pipeline.lightPass->Perform(camera, lightData.size() + additionalLightData.size());
 }

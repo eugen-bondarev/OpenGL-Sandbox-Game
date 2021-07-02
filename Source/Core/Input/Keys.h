@@ -59,10 +59,10 @@
 #define NF_KEY_BACKSPACE          259
 #define NF_KEY_INSERT             260
 #define NF_KEY_DELETE             261
-#define NF_KEY_RIGHT              262
-#define NF_KEY_LEFT               263
-#define NF_KEY_DOWN               264
-#define NF_KEY_UP                 265
+#define NF_KEY_ARROW_RIGHT        262
+#define NF_KEY_ARROW_LEFT         263
+#define NF_KEY_ARROW_DOWN         264
+#define NF_KEY_ARROW_UP           265
 #define NF_KEY_PAGE_UP            266
 #define NF_KEY_PAGE_DOWN          267
 #define NF_KEY_HOME               268

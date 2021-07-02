@@ -10,6 +10,8 @@
 
 #include "Renderer/Atlas/TextureAtlas.h"
 
+#include "Renderer/Renderer.h"
+
 struct BlockData {
   struct {
     float x { 0 }, y { 0 };
@@ -34,7 +36,7 @@ class ColorPass {
 public:
   ColorPass(int amountOfBlocks);
 
-  void Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks);
+  void Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>>& additionalRenderers = {});
 
   inline const Ref<Werwel::VBO>& GetBlocksVBO() const {
     return blocks.vbo;

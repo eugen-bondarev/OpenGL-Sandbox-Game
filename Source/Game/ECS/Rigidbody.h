@@ -5,7 +5,7 @@
 #include "ITransform.h"
 #include "IUpdatable.h"
 
-#include "../Map.h"
+#include "Game/World/Map.h"
 
 #include "Entity.h"
 

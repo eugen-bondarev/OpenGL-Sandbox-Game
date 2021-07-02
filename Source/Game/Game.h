@@ -3,7 +3,7 @@
 #include "Entities/Character.h"
 #include "Renderer/Characters/CharacterRenderer.h"
 
-#include "World.h"
+#include "World/World.h"
 #include "Renderer/World/WorldRenderer.h"
 
 #include "Renderer/Interface/InterfaceRenderer.h"

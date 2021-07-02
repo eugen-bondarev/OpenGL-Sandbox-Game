@@ -6,6 +6,9 @@
 #include "Util/Structures.h"
 #include "Maths/Maths.h"
 
+#define NF_WINDOW_WIDTH()				::Window::GetSize().x
+#define NF_WINDOW_HEIGHT()			::Window::GetSize().y
+
 namespace Window {
 
 enum class Mode {

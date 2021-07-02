@@ -6,20 +6,20 @@ class Time {
 public:
   inline static void BeginFrame() {
     currentTime = static_cast<float>(glfwGetTime());
-    nextDelta = (currentTime - lastTime);
+    delta = (currentTime - lastTime);
     lastTime = currentTime;
   }
 
   inline static void EndFrame() {
-    fpsTimer += nextDelta;
-    if (fpsTimer >= 1.0f) {
-      fps = 1.0f / nextDelta;
+    fpsTimer += delta;
+    if (fpsTimer >= 0.3f) {
+      fps = 1.0f / delta;
       fpsTimer = 0;
     }
   }
 
   inline static float GetDelta() {
-    return nextDelta;
+    return delta;
   }
 
   inline static int GetFps() {
@@ -30,9 +30,10 @@ public:
     return static_cast<float>(glfwGetTime());
   }
 
-	inline static float nextDelta{0};
 private:
   Time();
+  
+	inline static float delta{0};
 
 	inline static float currentTime{0};
 	inline static float lastTime{0};

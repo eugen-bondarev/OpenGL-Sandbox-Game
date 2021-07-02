@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../../Maths/Maths.h"
+#include "Maths/Maths.h"
 
-#include "../ECS/Animator.h"
-#include "../ECS/Rigidbody.h"
-#include "../ECS/Player.h"
-#include "../ECS/Entity.h"
+#include "Game/ECS/Animator.h"
+#include "Game/ECS/Rigidbody.h"
+#include "Game/ECS/Player.h"
+#include "Game/ECS/Entity.h"
 
-#include "../World.h"
+#include "Game/World/World.h"
 
 class Character : public Entity {
 public:

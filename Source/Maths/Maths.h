@@ -59,6 +59,8 @@ ALIAS_TEMPLATE_FUNCTION(Translate, glm::translate)
 ALIAS_TEMPLATE_FUNCTION(Rotate, glm::rotate)
 ALIAS_TEMPLATE_FUNCTION(Scale, glm::scale)
 
+ALIAS_TEMPLATE_FUNCTION(Distance, glm::distance)
+
 }
 
 namespace Physics {

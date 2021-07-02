@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../World.h"
+#include "Game/World/World.h"
 
 class Player;
 
