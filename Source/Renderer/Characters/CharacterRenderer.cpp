@@ -67,7 +67,6 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 	animation1.keyFrames.emplace_back(Vec2 { 28, 28 }, -45);
 	animation1.keyFrames.emplace_back(Vec2 { 26, 26 }, -60);
 	animation1.keyFrames.emplace_back(Vec2 { 24, 24 }, -75);
-
 }
 
 void CharacterRenderer::Render() {  
@@ -102,11 +101,8 @@ void CharacterRenderer::Render() {
 			
 			characterShader->SetFloat("u_Frame1", character->animator->state);
 			characterShader->SetFloat("u_Frames_Vert", 2.0f);
-			
-			int dir = character->animator->GetDirection();
-			int state = character->animator->state;
 
-			Animation& animation = state == 1 ? animation1 : animation0;
+			Animation& animation = character->animator->state == 1 ? animation1 : animation0;
 
 			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame())) % animation.keyFrames.size();
 
