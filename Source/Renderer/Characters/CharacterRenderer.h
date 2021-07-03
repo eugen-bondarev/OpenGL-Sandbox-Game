@@ -18,7 +18,9 @@ private:
   const std::vector<Ref<Character>>& characters;
   const Ref<Camera>& camera;
 
-	Ref<Werwel::Texture> characterTexture;
+	Ref<Werwel::Texture> characterBodyTexture;
+	Ref<Werwel::Texture> characterHandTexture;
+	Ref<Werwel::Texture> pickaxeTexture;
 	Ref<Werwel::VAO> characterVAO;
 	Ref<Werwel::Shader> characterShader;
 

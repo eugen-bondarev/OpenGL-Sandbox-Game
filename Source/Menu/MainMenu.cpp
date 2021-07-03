@@ -57,7 +57,7 @@ void MainMenu::Main() {
       ImGui::Text("NaturaForge");
     ImGui::PopFont();
 
-  static int seed = 27656;
+  static int seed = 27655;
 
   ImGui::SetNextItemWidth(100);
   ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);

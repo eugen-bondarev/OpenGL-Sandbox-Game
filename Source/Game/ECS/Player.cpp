@@ -58,6 +58,17 @@ void Player::Update() {
 		if (!inventory.items[inventory.selectedItem]->GetCurrentAmount()) {
 			inventory.items[inventory.selectedItem].reset(new Empty());
 		}
+
+		entity->animator->state = 1.0f;
+	}
+
+	if (entity->animator->state != 0.0f) {
+		entity->animator->SetAttackFrame(entity->animator->GetAttackFrame() + 0.2f * Time::GetDelta() * defaultSpeed);
+		if (entity->animator->GetAttackFrame() > 7.0f) {
+			entity->animator->SetAttackFrame(0.0f);
+			entity->animator->state = 0.0f;
+		}
+		world->GetMap()->blocksUpdated = true;
 	}
 }
 
