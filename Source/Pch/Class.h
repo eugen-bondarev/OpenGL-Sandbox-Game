@@ -12,12 +12,12 @@ std::string GetName() {
 
 }
 
-#if defined(NATURAFORGE_COMPILER_GCC) || defined(NATURAFORGE_COMPILER_CLANG)
-# define NATURAFORGE_CLASS_NAME(T) ::Class::GetName<T, 2>();
+#if defined(NF_COMPILER_GCC) || defined(NF_COMPILER_CLANG)
+# define NF_CLASS_NAME(T) ::Class::GetName<T, 2>();
 #else
-# define NATURAFORGE_CLASS_NAME(T) ::Class::GetName<T, 1>();
+# define NF_CLASS_NAME(T) ::Class::GetName<T, 1>();
 #endif
 
-#define NATURAFORGE_INHERIT_CONSTRUCTOR(Derived, Parent) \
+#define NF_INHERIT_CONSTRUCTOR(Derived, Parent) \
 template<typename... Args> \
 Derived(Args&&... args) : Parent(std::forward<Args>(args)...)

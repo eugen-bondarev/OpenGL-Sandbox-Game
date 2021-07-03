@@ -53,7 +53,7 @@ LightPass::LightPass() {
 }
 
 void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {  
-  NATURAFORGE_PROFILER_SCOPE();  
+  NF_PROFILER_SCOPE();  
 
   glViewport(0, 0, 300, 168);
 
@@ -71,5 +71,5 @@ void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {
 
   glViewport(0, 0, Window::GetSize().x, Window::GetSize().y);
 
-  NATURAFORGE_SYNC_GPU();
+  NF_SYNC_GPU();
 }

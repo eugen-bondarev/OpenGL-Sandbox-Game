@@ -43,7 +43,7 @@ void MapRenderer::PrepareTiles() {
 }
 
 void MapRenderer::RebuildScene() { 
-  NATURAFORGE_PROFILER_SCOPE();
+  NF_PROFILER_SCOPE();
 
   blocksData.clear();
   wallsData.clear();
@@ -110,7 +110,7 @@ void MapRenderer::RebuildScene() {
 }
 
 void MapRenderer::UpdateScene() {
-  NATURAFORGE_PROFILER_SCOPE();
+  NF_PROFILER_SCOPE();
 
   pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
   pipeline.colorPass->GetWallsVBO()->Store(wallsData);
@@ -121,7 +121,7 @@ void MapRenderer::UpdateScene() {
   }
   
   pipeline.lightPass->GetVBO()->Store(copy);
-  NATURAFORGE_SYNC_GPU();
+  NF_SYNC_GPU();
 }
 
 void MapRenderer::CheckVisibleChunks() {

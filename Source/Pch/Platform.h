@@ -1,9 +1,9 @@
 #pragma once
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-# define NATURAFORGE_PLATFORM_WINDOWS
+# define NF_PLATFORM_WINDOWS
 #else
-# define NATURAFORGE_PLATFORM_LINUX
+# define NF_PLATFORM_LINUX
 #endif
 
-#define NATURAFORGE_ERROR_EXIT() exit(1)
+#define NF_ERROR_EXIT() exit(1)

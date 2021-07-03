@@ -4,7 +4,7 @@
 
 class Shovel : public BlocksDestroyer {
 public:
-  NATURAFORGE_INHERIT_CONSTRUCTOR(Shovel, BlocksDestroyer) {}
+  NF_INHERIT_CONSTRUCTOR(Shovel, BlocksDestroyer) {}
   
   std::vector<BlockType> GetDestroyableBlocks() const override {
     return {

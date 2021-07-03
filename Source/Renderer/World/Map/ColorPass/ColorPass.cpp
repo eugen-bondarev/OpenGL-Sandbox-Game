@@ -71,7 +71,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 }
 
 void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>>& additionalRenderers) {
-	NATURAFORGE_PROFILER_SCOPE();
+	NF_PROFILER_SCOPE();
 
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
@@ -95,5 +95,5 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 				blocks.vao->GetIndexBuffer()->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
 
-	NATURAFORGE_SYNC_GPU();
+	NF_SYNC_GPU();
 }

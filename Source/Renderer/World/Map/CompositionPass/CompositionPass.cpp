@@ -27,7 +27,7 @@ CompositionPass::CompositionPass() {
 }
 
 void CompositionPass::Perform(const Ref<ColorPass>& colorPass, const Ref<LightPass>& lightPass) {   
-  NATURAFORGE_PROFILER_SCOPE();
+  NF_PROFILER_SCOPE();
 
   Werwel::GraphicsContext::Clear();
 
@@ -41,5 +41,5 @@ void CompositionPass::Perform(const Ref<ColorPass>& colorPass, const Ref<LightPa
         glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
       glActiveTexture(GL_TEXTURE0);
 
-  NATURAFORGE_SYNC_GPU();
+  NF_SYNC_GPU();
 }

@@ -2,15 +2,15 @@
 
 #include <string>
 
-#define NATURAFORGE_DEVELOPMENT  0
-#define NATURAFORGE_PRODUCTION   1
+#define NF_DEVELOPMENT  0
+#define NF_PRODUCTION   1
 
-#define NATURAFORGE_BUILD_TYPE   NATURAFORGE_PRODUCTION
+#define NF_BUILD_TYPE   NF_PRODUCTION
 
-inline std::string NATURAFORGE_ROOT;
+inline std::string NF_ROOT;
 
 #ifdef NDEBUG
-# define NATURAFORGE_RELEASE
+# define NF_RELEASE
 #else
-# define NATURAFORGE_DEBUG
+# define NF_DEBUG
 #endif

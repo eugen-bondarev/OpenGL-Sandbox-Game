@@ -4,7 +4,7 @@
 
 class Pickaxe : public BlocksDestroyer {
 public:
-  NATURAFORGE_INHERIT_CONSTRUCTOR(Pickaxe, BlocksDestroyer) {}
+  NF_INHERIT_CONSTRUCTOR(Pickaxe, BlocksDestroyer) {}
   
   std::vector<BlockType> GetDestroyableBlocks() const override {
     return {

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#ifdef NATURAFORGE_ENABLE_PROFILING
+#ifdef NF_ENABLE_PROFILING
 
 #include <string>
 #include <chrono>
@@ -126,13 +126,13 @@ private:
   bool m_Stopped;
 };
 
-# define NATURAFORGE_PROFILER_BEGIN(NAME)        Instrumentor::Get().BeginSession(NAME)
-# define NATURAFORGE_PROFILER_END()              Instrumentor::Get().EndSession()
-# define NATURAFORGE_PROFILER_SCOPE()            InstrumentationTimer timer(NATURAFORGE_FUNC_SIG)
-# define NATURAFORGE_PROFILER_NAMED_SCOPE(NAME)  InstrumentationTimer timer(NAME)
+# define NF_PROFILER_BEGIN(NAME)        Instrumentor::Get().BeginSession(NAME)
+# define NF_PROFILER_END()              Instrumentor::Get().EndSession()
+# define NF_PROFILER_SCOPE()            InstrumentationTimer timer(NF_FUNC_SIG)
+# define NF_PROFILER_NAMED_SCOPE(NAME)  InstrumentationTimer timer(NAME)
 #else
-# define NATURAFORGE_PROFILER_BEGIN(NAME)        NATURAFORGE_VOID_ASSEMBLY
-# define NATURAFORGE_PROFILER_END()              NATURAFORGE_VOID_ASSEMBLY
-# define NATURAFORGE_PROFILER_SCOPE()            NATURAFORGE_VOID_ASSEMBLY
-# define NATURAFORGE_PROFILER_NAMED_SCOPE(NAME)  NATURAFORGE_VOID_ASSEMBLY
+# define NF_PROFILER_BEGIN(NAME)        NF_VOID_ASSEMBLY
+# define NF_PROFILER_END()              NF_VOID_ASSEMBLY
+# define NF_PROFILER_SCOPE()            NF_VOID_ASSEMBLY
+# define NF_PROFILER_NAMED_SCOPE(NAME)  NF_VOID_ASSEMBLY
 #endif

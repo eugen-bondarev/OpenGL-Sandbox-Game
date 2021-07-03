@@ -14,22 +14,22 @@ std::string DefineRoot(int amountOfArguments, char* arguments[]) {
 }
 
 int main(int amountOfArguments, char* arguments[]) {
-	NATURAFORGE_CONSOLE_HIDE();
-	NATURAFORGE_PROFILER_BEGIN("Forgio");
+	NF_CONSOLE_HIDE();
+	NF_PROFILER_BEGIN("Forgio");
 
-	NATURAFORGE_ROOT = DefineRoot(amountOfArguments, arguments);
+	NF_ROOT = DefineRoot(amountOfArguments, arguments);
 
 	Engine engine;
 
 	while (engine.IsRunning()) {
-		NATURAFORGE_PROFILER_NAMED_SCOPE("New frame");
+		NF_PROFILER_NAMED_SCOPE("New frame");
 
 		engine.BeginFrame();
 		engine.Run();
 		engine.EndFrame();
 	}
 	
-	NATURAFORGE_PROFILER_END();
+	NF_PROFILER_END();
 
 	return 0;
 }

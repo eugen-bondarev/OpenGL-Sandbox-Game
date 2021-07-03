@@ -10,14 +10,14 @@ TextAsset::TextAsset(const std::string& path) {
 
 void TextAsset::Load(const std::string& path) {
 	std::ifstream file;
-	std::string fullPath = NATURAFORGE_ROOT + path;
+	std::string fullPath = NF_ROOT + path;
 
 	file.open(fullPath);
 
 	if (!file.is_open()) {
 		Window::Minimize();
-		NATURAFORGE_ERROR_POPUP("Could not load a text asset: " + fullPath, "TextAsset::Load()");
-		NATURAFORGE_ERROR_EXIT();
+		NF_ERROR_POPUP("Could not load a text asset: " + fullPath, "TextAsset::Load()");
+		NF_ERROR_EXIT();
 	}
 
 	while (!file.eof()) {

@@ -9,11 +9,11 @@ ImageAsset::ImageAsset(const std::string& path) {
 
 void ImageAsset::Load(const std::string& path) {
 	int width, height;
-	std::string fullPath = NATURAFORGE_ROOT + path;
+	std::string fullPath = NF_ROOT + path;
 	data = stbi_load(fullPath.c_str(), &width, &height, &amountOfChannels, 0);
 	if (!data) {
-		NATURAFORGE_ERROR_POPUP("Could not load an image asset: " + fullPath, "ImageAsset::Load()");
-		NATURAFORGE_ERROR_EXIT();
+		NF_ERROR_POPUP("Could not load an image asset: " + fullPath, "ImageAsset::Load()");
+		NF_ERROR_EXIT();
 	}
 	size = { static_cast<float>(width), static_cast<float>(height) };
 }
