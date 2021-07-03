@@ -18,6 +18,8 @@ private:
   const std::vector<Ref<Character>>& characters;
   const Ref<Camera>& camera;
 
+  Werwel::Texture* pickaxe;
+
 	Ref<Werwel::Texture> characterBodyTexture;
 	Ref<Werwel::Texture> characterHandTexture;
 	Ref<Werwel::Texture> pickaxeTexture;

@@ -47,7 +47,7 @@ WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera)
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 
-	const ImageAsset leavesTextureAsset("Assets/Images/Leaves.png");
+	const ImageAsset leavesTextureAsset("Assets/Images/Leaves_Stroke.png");
 	pipeline.leavesTexture = CreateRef<Werwel::Texture>(
 		leavesTextureAsset.GetSize(),
 		leavesTextureAsset.GetData(),
