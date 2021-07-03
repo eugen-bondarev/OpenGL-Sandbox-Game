@@ -15,6 +15,9 @@ public:
   void Render() override;
 
 private:
+  Animation animation0;
+  Animation animation1;
+
   const std::vector<Ref<Character>>& characters;
   const Ref<Camera>& camera;
 

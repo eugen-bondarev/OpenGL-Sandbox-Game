@@ -55,6 +55,30 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		vsCode.GetContent(), fsCode.GetContent(),
 		"u_Proj", "u_View", "u_Model", "u_Frame", "u_Frame1", "u_Frames_Vert", "u_Frames_Hor", "u_Direction", "u_Weapon"
 	);
+	
+	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 8, 18 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 8, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 8, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 4, 18 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 4, 18 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 4, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 4, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
+	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
+
+	animation1.keyFrames.emplace_back(Vec2 { 24, 36 },  30);
+	animation1.keyFrames.emplace_back(Vec2 { 26, 34 },  15);
+	animation1.keyFrames.emplace_back(Vec2 { 28, 32 },  0);
+	animation1.keyFrames.emplace_back(Vec2 { 30, 30 }, -25);
+	animation1.keyFrames.emplace_back(Vec2 { 28, 28 }, -45);
+	animation1.keyFrames.emplace_back(Vec2 { 26, 26 }, -60);
+	animation1.keyFrames.emplace_back(Vec2 { 24, 24 }, -75);
+
 }
 
 void CharacterRenderer::Render() {  
@@ -93,54 +117,56 @@ void CharacterRenderer::Render() {
 			int dir = character->animator->GetDirection();
 			int state = character->animator->state;
 			
-			struct KeyFrame {
-				KeyFrame(Vec2 pos, float rot) : pos { pos }, rot { rot } { }
-				Vec2 pos  { 0, 0 };
-				float rot { 0 };
-			};
+			// struct KeyFrame {
+			// 	KeyFrame(Vec2 pos, float rot) : pos { pos }, rot { rot } { }
+			// 	Vec2 pos  { 0, 0 };
+			// 	float rot { 0 };
+			// };
 
-			std::vector<KeyFrame> animation;
+			// std::vector<KeyFrame> animation;
 
-			if (state == 1) {
-				animation.emplace_back(Vec2 { 24, 36 }, -30);
-				animation.emplace_back(Vec2 { 26, 34 }, -15);
-				animation.emplace_back(Vec2 { 28, 32 },  0);
-				animation.emplace_back(Vec2 { 30, 30 },  25);
-				animation.emplace_back(Vec2 { 28, 28 },  45);
-				animation.emplace_back(Vec2 { 26, 26 },  60);
-				animation.emplace_back(Vec2 { 24, 24 },  75);
-			} else {
-				animation.emplace_back(Vec2 { 6, 18 }, 0);
-				animation.emplace_back(Vec2 { 6, 18 }, 0);
-				animation.emplace_back(Vec2 { 8, 18 }, 0);
-				animation.emplace_back(Vec2 { 8, 16 }, 0);
-				animation.emplace_back(Vec2 { 8, 16 }, 0);
-				animation.emplace_back(Vec2 { 6, 16 }, 0);
-				animation.emplace_back(Vec2 { 6, 16 }, 0);
-				animation.emplace_back(Vec2 { 6, 18 }, 0);
-				animation.emplace_back(Vec2 { 4, 18 }, 0);
-				animation.emplace_back(Vec2 { 4, 18 }, 0);
-				animation.emplace_back(Vec2 { 4, 16 }, 0);
-				animation.emplace_back(Vec2 { 4, 16 }, 0);
-				animation.emplace_back(Vec2 { 6, 16 }, 0);
-				animation.emplace_back(Vec2 { 6, 16 }, 0);
-			}
+			// if (state == 1) {
+			// 	animation.emplace_back(Vec2 { 24, 36 }, -30);
+			// 	animation.emplace_back(Vec2 { 26, 34 }, -15);
+			// 	animation.emplace_back(Vec2 { 28, 32 },  0);
+			// 	animation.emplace_back(Vec2 { 30, 30 },  25);
+			// 	animation.emplace_back(Vec2 { 28, 28 },  45);
+			// 	animation.emplace_back(Vec2 { 26, 26 },  60);
+			// 	animation.emplace_back(Vec2 { 24, 24 },  75);
+			// } else {
+			// 	animation.emplace_back(Vec2 { 6, 18 }, 0);
+			// 	animation.emplace_back(Vec2 { 6, 18 }, 0);
+			// 	animation.emplace_back(Vec2 { 8, 18 }, 0);
+			// 	animation.emplace_back(Vec2 { 8, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 8, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 6, 18 }, 0);
+			// 	animation.emplace_back(Vec2 { 4, 18 }, 0);
+			// 	animation.emplace_back(Vec2 { 4, 18 }, 0);
+			// 	animation.emplace_back(Vec2 { 4, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 4, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
+			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
+			// }
 
-			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame())) % animation.size();
+			Animation& animation = state == 1 ? animation1 : animation0;
+
+			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame())) % animation.keyFrames.size();
 
 			Vec2 setPosition { 0, 0 };
 			float setRotation { 0 };
 
-			int clips = animation.size();
+			int clips = animation.keyFrames.size();
+
+			animation.keyFrames[anim].ApplyTo(t);
 			
-			if (anim >= 0 && anim < animation.size()) {
-				KeyFrame keyFrame = animation[anim];
-				setPosition = keyFrame.pos;
-				setRotation = keyFrame.rot;
-			}
+			// KeyFrame keyFrame = animation.keyFrames[anim];
+			// setPosition = keyFrame.pos;
+			// setRotation = keyFrame.rot;
 			
-			t = Math::Translate(t, Vec3(setPosition, 0.0f));
-			t = Math::Rotate(t, Math::Radians(-setRotation), Vec3(0, 0, 1));
+			// t = Math::Translate(t, Vec3(setPosition, 0.0f));
+			// t = Math::Rotate(t, Math::Radians(-setRotation), Vec3(0, 0, 1));
 			Vec2 size = character->player->GetCurrentItem().first->GetSize() * 2.0f / character->player->GetCurrentItem().first->GetAmountOfTiles();
 			t = Math::Scale(t, Vec3(size / Vec2(32 * 2.0f, 48 * 2.0f), 1));
 
