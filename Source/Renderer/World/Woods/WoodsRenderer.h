@@ -20,10 +20,19 @@ private:
   const Ref<Woods>& woods;
   const Ref<Camera>& camera;
 
+  Vec2 barkSize { 16, 204 };
+  Vec2 leavesSize { 128, 128 };
+
+  Mat4 barkModelMatrix { 1 };
+  Mat4 leavesModelMatrix { 1 };
+
   struct {
-    Ref<Werwel::Texture> texture;
+    Ref<Werwel::Texture> barkTexture;
+    Ref<Werwel::Texture> leavesTexture;
+    
     Ref<Werwel::Shader> shader;
-    Ref<Werwel::VAO> vao;
+
+    Ref<Werwel::VAO> barkVAO;
     Ref<Werwel::VBO> vbo;
   } pipeline;
 

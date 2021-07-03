@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD									17)
-set(PROJ_PROJECT_VERSION								0.2.8)
+set(PROJ_PROJECT_VERSION								0.2.9)
 set(PROJ_PROJECT_NAME										Naturaforge)
 set(PROJ_APP_NAME												Naturaforge)
 set(PROJ_SRC_DIR_NAME										Source)
@@ -14,8 +14,9 @@ set(GLM_INCLUDE_DIR											External/glm)
 project(${PROJ_PROJECT_NAME} VERSION ${PROJ_PROJECT_VERSION})
 
 add_compile_definitions(
-	NATURAFORGE_ENABLE_PROFILING
-	NATURAFORGE_ENABLE_GPU_SYNC
+	NF_SHOW_DEBUG_GUI
+	# NATURAFORGE_ENABLE_PROFILING
+	# NATURAFORGE_ENABLE_GPU_SYNC
 	WERWEL_USE_GLM
 	LINOW_USE_GLM
 )

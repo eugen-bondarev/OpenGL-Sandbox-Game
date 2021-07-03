@@ -11,7 +11,6 @@ void WorldRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderer
 		world->GetMap()->blocksUpdated = true;
 	});
 
-	// woodsRenderer->Render();
   mapRenderer->Render(additionalRenderers);
 }
 

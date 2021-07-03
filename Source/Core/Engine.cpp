@@ -46,11 +46,13 @@ void Engine::Run() {
 		mainMenu->Show();
 	}
 
+#ifdef NF_SHOW_DEBUG_GUI
 	ImGui::SetNextWindowSize(ImVec2(140, 120));
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
 		ImGui::Text(("FPS: " + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();
+#endif
 }
 
 void Engine::EndFrame() {

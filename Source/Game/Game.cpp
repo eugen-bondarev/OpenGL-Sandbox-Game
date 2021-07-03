@@ -55,7 +55,17 @@ void Game::Render() {
 
 	world->GetCamera()->SetPosition(character->GetPosition() + Vec2(24, 24));
 	character->CollectLights(worldRenderer->GetMapRenderer()->GetAdditionalLightData());
+
 	for (int i = 0; i < worldRenderer->GetWoodsRenderer()->visibleTrees.size(); i++) {
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(-64, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(-48, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(-32, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(-16, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(16, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(32, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(48, 80));
+		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(64, 80));
+		
 		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, 80));
 		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, 32));
 		worldRenderer->GetMapRenderer()->GetAdditionalLightData().emplace_back(worldRenderer->GetWoodsRenderer()->visibleTrees[i] + Vec2(0, 0));
@@ -69,14 +79,14 @@ void Game::Render() {
 
 	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 
+#ifdef NF_SHOW_DEBUG_GUI
 	ImGui::SetNextWindowSize(ImVec2(220, 120));
 	ImGui::SetNextWindowPos(ImVec2(140 + 20 + 20, 20));
 	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
     ImGui::Text(std::string("Blocks: " + std::to_string(worldRenderer->GetMapRenderer()->GetAmountOfRenderedBlocks())).c_str());
     ImGui::Text(std::string("Walls: " + std::to_string(worldRenderer->GetMapRenderer()->GetAmountOfRenderedWalls())).c_str());
     ImGui::Text(std::string("Area: " + std::to_string(world->GetMap()->GetWidth()) + 'x' + std::to_string(world->GetMap()->GetHeight()) + " = " + std::to_string(world->GetMap()->GetArea())).c_str());
-    ImGui::Text(std::string("Size (b): " + std::to_string(world->GetMap()->GetSizeInBytes())).c_str());
-    ImGui::Text(std::string("Size (kb): " + std::to_string(world->GetMap()->GetSizeInKilobytes())).c_str());
     ImGui::Text(std::string("Size (mb): " + std::to_string(world->GetMap()->GetSizeInMegabytes())).c_str());
 	ImGui::End();
+#endif
 }
