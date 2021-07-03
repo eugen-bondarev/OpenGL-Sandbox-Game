@@ -30,17 +30,6 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 
-	const ImageAsset pickaxeTextureAsset("Assets/Images/Pickaxe1.png");
-	pickaxeTexture = CreateRef<Werwel::Texture>(
-		pickaxeTextureAsset.GetSize(),
-		pickaxeTextureAsset.GetData(),
-		GL_RGBA,
-		GL_RGBA,
-		GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
-	);
-
 	const auto& vertices = Primitives::Char::Vertices(32 * 2.0f, 48 * 2.0f);
 	const auto& indices = Primitives::Char::indices;
 
@@ -90,10 +79,10 @@ void CharacterRenderer::Render() {
   characterVAO->GetIndexBuffer()->Bind();
 
   for (const auto& character : characters) {
-		Mat4 t = character->GetTransform();
-		t = Math::Translate(t, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
-		t = Math::Scale(t, Vec3(character->animator->GetDirection(), 1, 1));
-    characterShader->SetMat4x4("u_Model", Math::ToPtr(t));
+		Mat4 characterTransform = character->GetTransform();
+		characterTransform = Math::Translate(characterTransform, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
+		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
+    characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 
 		characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
 		characterShader->SetFloat("u_Frame1", 0);
@@ -116,61 +105,17 @@ void CharacterRenderer::Render() {
 			
 			int dir = character->animator->GetDirection();
 			int state = character->animator->state;
-			
-			// struct KeyFrame {
-			// 	KeyFrame(Vec2 pos, float rot) : pos { pos }, rot { rot } { }
-			// 	Vec2 pos  { 0, 0 };
-			// 	float rot { 0 };
-			// };
-
-			// std::vector<KeyFrame> animation;
-
-			// if (state == 1) {
-			// 	animation.emplace_back(Vec2 { 24, 36 }, -30);
-			// 	animation.emplace_back(Vec2 { 26, 34 }, -15);
-			// 	animation.emplace_back(Vec2 { 28, 32 },  0);
-			// 	animation.emplace_back(Vec2 { 30, 30 },  25);
-			// 	animation.emplace_back(Vec2 { 28, 28 },  45);
-			// 	animation.emplace_back(Vec2 { 26, 26 },  60);
-			// 	animation.emplace_back(Vec2 { 24, 24 },  75);
-			// } else {
-			// 	animation.emplace_back(Vec2 { 6, 18 }, 0);
-			// 	animation.emplace_back(Vec2 { 6, 18 }, 0);
-			// 	animation.emplace_back(Vec2 { 8, 18 }, 0);
-			// 	animation.emplace_back(Vec2 { 8, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 8, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 6, 18 }, 0);
-			// 	animation.emplace_back(Vec2 { 4, 18 }, 0);
-			// 	animation.emplace_back(Vec2 { 4, 18 }, 0);
-			// 	animation.emplace_back(Vec2 { 4, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 4, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
-			// 	animation.emplace_back(Vec2 { 6, 16 }, 0);
-			// }
 
 			Animation& animation = state == 1 ? animation1 : animation0;
 
 			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame())) % animation.keyFrames.size();
 
-			Vec2 setPosition { 0, 0 };
-			float setRotation { 0 };
-
-			int clips = animation.keyFrames.size();
-
-			animation.keyFrames[anim].ApplyTo(t);
+			animation.keyFrames[anim].ApplyTo(characterTransform);
 			
-			// KeyFrame keyFrame = animation.keyFrames[anim];
-			// setPosition = keyFrame.pos;
-			// setRotation = keyFrame.rot;
-			
-			// t = Math::Translate(t, Vec3(setPosition, 0.0f));
-			// t = Math::Rotate(t, Math::Radians(-setRotation), Vec3(0, 0, 1));
 			Vec2 size = character->player->GetCurrentItem().first->GetSize() * 2.0f / character->player->GetCurrentItem().first->GetAmountOfTiles();
-			t = Math::Scale(t, Vec3(size / Vec2(32 * 2.0f, 48 * 2.0f), 1));
+			characterTransform = Math::Scale(characterTransform, Vec3(size / Vec2(32 * 2.0f, 48 * 2.0f), 1));
 
-			characterShader->SetMat4x4("u_Model", Math::ToPtr(t));
+			characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 			characterShader->SetFloat("u_Weapon", 1.0f);
 			characterShader->SetFloat("u_Frame", character->player->GetCurrentItem().second.x);
 			characterShader->SetFloat("u_Frame1", character->player->GetCurrentItem().second.y);
@@ -181,10 +126,10 @@ void CharacterRenderer::Render() {
 					glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);			
 		}
 
-		t = character->GetTransform();
-		t = Math::Translate(t, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
-		t = Math::Scale(t, Vec3(character->animator->GetDirection(), 1, 1));
-    characterShader->SetMat4x4("u_Model", Math::ToPtr(t));
+		characterTransform = character->GetTransform();
+		characterTransform = Math::Translate(characterTransform, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
+		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
+    characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 
 		if (character->animator->state == 1) {
 			characterShader->SetFloat("u_Frame", truncf(character->animator->GetAttackFrame()));

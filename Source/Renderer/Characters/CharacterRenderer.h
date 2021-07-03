@@ -23,7 +23,7 @@ private:
 
 	Ref<Werwel::Texture> characterBodyTexture;
 	Ref<Werwel::Texture> characterHandTexture;
-	Ref<Werwel::Texture> pickaxeTexture;
+  
 	Ref<Werwel::VAO> characterVAO;
 	Ref<Werwel::Shader> characterShader;
 
