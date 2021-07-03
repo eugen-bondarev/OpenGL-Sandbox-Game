@@ -4,6 +4,7 @@
 
 class Animator;
 class Rigidbody;
+class Player;
 class ITransform;
 
 class Entity : public ITransform {
@@ -20,6 +21,7 @@ public:
 
   Animator* animator;
   Rigidbody* rigidbody;
+  Player* player;
   std::map<std::string, Ref<Component>> components;
 
   template <typename T, typename... Args>
@@ -35,6 +37,10 @@ public:
 
     if (prettyName == "Rigidbody") {
       rigidbody = dynamic_cast<Rigidbody*>(r.get());
+    }
+
+    if (prettyName == "Player") {
+      player = dynamic_cast<Player*>(r.get());
     }
 
     if (IUpdatable* updatable = dynamic_cast<IUpdatable*>(r.get())) {

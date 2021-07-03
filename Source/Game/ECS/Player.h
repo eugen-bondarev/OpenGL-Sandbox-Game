@@ -17,6 +17,8 @@ public:
 
   void Update() override;
 
+  Icon GetCurrentItem() const;
+
   Inventory& GetInventory();
 
 private:

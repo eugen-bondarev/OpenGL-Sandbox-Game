@@ -22,7 +22,7 @@ void main() {
   if (u_Weapon != 1.0) {
     gl_Position = u_Proj * u_View * (u_Model * vec4(position, 0.0, 1.0) + vec4(vec2(correction, (u_Frames_Vert - u_Frame1) * -32.0) + vec2(0, 32.0), 0, 0));
   } else {
-    gl_Position = u_Proj * u_View * (u_Model * vec4(position, 0.0, 1.0));
+    gl_Position = u_Proj * u_View * (u_Model * vec4(position, 0.0, 1.0) + vec4(vec2(correction, 0), 0, 0));
   }
   out_Uv = uv;
 }

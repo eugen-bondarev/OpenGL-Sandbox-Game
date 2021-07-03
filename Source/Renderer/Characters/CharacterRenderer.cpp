@@ -53,7 +53,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 	TextAsset fsCode("Assets/Shaders/Characters/Default.fs");
 	characterShader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View", "u_Model", "u_Frame", "u_Frame1", "u_Frames_Vert", "u_Direction", "u_Weapon"
+		"u_Proj", "u_View", "u_Model", "u_Frame", "u_Frame1", "u_Frames_Vert", "u_Frames_Hor", "u_Direction", "u_Weapon"
 	);
 
 	pickaxe = TextureAtlas::Get<ToolsTileMap>(TextureAtlasType::Tools);
@@ -90,70 +90,82 @@ void CharacterRenderer::Render() {
 		characterShader->SetFloat("u_Frame1", character->animator->state);
 		characterShader->SetFloat("u_Frames_Vert", 2.0f);
 		
-		int anim = truncf( character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame() );
 		int dir = character->animator->GetDirection();
+		int state = character->animator->state;
 
-		t = character->GetTransform();
-		t = Math::Translate(t, Vec3(2 + 5 * dir, 24, 0));
+		// t = character->GetTransform();
+		
+		struct KeyFrame {
+			KeyFrame(Vec2 pos, float rot) : pos { pos }, rot { rot } { }
+			Vec2 pos  { 0, 0 };
+			float rot { 0 };
+		};
 
-		Vec2 v = { 0, 0 };
-		if (character->animator->state == 1) {
-			t = Math::Rotate(t, Math::Radians(24.0f * dir), Vec3(0, 0, 1));
-			t = Math::Rotate(t, Math::Radians(character->animator->GetAttackFrame() * -10 * dir), Vec3(0, 0, 1));			
-			if (anim == 0) {
-				v = Vec2(16, 28);
-			} else if (anim == 1) {
-				v = Vec2(16, 28);
-			} else if (anim == 2) {
-				v = Vec2(16, 28);
-			} else if (anim == 3) {
-				v = Vec2(14, 28);
-			} else if (anim == 4) {
-				v = Vec2(12, 28);
-			} else if (anim == 5) {
-				v = Vec2(10, 24);
-			} else if (anim == 6) {
-				v = Vec2(8, 22);
-			} else if (anim == 7) {
-				v = Vec2(6, 20);
-			}
+		std::vector<KeyFrame> animation;
+
+		if (state == 1) {
+			animation.emplace_back(Vec2 { 24, 36 }, 15 - 45);
+			animation.emplace_back(Vec2 { 26, 34 }, 30 - 45);
+			animation.emplace_back(Vec2 { 28, 32 }, 45 - 45);
+			animation.emplace_back(Vec2 { 30, 30 }, 70 - 45);
+			animation.emplace_back(Vec2 { 28, 28 }, 90 - 45);
+			animation.emplace_back(Vec2 { 26, 26 }, 105 - 45);
+			animation.emplace_back(Vec2 { 24, 24 }, 120 - 45);
 		} else {
-			if (anim % 14 == 0) { 				v = Vec2(2, 18);
-			} else if (anim % 14 == 1) { v = Vec2(2, 18);
-			} else if (anim % 14 == 2) { v = Vec2(4, 18);
-			} else if (anim % 14 == 3) { v = Vec2(4, 16);
-			} else if (anim % 14 == 4) { v = Vec2(4, 16);
-			} else if (anim % 14 == 5) { v = Vec2(2, 16);
-			} else if (anim % 14 == 6) { v = Vec2(2, 16);
-			} else if (anim % 14 == 7) { v = Vec2(2, 18);
-			} else if (anim % 14 == 8) { v = Vec2(0, 18);
-			} else if (anim % 14 == 9) { v = Vec2(0, 18);
-			} else if (anim % 14 == 10) { v = Vec2(0, 16);
-			} else if (anim % 14 == 11) { v = Vec2(0, 16);
-			} else if (anim % 14 == 12) { v = Vec2(2, 16);
-			} else if (anim % 14 == 13) { v = Vec2(2, 16);
-			}
-		}
-		if (dir == -1) {
-			v *= Vec2(dir, 1);
-			v += Vec2(32, 0);
+			animation.emplace_back(Vec2 { 6, 18 }, 0);
+			animation.emplace_back(Vec2 { 6, 18 }, 0);
+			animation.emplace_back(Vec2 { 8, 18 }, 0);
+			animation.emplace_back(Vec2 { 8, 16 }, 0);
+			animation.emplace_back(Vec2 { 8, 16 }, 0);
+			animation.emplace_back(Vec2 { 6, 16 }, 0);
+			animation.emplace_back(Vec2 { 6, 16 }, 0);
+			animation.emplace_back(Vec2 { 6, 18 }, 0);
+			animation.emplace_back(Vec2 { 4, 18 }, 0);
+			animation.emplace_back(Vec2 { 4, 18 }, 0);
+			animation.emplace_back(Vec2 { 4, 16 }, 0);
+			animation.emplace_back(Vec2 { 4, 16 }, 0);
+			animation.emplace_back(Vec2 { 6, 16 }, 0);
+			animation.emplace_back(Vec2 { 6, 16 }, 0);
 		}
 
-		t = Math::Translate(t, Vec3(v, 0));
-		t = Math::Translate(t, -Vec3(5, 24, 0));
-		t = Math::Scale(t, Vec3(32.0f / Vec2(32 * 2.0f * character->animator->GetDirection(), 48 * 2.0f), 1));
+		int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame() )) % animation.size();
 
+		Vec2 setPosition { 0, 0 };
+		float setRotation { 0 };
+
+		int clips = animation.size();
+		
+		if (anim >= 0 && anim < animation.size()) {
+			KeyFrame keyFrame = animation[anim];
+			setPosition = keyFrame.pos;
+			setRotation = keyFrame.rot;
+		}
+		
+		t = Math::Translate(t, Vec3(setPosition, 0.0f));
+		t = Math::Rotate(t, Math::Radians(-setRotation), Vec3(0, 0, 1));
+		Vec2 size = character->player->GetCurrentItem().first->GetSize() * 2.0f / character->player->GetCurrentItem().first->GetAmountOfTiles();
+		t = Math::Scale(t, Vec3(size / Vec2(32 * 2.0f, 48 * 2.0f), 1));
 
     characterShader->SetMat4x4("u_Model", Math::ToPtr(t));
 		characterShader->SetFloat("u_Weapon", 1.0f);
-  		// pickaxeTexture->Bind();
-			pickaxe->Bind();
+		characterShader->SetFloat("u_Frame", character->player->GetCurrentItem().second.x);
+		characterShader->SetFloat("u_Frame1", character->player->GetCurrentItem().second.y);
+		characterShader->SetFloat("u_Frames_Hor", character->player->GetCurrentItem().first->GetAmountOfTiles().x);
+		characterShader->SetFloat("u_Frames_Vert", character->player->GetCurrentItem().first->GetAmountOfTiles().y);
+		
+			character->player->GetCurrentItem().first->Bind();
 				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 
 		t = character->GetTransform();
 		t = Math::Translate(t, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
 		t = Math::Scale(t, Vec3(character->animator->GetDirection(), 1, 1));
     characterShader->SetMat4x4("u_Model", Math::ToPtr(t));
+
+		if (character->animator->state == 1) {
+			characterShader->SetFloat("u_Frame", truncf(character->animator->GetAttackFrame()));
+		} else {
+			characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
+		}
 		characterShader->SetFloat("u_Frame1", character->animator->state);
 		characterShader->SetFloat("u_Frames_Vert", 2.0f);
 		characterShader->SetFloat("u_Weapon", 0.0f);
