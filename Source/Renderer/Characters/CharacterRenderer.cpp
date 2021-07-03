@@ -55,8 +55,6 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		vsCode.GetContent(), fsCode.GetContent(),
 		"u_Proj", "u_View", "u_Model", "u_Frame", "u_Frame1", "u_Frames_Vert", "u_Frames_Hor", "u_Direction", "u_Weapon"
 	);
-
-	pickaxe = TextureAtlas::Get<ToolsTileMap>(TextureAtlasType::Tools);
 }
 
 void CharacterRenderer::Render() {  
@@ -75,6 +73,7 @@ void CharacterRenderer::Render() {
 
 		characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
 		characterShader->SetFloat("u_Frame1", 0);
+		characterShader->SetFloat("u_Frames_Hor", 14.0f);
 		characterShader->SetFloat("u_Frames_Vert", 1.0f);
 		characterShader->SetFloat("u_Direction", static_cast<float>(character->animator->GetDirection()));
 		characterShader->SetFloat("u_Weapon", 0.0f);
@@ -92,8 +91,6 @@ void CharacterRenderer::Render() {
 		
 		int dir = character->animator->GetDirection();
 		int state = character->animator->state;
-
-		// t = character->GetTransform();
 		
 		struct KeyFrame {
 			KeyFrame(Vec2 pos, float rot) : pos { pos }, rot { rot } { }
@@ -104,13 +101,13 @@ void CharacterRenderer::Render() {
 		std::vector<KeyFrame> animation;
 
 		if (state == 1) {
-			animation.emplace_back(Vec2 { 24, 36 }, 15 - 45);
-			animation.emplace_back(Vec2 { 26, 34 }, 30 - 45);
-			animation.emplace_back(Vec2 { 28, 32 }, 45 - 45);
-			animation.emplace_back(Vec2 { 30, 30 }, 70 - 45);
-			animation.emplace_back(Vec2 { 28, 28 }, 90 - 45);
-			animation.emplace_back(Vec2 { 26, 26 }, 105 - 45);
-			animation.emplace_back(Vec2 { 24, 24 }, 120 - 45);
+			animation.emplace_back(Vec2 { 24, 36 }, -30);
+			animation.emplace_back(Vec2 { 26, 34 }, -15);
+			animation.emplace_back(Vec2 { 28, 32 },  0);
+			animation.emplace_back(Vec2 { 30, 30 },  25);
+			animation.emplace_back(Vec2 { 28, 28 },  45);
+			animation.emplace_back(Vec2 { 26, 26 },  60);
+			animation.emplace_back(Vec2 { 24, 24 },  75);
 		} else {
 			animation.emplace_back(Vec2 { 6, 18 }, 0);
 			animation.emplace_back(Vec2 { 6, 18 }, 0);
@@ -128,7 +125,7 @@ void CharacterRenderer::Render() {
 			animation.emplace_back(Vec2 { 6, 16 }, 0);
 		}
 
-		int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame() )) % animation.size();
+		int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame())) % animation.size();
 
 		Vec2 setPosition { 0, 0 };
 		float setRotation { 0 };
@@ -152,7 +149,7 @@ void CharacterRenderer::Render() {
 		characterShader->SetFloat("u_Frame1", character->player->GetCurrentItem().second.y);
 		characterShader->SetFloat("u_Frames_Hor", character->player->GetCurrentItem().first->GetAmountOfTiles().x);
 		characterShader->SetFloat("u_Frames_Vert", character->player->GetCurrentItem().first->GetAmountOfTiles().y);
-		
+
 			character->player->GetCurrentItem().first->Bind();
 				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 
@@ -166,7 +163,9 @@ void CharacterRenderer::Render() {
 		} else {
 			characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
 		}
+
 		characterShader->SetFloat("u_Frame1", character->animator->state);
+		characterShader->SetFloat("u_Frames_Hor", 14.0f);
 		characterShader->SetFloat("u_Frames_Vert", 2.0f);
 		characterShader->SetFloat("u_Weapon", 0.0f);
   		characterHandTexture->Bind();
