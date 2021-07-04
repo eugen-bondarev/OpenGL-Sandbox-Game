@@ -61,47 +61,38 @@ void CharacterRenderer::Render() {
 		characterTransform = Math::Translate(characterTransform, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
 		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
 		Mat4 bodyTransform = characterTransform;
+
     characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
-
-		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->walkingAnimation.time), 0.0f)));
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->walkingAnimation->time), 0.0f)));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 1.0f)));
-
 		characterShader->SetFloat("u_Direction", static_cast<float>(character->animator->GetDirection()));
 		characterShader->SetFloat("u_Weapon", 0.0f);
-
+		
 		characterBodyTexture->Bind();
-			Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+		Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 
+		Ref<Animation::Clip>& animation = character->animator->GetCurrentAnimation();
 
 		if (character->player->GetCurrentItem().first) {
 			const Icon& icon = character->player->GetCurrentItem();
-
-			float selectedAnimation = character->animator->state == 1 ? character->animator->attackingAnimation.time : character->animator->walkingAnimation.time;
-			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
-
-			Animation& animation = character->animator->state == 1 ? character->animator->attackingAnimation : character->animator->walkingAnimation;
-
-			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->attackingAnimation.time : character->animator->walkingAnimation.time)) % animation.keyFrames.size();
-
-			animation.keyFrames[anim].ApplyTo(characterTransform);
-			
+			animation->ApplyTo(characterTransform);
 			characterTransform = Math::Scale(characterTransform, Vec3(icon.first->GetTileSize() / HUMANOID_SIZE * 2.0f, 1));
 
 			characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
+			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(animation->time), character->animator->GetState())));
 			characterShader->SetFloat("u_Weapon", 1.0f);
 			characterShader->SetVec2("u_Frame", Math::ToPtr(icon.second));
 			characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(icon.first->GetAmountOfTiles()));
+
 			icon.first->Bind();
-				Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+			Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 		}
 
     characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
-
-		float selectedAnimation = character->animator->state == 1 ? character->animator->attackingAnimation.time : character->animator->walkingAnimation.time;
-		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(animation->time), character->animator->GetState())));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
 		characterHandTexture->Bind();
-			Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+		Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
   }
 }

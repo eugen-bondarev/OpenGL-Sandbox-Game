@@ -1,22 +1,10 @@
 #pragma once
 
 #include "Component.h"
-			
-struct KeyFrame {
-  KeyFrame(Vec2 pos, float rot) : pos { pos }, rot { rot } { }
-  Vec2 pos  { 0, 0 };
-  float rot { 0 };
 
-  void ApplyTo(Mat4& transform) const {    
-    transform = Math::Translate(transform, Vec3(pos, 0.0f));
-    transform = Math::Rotate(transform, Math::Radians(rot), Vec3(0, 0, 1));
-  }
-};
-
-struct Animation {
-  std::vector<KeyFrame> keyFrames;
-  float time { 0 };
-};
+#include "Animation/Animation.h"
+#include "Animation/Humanoid/Walking.h"
+#include "Animation/Humanoid/Attacking.h"
 
 class Entity;
 
@@ -27,16 +15,16 @@ public:
   void SetDirection(int direction);
   int GetDirection() const;
 
-  float GetCurrentAnimationFrame() const;
+  Animation::Clip* walkingAnimation;
+  Animation::Clip* attackingAnimation;
 
-  Animation walkingAnimation;
-  Animation attackingAnimation;
+  std::vector<Ref<Animation::Clip>> animations;
+  Ref<Animation::Clip>& GetCurrentAnimation();
 
-  int state { 0 };
+  float GetState() const;
+  void SetState(float newState);
 
 private:
-  float frame { 0 };
+  float state { 0 };
   int direction { 1 };
-
-  float attackFrame { 0 };
 };
