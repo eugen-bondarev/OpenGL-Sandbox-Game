@@ -8,7 +8,7 @@
 #include "Core/Window.h"
 
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera) : characters { characters }, camera { camera } {
-	const ImageAsset characterBodyTextureAsset("Assets/Images/Characters/Char_NoHand2.png");
+	const ImageAsset characterBodyTextureAsset("Assets/Images/Characters/Humanoid_Body.png");
 	characterBodyTexture = CreateRef<Werwel::Texture>(
 		characterBodyTextureAsset.GetSize(),
 		characterBodyTextureAsset.GetData(),
@@ -19,7 +19,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 
-	const ImageAsset characterHandTextureAsset("Assets/Images/Characters/Hand2.png");
+	const ImageAsset characterHandTextureAsset("Assets/Images/Characters/Humanoid_Hand.png");
 	characterHandTexture = CreateRef<Werwel::Texture>(
 		characterHandTextureAsset.GetSize(),
 		characterHandTextureAsset.GetData(),
@@ -30,7 +30,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
 	);
 
-	const auto& vertices = Primitives::Char::Vertices(32 * 2.0f, 48 * 2.0f);
+	const auto& vertices = Primitives::Char::Vertices(HUMANOID_SIZE.x, HUMANOID_SIZE.y);
 	const auto& indices = Primitives::Char::indices;
 
 	characterVAO = CreateRef<Werwel::VAO>();
@@ -42,7 +42,9 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 	TextAsset fsCode("Assets/Shaders/Characters/Default.fs");
 	characterShader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View", "u_Model", "u_Frame", "u_AmountOfFrames", "u_Direction", "u_Weapon"
+		"u_Proj", "u_View", "u_Model", 
+		"u_Frame", "u_AmountOfFrames", 
+		"u_Direction", "u_Weapon"
 	);
 	
 	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
@@ -103,8 +105,7 @@ void CharacterRenderer::Render() {
 
 			animation.keyFrames[anim].ApplyTo(characterTransform);
 			
-			Vec2 size = icon.first->GetSize() * 2.0f / icon.first->GetAmountOfTiles();
-			characterTransform = Math::Scale(characterTransform, Vec3(size / Vec2(32 * 2.0f, 48 * 2.0f), 1));
+			characterTransform = Math::Scale(characterTransform, Vec3(icon.first->GetTileSize() / HUMANOID_SIZE * 2.0f, 1));
 
 			characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 			characterShader->SetFloat("u_Weapon", 1.0f);

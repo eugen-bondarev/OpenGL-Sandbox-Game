@@ -16,6 +16,10 @@ public:
     return amountOfTiles;
   }
 
+  inline Vec2 GetTileSize() const {
+    return size / amountOfTiles;
+  }
+
 private:
   Vec2 amountOfTiles;
 };

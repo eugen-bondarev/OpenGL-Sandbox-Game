@@ -19,7 +19,7 @@ uniform float   u_Direction;
 uniform BOOLEAN u_Weapon;
 
 void main() {
-  vec2 correction = vec2(16, 0);
+  vec2 correction = vec2(24, 0);
 
   if (!IS_TRUE(u_Weapon)) {
     correction.y = (u_AmountOfFrames.y - u_Frame.y - 1) * -32.0;
