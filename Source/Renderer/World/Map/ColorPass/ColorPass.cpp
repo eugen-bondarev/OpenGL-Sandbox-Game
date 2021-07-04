@@ -10,7 +10,7 @@
 #include "Werwel/GraphicsContext.h"
 
 ColorPass::ColorPass(int amountOfBlocks) {
-  fbo = CreateRef<ColorFBO>(Window::GetSize());
+  	fbo = CreateRef<ColorFBO>(Window::GetSize());
 
 	TextAsset vsCode("Assets/Shaders/Terrain/ColorPassShader.vs");
 	TextAsset fsCode("Assets/Shaders/Terrain/ColorPassShader.fs");
@@ -30,10 +30,10 @@ ColorPass::ColorPass(int amountOfBlocks) {
 			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
 		}
 	));
-  tileMap->Add(BlockType::Dirt, Vec2(1, 1));
-  tileMap->Add(BlockType::Grass, Vec2(1, 7));
-  tileMap->Add(BlockType::Stone, Vec2(7, 1));
-  tileMap->Add(BlockType::Wood, Vec2(13, 1));
+	tileMap->Add(BlockType::Dirt, Vec2(1, 1));
+	tileMap->Add(BlockType::Grass, Vec2(1, 7));
+	tileMap->Add(BlockType::Stone, Vec2(7, 1));
+	tileMap->Add(BlockType::Wood, Vec2(13, 1));
 
 	const auto& vers = Primitives::Block::Vertices(16, 16);
 	const auto& inds = Primitives::Block::indices;
@@ -67,6 +67,10 @@ ColorPass::ColorPass(int amountOfBlocks) {
 				{ 4, sizeof(BlockData), 0, 1 }
 			}
 		);
+
+	Window::callbacks.push_back([&]() {
+		fbo->Resize(Window::GetSize());
+	});
 }
 
 void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>>& additionalRenderers) {

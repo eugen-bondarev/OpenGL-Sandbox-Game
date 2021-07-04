@@ -7,10 +7,12 @@
 
 #include "Werwel/GraphicsContext.h"
 
-Engine::Engine() {
+Engine::Engine()
+{
 	Window::Create({
 		{ 1920, 1080 },
-		Window::Mode::Borderless
+		Window::Mode::Borderless,
+		true
 	});
 
 	Gui::Create();
@@ -20,11 +22,13 @@ Engine::Engine() {
 	mainMenu = CreateRef<MainMenu>(game);
 }
 
-bool Engine::IsRunning() const {
+bool Engine::IsRunning() const
+{
 	return !Window::ShouldClose();
 }
 
-void Engine::BeginFrame() {
+void Engine::BeginFrame()
+{
 	Window::BeginFrame();
 	Gui::BeginFrame();
 	Time::BeginFrame();
@@ -33,15 +37,20 @@ void Engine::BeginFrame() {
 	Linow::Clear();
 }
 
-void Engine::Run() {
-	if (resetGame) {
+void Engine::Run()
+{
+	if (resetGame)
+	{
 		game.reset();
 		resetGame = false;
 	}
 
-	if (game) {
+	if (game)
+	{
 		game->Play(resetGame);
-	} else {
+	}
+	else
+	{
 		Werwel::GraphicsContext::Clear();
 		mainMenu->Show();
 	}
@@ -50,19 +59,21 @@ void Engine::Run() {
 	ImGui::SetNextWindowSize(ImVec2(140, 120));
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
-		ImGui::Text(("FPS: " + std::to_string(Time::GetFps())).c_str());
+	ImGui::Text(("FPS: " + std::to_string(Time::GetFps())).c_str());
 	ImGui::End();
 #endif
 }
 
-void Engine::EndFrame() {
+void Engine::EndFrame()
+{
 	Input::EndFrame();
 	Time::EndFrame();
 	Gui::EndFrame();
 	Window::EndFrame();
 }
 
-Engine::~Engine() {
+Engine::~Engine()
+{
 	Gui::Destroy();
 	Window::Destroy();
 	Window::Shutdown();
