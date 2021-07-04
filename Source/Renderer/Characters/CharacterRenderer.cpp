@@ -63,7 +63,7 @@ void CharacterRenderer::Render() {
 		Mat4 bodyTransform = characterTransform;
     characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
 
-		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->animation0.time), 0.0f)));
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->walkingAnimation.time), 0.0f)));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 1.0f)));
 
 		characterShader->SetFloat("u_Direction", static_cast<float>(character->animator->GetDirection()));
@@ -76,12 +76,12 @@ void CharacterRenderer::Render() {
 		if (character->player->GetCurrentItem().first) {
 			const Icon& icon = character->player->GetCurrentItem();
 
-			float selectedAnimation = character->animator->state == 1 ? character->animator->animation1.time : character->animator->animation0.time;
+			float selectedAnimation = character->animator->state == 1 ? character->animator->attackingAnimation.time : character->animator->walkingAnimation.time;
 			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
 
-			Animation& animation = character->animator->state == 1 ? character->animator->animation1 : character->animator->animation0;
+			Animation& animation = character->animator->state == 1 ? character->animator->attackingAnimation : character->animator->walkingAnimation;
 
-			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->animation1.time : character->animator->animation0.time)) % animation.keyFrames.size();
+			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->attackingAnimation.time : character->animator->walkingAnimation.time)) % animation.keyFrames.size();
 
 			animation.keyFrames[anim].ApplyTo(characterTransform);
 			
@@ -97,7 +97,7 @@ void CharacterRenderer::Render() {
 
     characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
 
-		float selectedAnimation = character->animator->state == 1 ? character->animator->animation1.time : character->animator->animation0.time;
+		float selectedAnimation = character->animator->state == 1 ? character->animator->attackingAnimation.time : character->animator->walkingAnimation.time;
 		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
