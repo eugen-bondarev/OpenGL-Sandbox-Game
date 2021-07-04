@@ -24,13 +24,18 @@ class Animator : public Component {
 public:
   Animator(Entity* entity);
 
-  void SetFrame(float frame);
-  void SetAttackFrame(float frame);
+  // void SetFrame(float frame);
+  // void SetAttackFrame(float frame);
   void SetDirection(int direction);
 
-  float GetFrame() const;
-  float GetAttackFrame() const;
+  // float GetFrame() const;
+  // float GetAttackFrame() const;
   int GetDirection() const;
+
+  float GetCurrentAnimationFrame() const;
+
+  Animation animation0;
+  Animation animation1;
 
   int state { 0 };
 

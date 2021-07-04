@@ -7,13 +7,14 @@
 
 #include "Core/Window.h"
 
+#include "Werwel/GraphicsContext.h"
+
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera) : characters { characters }, camera { camera } {
 	const ImageAsset characterBodyTextureAsset("Assets/Images/Characters/Humanoid_Body.png");
 	characterBodyTexture = CreateRef<Werwel::Texture>(
 		characterBodyTextureAsset.GetSize(),
 		characterBodyTextureAsset.GetData(),
-		GL_RGBA,
-		GL_RGBA,
+		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
@@ -23,8 +24,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 	characterHandTexture = CreateRef<Werwel::Texture>(
 		characterHandTextureAsset.GetSize(),
 		characterHandTextureAsset.GetData(),
-		GL_RGBA,
-		GL_RGBA,
+		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
 		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
@@ -46,29 +46,6 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		"u_Frame", "u_AmountOfFrames", 
 		"u_Direction", "u_Weapon"
 	);
-	
-	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 8, 18 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 8, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 8, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 4, 18 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 4, 18 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 4, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 4, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
-	animation0.keyFrames.emplace_back(Vec2 { 6, 16 }, 0);
-
-	animation1.keyFrames.emplace_back(Vec2 { 24, 36 },  30);
-	animation1.keyFrames.emplace_back(Vec2 { 26, 34 },  15);
-	animation1.keyFrames.emplace_back(Vec2 { 28, 32 },  0);
-	animation1.keyFrames.emplace_back(Vec2 { 30, 30 }, -25);
-	animation1.keyFrames.emplace_back(Vec2 { 28, 28 }, -45);
-	animation1.keyFrames.emplace_back(Vec2 { 26, 26 }, -60);
-	animation1.keyFrames.emplace_back(Vec2 { 24, 24 }, -75);
 }
 
 void CharacterRenderer::Render() {  
@@ -83,25 +60,28 @@ void CharacterRenderer::Render() {
 		Mat4 characterTransform = character->GetTransform();
 		characterTransform = Math::Translate(characterTransform, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
 		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
-    characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
+		Mat4 bodyTransform = characterTransform;
+    characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
 
-		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->GetFrame()), 0)));
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->animation0.time), 0.0f)));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 1.0f)));
+
 		characterShader->SetFloat("u_Direction", static_cast<float>(character->animator->GetDirection()));
 		characterShader->SetFloat("u_Weapon", 0.0f);
-  		characterBodyTexture->Bind();
-				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+
+		characterBodyTexture->Bind();
+			Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 
 
 		if (character->player->GetCurrentItem().first) {
 			const Icon& icon = character->player->GetCurrentItem();
 
-			float selectedAnimation = character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame();
+			float selectedAnimation = character->animator->state == 1 ? character->animator->animation1.time : character->animator->animation0.time;
 			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
 
-			Animation& animation = character->animator->state == 1 ? animation1 : animation0;
+			Animation& animation = character->animator->state == 1 ? character->animator->animation1 : character->animator->animation0;
 
-			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame())) % animation.keyFrames.size();
+			int anim = static_cast<int>(truncf(character->animator->state == 1 ? character->animator->animation1.time : character->animator->animation0.time)) % animation.keyFrames.size();
 
 			animation.keyFrames[anim].ApplyTo(characterTransform);
 			
@@ -112,19 +92,16 @@ void CharacterRenderer::Render() {
 			characterShader->SetVec2("u_Frame", Math::ToPtr(icon.second));
 			characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(icon.first->GetAmountOfTiles()));
 			icon.first->Bind();
-				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);			
+				Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 		}
 
-		characterTransform = character->GetTransform();
-		characterTransform = Math::Translate(characterTransform, Vec3(character->animator->GetDirection() * -24.0f, 0, 0));
-		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
-    characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
+    characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
 
-		float selectedAnimation = character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame();
+		float selectedAnimation = character->animator->state == 1 ? character->animator->animation1.time : character->animator->animation0.time;
 		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
-  		characterHandTexture->Bind();
-				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+		characterHandTexture->Bind();
+			Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
   }
 }

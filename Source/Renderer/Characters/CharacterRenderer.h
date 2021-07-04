@@ -17,8 +17,6 @@ public:
   inline static const Vec2 HUMANOID_SIZE = Vec2(64.0f, 96.0f);
 
 private:
-  Animation animation0;
-  Animation animation1;
 
   const std::vector<Ref<Character>>& characters;
   const Ref<Camera>& camera;
