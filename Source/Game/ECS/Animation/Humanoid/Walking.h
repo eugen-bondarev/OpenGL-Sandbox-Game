@@ -5,7 +5,8 @@
 namespace Animation {
 namespace Humanoid {
 
-struct Walking : public Clip {
+class Walking : public Clip {
+public:
   Walking() {
 	  keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
 	  keyFrames.emplace_back(Vec2 { 6, 18 }, 0);

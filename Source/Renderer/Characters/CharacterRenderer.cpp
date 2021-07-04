@@ -63,7 +63,7 @@ void CharacterRenderer::Render() {
 		Mat4 bodyTransform = characterTransform;
 
     characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
-		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->walkingAnimation->time), 0.0f)));
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->walkingAnimation->GetTime()), 0.0f)));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 1.0f)));
 		characterShader->SetFloat("u_Direction", static_cast<float>(character->animator->GetDirection()));
 		characterShader->SetFloat("u_Weapon", 0.0f);
@@ -79,7 +79,7 @@ void CharacterRenderer::Render() {
 			characterTransform = Math::Scale(characterTransform, Vec3(icon.first->GetTileSize() / HUMANOID_SIZE * 2.0f, 1));
 
 			characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
-			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(animation->time), character->animator->GetState())));
+			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(animation->GetTime()), character->animator->GetState())));
 			characterShader->SetFloat("u_Weapon", 1.0f);
 			characterShader->SetVec2("u_Frame", Math::ToPtr(icon.second));
 			characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(icon.first->GetAmountOfTiles()));
@@ -89,7 +89,7 @@ void CharacterRenderer::Render() {
 		}
 
     characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
-		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(animation->time), character->animator->GetState())));
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(animation->GetTime()), character->animator->GetState())));
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
 		characterHandTexture->Bind();

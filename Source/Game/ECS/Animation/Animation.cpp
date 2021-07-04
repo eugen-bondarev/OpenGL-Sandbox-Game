@@ -14,4 +14,12 @@ bool Clip::InUse(float state) const {
   return true; 
 }
 
+float Clip::GetTime() const {
+  return time;
+}
+
+void Clip::SetTime(float time) {
+  this->time = time;
+}
+
 }

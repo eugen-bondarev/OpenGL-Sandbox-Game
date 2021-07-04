@@ -5,7 +5,8 @@
 namespace Animation {
 namespace Humanoid {
 
-struct Attacking : public Clip {
+class Attacking : public Clip {
+public:
   Attacking() {
     keyFrames.emplace_back(Vec2 { 24, 36 },  30);
     keyFrames.emplace_back(Vec2 { 26, 34 },  15);
