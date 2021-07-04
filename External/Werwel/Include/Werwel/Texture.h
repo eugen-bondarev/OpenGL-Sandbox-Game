@@ -1,8 +1,6 @@
 #pragma once
 
-#include "GpuEntity.h"
-
-#include <functional>
+#include "gpu_entity.h"
 
 namespace Werwel {
 
@@ -12,28 +10,26 @@ enum class Interpolation
 	Constant
 };
 
-class Texture : public GpuEntity {
+class Texture : public GPUEntity {
 public:
 	using Pixels_t = const unsigned char*;
 
 	using Parameter_t = std::function<void()>;
 	using Parameters_t = std::vector<Parameter_t>;
 
-	static Parameter_t SetInterpolation(Interpolation interpolation);
-
 	Texture(Size size, Pixels_t data, GLint internalFormat, GLuint format, GLuint type, Parameters_t params = {});
 	~Texture() override;
 
-	Size GetSize() const;
+	static Parameter_t SetInterpolation(Interpolation interpolation);
 
 	void Resize(Size size);
-
-	void SetParamFV(GLuint name, GLfloat *params);
 
 	void Bind() const override;
 	void Bind(GLuint unit) const;
 	void Unbind() const override;
 	void Unbind(GLuint unit) const;
+
+	Size GetSize() const;
 	
 protected:
 	Size size;

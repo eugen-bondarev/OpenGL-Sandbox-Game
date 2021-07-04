@@ -15,7 +15,7 @@ WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera)
 	const auto& inds = Primitives::Block::indices;
 
 	pipeline.barkVAO = CreateRef<Werwel::VAO>();
-	pipeline.barkVAO->BindSafely();
+	pipeline.barkVAO->Bind();
 		pipeline.barkVAO->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
 		pipeline.barkVAO->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);		
 		pipeline.vbo = pipeline.barkVAO->AddVBO(

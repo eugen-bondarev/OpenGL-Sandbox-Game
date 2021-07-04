@@ -1,12 +1,12 @@
 #pragma once
 
-#include "GpuEntity.h"
-#include "VertexBufferLayout.h"
-#include "VBO.h"
+#include "gpu_entity.h"
+#include "vertex_buffer_layout.h"
+#include "vbo.h"
 
 namespace Werwel {
 
-class VAO : public GpuEntity {
+class VAO : public GPUEntity {
 public:
 	inline VAO() {
 		glGenVertexArrays(1, &handle);
@@ -25,12 +25,6 @@ public:
 
 		for (const auto& attribute : attributes) {
 			glEnableVertexAttribArray(attribute);
-		}
-	}
-
-	inline void BindSafely() const {
-		if (!IsBound()) {
-			Bind();
 		}
 	}
 
@@ -79,11 +73,6 @@ public:
 
 	inline const Mem::Ref<VBO>& GetIndexBuffer() const {
 		return indexBuffer;
-	}
-
-	inline static VAO const* boundVAO { nullptr };
-	inline bool IsBound() const {
-		return this == boundVAO;
 	}
 
 private:

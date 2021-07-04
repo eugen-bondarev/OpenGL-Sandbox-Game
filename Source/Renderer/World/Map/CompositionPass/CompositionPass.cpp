@@ -21,7 +21,7 @@ CompositionPass::CompositionPass() {
   const auto& inds = Primitives::Block::indices;
 
   canvas = CreateRef<Werwel::VAO>();
-  canvas->BindSafely();
+  canvas->Bind();
   canvas->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
   canvas->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 }

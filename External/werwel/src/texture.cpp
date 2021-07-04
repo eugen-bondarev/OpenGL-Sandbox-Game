@@ -16,6 +16,12 @@ Texture::Texture(Size size, Pixels_t data, GLint internalFormat, GLuint format, 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+Texture::~Texture()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &handle);
+}
+
 Size Texture::GetSize() const
 {
 	return size;
@@ -25,19 +31,6 @@ void Texture::Resize(Size size)
 {
 	this->size = size;
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, nullptr);
-}
-
-Texture::~Texture()
-{
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDeleteTextures(1, &handle);
-}
-
-void Texture::SetParamFV(GLuint name, GLfloat *params)
-{
-	glBindTexture(GL_TEXTURE_2D, handle);
-	glTexParameterfv(GL_TEXTURE_2D, name, params);
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::Bind() const

@@ -1,6 +1,6 @@
 #include "Window.h"
 
-#include "Werwel/GraphicsContext.h"
+#include "Werwel/werwel.h"
 
 #include "Input/Input.h"
 #include "Gui.h"

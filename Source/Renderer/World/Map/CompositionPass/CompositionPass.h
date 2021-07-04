@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Werwel/Shader.h"
-#include "Werwel/VAO.h"
-#include "Werwel/GraphicsContext.h"
+#include "Werwel/werwel.h"
 
 #include "Assets/TextAsset.h"
 #include "../ColorPass/ColorPass.h"

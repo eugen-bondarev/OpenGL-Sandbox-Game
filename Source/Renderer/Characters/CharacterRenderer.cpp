@@ -7,7 +7,7 @@
 
 #include "Core/Window.h"
 
-#include "Werwel/GraphicsContext.h"
+#include "Werwel/werwel.h"
 
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera) : characters { characters }, camera { camera } {
 	const ImageAsset characterBodyTextureAsset("Assets/Images/Characters/Humanoid_Body.png");

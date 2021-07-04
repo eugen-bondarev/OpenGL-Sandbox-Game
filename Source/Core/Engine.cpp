@@ -5,7 +5,7 @@
 #include "Core/Time.h"
 #include "Core/Gui.h"
 
-#include "Werwel/GraphicsContext.h"
+#include "Werwel/werwel.h"
 
 Engine::Engine()
 {

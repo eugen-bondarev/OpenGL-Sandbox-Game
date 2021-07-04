@@ -1,21 +1,18 @@
 #pragma once
 
-#include "Texture.h"
+#include "texture.h"
 
 #include <GL/glew.h>
 
-#include "GpuEntity.h"
+#include "gpu_entity.h"
 
 namespace Werwel {
 
-class FBO : public GpuEntity {
+class FBO : public GPUEntity
+{
 public:
 	FBO(Size size, GLbitfield buffersToClear, std::vector<GLuint> drawBuffers = {});
 	virtual ~FBO();
-
-	inline static void UnbindStatic() {
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
 
 	void Bind() const override;
 	void Unbind() const override;
@@ -24,7 +21,8 @@ public:
 	virtual void Resize(Size size);
 
 	template <int size>
-	std::array<unsigned char, size> GetPixel(GLenum attachment, Pos pos) const {
+	std::array<unsigned char, size> GetPixel(GLenum attachment, Pos pos) const
+	{
 		std::array<unsigned char, size> pixel;
 
 		glReadBuffer(attachment);
@@ -45,10 +43,10 @@ protected:
 
 private:
 	std::vector<GLuint> drawBuffers;
-	GLuint buffersToClear{GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT};
-	
-	FBO(const FBO&) = delete;
-	FBO operator=(const FBO&) = delete;
+	GLuint buffersToClear { GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT };
+
+	FBO(const FBO &) = delete;
+	FBO operator=(const FBO &) = delete;
 };
 
 }

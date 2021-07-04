@@ -39,21 +39,21 @@ target_precompile_headers(${PROJ_APP_NAME} PUBLIC ${PROJ_SRC_DIR_NAME}/Pch/Pch.h
 
 add_subdirectory(External/glfw)
 add_subdirectory(External/boxer)
-add_subdirectory(External/Werwel)
+add_subdirectory(External/werwel)
 add_subdirectory(External/glew/build/cmake)
 
 target_include_directories(${PROJ_APP_NAME} PUBLIC 
 	External/glfw/include 
 	External/boxer/include 
-	External/Werwel/Include 
+	External/werwel/Include 
 	${GLM_INCLUDE_DIR}
 	${GLEW_INCLUDE_DIR} 
 	${CMAKE_SOURCE_DIR}/Source
 	${PROJ_SRC_DIR_NAME}/External
 )
 
-target_link_libraries(Werwel glew_s ole32 oleaut32 imm32)
-target_link_libraries(${PROJ_APP_NAME} glfw glew_s Boxer Werwel)
+target_link_libraries(werwel glew_s ole32 oleaut32 imm32)
+target_link_libraries(${PROJ_APP_NAME} glfw glew_s Boxer werwel)
 
-target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
-target_include_directories(Werwel PUBLIC ${GLM_INCLUDE_DIR})
+target_include_directories(werwel PUBLIC ${GLEW_INCLUDE_DIR})
+target_include_directories(werwel PUBLIC ${GLM_INCLUDE_DIR})

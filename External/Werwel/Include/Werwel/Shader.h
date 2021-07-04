@@ -1,12 +1,12 @@
 #pragma once
 
-#include "GpuEntity.h"
+#include "gpu_entity.h"
 
 #include <GL/glew.h>
 
 namespace Werwel {
 
-class Shader : public GpuEntity {
+class Shader : public GPUEntity {
 public:
 	template <typename... Args>
 	Shader(const std::string& vsCode, const std::string& fsCode, Args&&... args) {

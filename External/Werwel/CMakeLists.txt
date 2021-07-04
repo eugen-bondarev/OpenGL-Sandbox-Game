@@ -1,27 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	set(CMAKE_CXX_FLAGS             "${CMAKE_CXX_FLAGS} -std=c++17")
-	set(CMAKE_CXX_COMPILER_FORCED TRUE)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS             "${CMAKE_CXX_FLAGS} -std=c++17")
-	set(CMAKE_CXX_COMPILER_FORCED TRUE)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-	set(CMAKE_CXX_FLAGS "/std:c++17 /EHsc")
-endif()
+set(CMAKE_CXX_STANDARD 17)
 
-project(Werwel VERSION 0.0.1)
+project(werwel VERSION 0.0.1)
 
 file(GLOB src 
-  Source/*.cpp
-  Source/**/*.cpp
-  Source/**/**/*.cpp
+  src/*.cpp
+  src/**/*.cpp
+  src/**/**/*.cpp
 )
 
-add_library(Werwel STATIC ${src})
+add_library(werwel STATIC ${src})
 
-target_precompile_headers(Werwel PUBLIC include/Werwel/Common.h)
+target_precompile_headers(werwel PUBLIC include/werwel/pch.h)
 
-target_include_directories(Werwel PUBLIC include/Werwel)
-target_include_directories(Werwel PUBLIC ${GLEW_INCLUDE_DIR})
-target_include_directories(Werwel PUBLIC ${GLM_INCLUDE_DIR})
+target_include_directories(werwel PUBLIC include/werwel)
+target_include_directories(werwel PUBLIC ${GLEW_INCLUDE_DIR})
+target_include_directories(werwel PUBLIC ${GLM_INCLUDE_DIR})

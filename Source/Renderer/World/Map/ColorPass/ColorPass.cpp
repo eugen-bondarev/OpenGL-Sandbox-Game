@@ -7,9 +7,10 @@
 
 #include "Maths/Primitive.h"
 
-#include "Werwel/GraphicsContext.h"
+#include "Werwel/werwel.h"
 
-ColorPass::ColorPass(int amountOfBlocks) {
+ColorPass::ColorPass(int amountOfBlocks) 
+{
   	fbo = CreateRef<ColorFBO>(Window::GetSize());
 
 	TextAsset vsCode("Assets/Shaders/Terrain/ColorPassShader.vs");
@@ -39,7 +40,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 	const auto& inds = Primitives::Block::indices;
 
 	blocks.vao = CreateRef<Werwel::VAO>();
-	blocks.vao->BindSafely();
+	blocks.vao->Bind();
 		blocks.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
 		blocks.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);		
 		blocks.vbo = blocks.vao->AddVBO(
@@ -54,7 +55,7 @@ ColorPass::ColorPass(int amountOfBlocks) {
 		);
 
 	walls.vao = CreateRef<Werwel::VAO>();
-	walls.vao->BindSafely();
+	walls.vao->Bind();
 		walls.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
 		walls.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);		
 		walls.vbo = walls.vao->AddVBO(
@@ -73,7 +74,8 @@ ColorPass::ColorPass(int amountOfBlocks) {
 	});
 }
 
-void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>>& additionalRenderers) {
+void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>>& additionalRenderers) 
+{
 	NF_PROFILER_SCOPE();
 
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
@@ -88,7 +90,8 @@ void ColorPass::Perform(const Ref<Camera>& camera, int amountOfWalls, int amount
 				walls.vao->GetIndexBuffer()->Bind();
 					glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfWalls);
 
-		for (const auto& renderer : additionalRenderers) {
+		for (const auto& renderer : additionalRenderers) 
+		{
 			renderer->Render();
 		}
 

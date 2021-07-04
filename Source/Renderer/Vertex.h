@@ -2,7 +2,7 @@
 
 #include "Maths/Maths.h"
 
-#include "Werwel/VertexBufferLayout.h"
+#include "Werwel/werwel.h"
 
 struct Vertex2D {
 	Vec2 position;

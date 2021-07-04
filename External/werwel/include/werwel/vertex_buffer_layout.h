@@ -4,7 +4,8 @@
 
 namespace Werwel {
 
-struct VertexBufferLayout {
+struct VertexBufferLayout 
+{
 	size_t size   { 0 };
 	size_t stride { 0 };
 	size_t offset { 0 };
