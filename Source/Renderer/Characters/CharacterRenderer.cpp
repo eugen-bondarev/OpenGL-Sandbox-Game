@@ -42,7 +42,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 	TextAsset fsCode("Assets/Shaders/Characters/Default.fs");
 	characterShader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View", "u_Model", "u_Frame", "u_Frame1", "u_Frames_Vert", "u_Frames_Hor", "u_Direction", "u_Weapon"
+		"u_Proj", "u_View", "u_Model", "u_Frame", "u_AmountOfFrames", "u_Direction", "u_Weapon"
 	);
 	
 	animation0.keyFrames.emplace_back(Vec2 { 6, 18 }, 0);
@@ -83,24 +83,19 @@ void CharacterRenderer::Render() {
 		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
     characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 
-		characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
-		characterShader->SetFloat("u_Frame1", 0);
-		characterShader->SetFloat("u_Frames_Hor", 14.0f);
-		characterShader->SetFloat("u_Frames_Vert", 1.0f);
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(character->animator->GetFrame()), 0)));
+		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 1.0f)));
 		characterShader->SetFloat("u_Direction", static_cast<float>(character->animator->GetDirection()));
 		characterShader->SetFloat("u_Weapon", 0.0f);
   		characterBodyTexture->Bind();
 				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 
+
 		if (character->player->GetCurrentItem().first) {
-			if (character->animator->state == 1) {
-				characterShader->SetFloat("u_Frame", truncf(character->animator->GetAttackFrame()));
-			} else {
-				characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
-			}
-			
-			characterShader->SetFloat("u_Frame1", character->animator->state);
-			characterShader->SetFloat("u_Frames_Vert", 2.0f);
+			const Icon& icon = character->player->GetCurrentItem();
+
+			float selectedAnimation = character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame();
+			characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
 
 			Animation& animation = character->animator->state == 1 ? animation1 : animation0;
 
@@ -108,18 +103,15 @@ void CharacterRenderer::Render() {
 
 			animation.keyFrames[anim].ApplyTo(characterTransform);
 			
-			Vec2 size = character->player->GetCurrentItem().first->GetSize() * 2.0f / character->player->GetCurrentItem().first->GetAmountOfTiles();
+			Vec2 size = icon.first->GetSize() * 2.0f / icon.first->GetAmountOfTiles();
 			characterTransform = Math::Scale(characterTransform, Vec3(size / Vec2(32 * 2.0f, 48 * 2.0f), 1));
 
 			characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 			characterShader->SetFloat("u_Weapon", 1.0f);
-			characterShader->SetFloat("u_Frame", character->player->GetCurrentItem().second.x);
-			characterShader->SetFloat("u_Frame1", character->player->GetCurrentItem().second.y);
-			characterShader->SetFloat("u_Frames_Hor", character->player->GetCurrentItem().first->GetAmountOfTiles().x);
-			characterShader->SetFloat("u_Frames_Vert", character->player->GetCurrentItem().first->GetAmountOfTiles().y);
-
-				character->player->GetCurrentItem().first->Bind();
-					glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);			
+			characterShader->SetVec2("u_Frame", Math::ToPtr(icon.second));
+			characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(icon.first->GetAmountOfTiles()));
+			icon.first->Bind();
+				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);			
 		}
 
 		characterTransform = character->GetTransform();
@@ -127,15 +119,9 @@ void CharacterRenderer::Render() {
 		characterTransform = Math::Scale(characterTransform, Vec3(character->animator->GetDirection(), 1, 1));
     characterShader->SetMat4x4("u_Model", Math::ToPtr(characterTransform));
 
-		if (character->animator->state == 1) {
-			characterShader->SetFloat("u_Frame", truncf(character->animator->GetAttackFrame()));
-		} else {
-			characterShader->SetFloat("u_Frame", truncf(character->animator->GetFrame()));
-		}
-
-		characterShader->SetFloat("u_Frame1", character->animator->state);
-		characterShader->SetFloat("u_Frames_Hor", 14.0f);
-		characterShader->SetFloat("u_Frames_Vert", 2.0f);
+		float selectedAnimation = character->animator->state == 1 ? character->animator->GetAttackFrame() : character->animator->GetFrame();
+		characterShader->SetVec2("u_Frame", Math::ToPtr(Vec2(truncf(selectedAnimation), character->animator->state)));
+		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
   		characterHandTexture->Bind();
 				glDrawElements(GL_TRIANGLES, characterVAO->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
