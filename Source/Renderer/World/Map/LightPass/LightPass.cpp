@@ -40,10 +40,9 @@ LightPass::LightPass() {
     GL_RGBA,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER,          GL_LINEAR },
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER,          GL_LINEAR },
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int,     GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER },
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int,     GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER }
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Linear)
+		}
   );
 
   /**

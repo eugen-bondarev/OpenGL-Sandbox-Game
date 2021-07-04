@@ -16,8 +16,9 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		characterBodyTextureAsset.GetData(),
 		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		}
 	);
 
 	const ImageAsset characterHandTextureAsset("Assets/Images/Characters/Humanoid_Hand.png");
@@ -26,8 +27,9 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		characterHandTextureAsset.GetData(),
 		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		}
 	);
 
 	const auto& vertices = Primitives::Char::Vertices(HUMANOID_SIZE.x, HUMANOID_SIZE.y);

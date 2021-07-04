@@ -9,8 +9,9 @@ ColorFBO::ColorFBO(Vec2 size) : Werwel::FBO(size, GL_COLOR_BUFFER_BIT, { GL_COLO
     GL_RGBA,
     GL_RGBA,
     GL_UNSIGNED_BYTE,
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-    Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		}
   );
 
   EndInit();

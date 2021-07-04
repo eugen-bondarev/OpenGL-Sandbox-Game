@@ -6,10 +6,10 @@
 #include "Maths/Primitive.h"
 
 WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera) : woods { woods }, camera { camera } {
-  TextAsset vsCode("Assets/Shaders/Woods/VS_Woods.glsl");
-  TextAsset fsCode("Assets/Shaders/Woods/FS_Woods.glsl");
+	TextAsset vsCode("Assets/Shaders/Woods/VS_Woods.glsl");
+	TextAsset fsCode("Assets/Shaders/Woods/FS_Woods.glsl");
 
-  pipeline.shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ProjectionView", "u_Model");
+  	pipeline.shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ProjectionView", "u_Model");
 
 	const auto& vers = Primitives::Block::Vertices(16, 16);
 	const auto& inds = Primitives::Block::indices;
@@ -29,31 +29,33 @@ WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera)
 			}
 		);
 
-  std::vector<Vec2> positions;
+  	std::vector<Vec2> positions;
 
-  for (int i = 0; i < woods->GetTrees().size(); i++) {
-    positions.push_back(woods->GetTrees()[i].GetPosition());
-  }
+	for (int i = 0; i < woods->GetTrees().size(); i++) {
+		positions.push_back(woods->GetTrees()[i].GetPosition());
+	}
 
-  pipeline.vbo->Bind();
+  	pipeline.vbo->Bind();
     pipeline.vbo->Store(positions);
 
 	const ImageAsset tileMapTexture("Assets/Images/Bark.png");
 	pipeline.barkTexture = CreateRef<Werwel::Texture>(
 		tileMapTexture.GetSize(),
 		tileMapTexture.GetData(),
-		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		}
 	);
 
 	const ImageAsset leavesTextureAsset("Assets/Images/Leaves_Stroke.png");
 	pipeline.leavesTexture = CreateRef<Werwel::Texture>(
 		leavesTextureAsset.GetSize(),
 		leavesTextureAsset.GetData(),
-		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST }
+		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		}
 	);
 
 	barkModelMatrix = Math::Scale(Mat4(1), Vec3(barkSize / 16.0f, 1.0f));
@@ -61,18 +63,18 @@ WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera)
 	leavesModelMatrix = Math::Translate(Mat4(1), Vec3(8, 16 * 3, 0));
 	leavesModelMatrix = Math::Scale(leavesModelMatrix, Vec3(leavesSize / 16.0f, 1.0f));
 	
-  woods->GetVisibleTrees(visibleTrees, camera);
+  	woods->GetVisibleTrees(visibleTrees, camera);
 }
 
 void WoodsRenderer::Render() {
 	Mat4 projView = Window::GetSpace() * camera->GetTransform();
 
-  visibleTrees.clear();
-  woods->GetVisibleTrees(visibleTrees, camera);
-  pipeline.vbo->Bind();
-    pipeline.vbo->Store(visibleTrees);
+	visibleTrees.clear();
+	woods->GetVisibleTrees(visibleTrees, camera);
+	pipeline.vbo->Bind();
+		pipeline.vbo->Store(visibleTrees);
 
-  pipeline.shader->Bind();
+	pipeline.shader->Bind();
 		pipeline.shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
 		pipeline.shader->SetMat4x4("u_Model", Math::ToPtr(barkModelMatrix));
 			pipeline.barkVAO->Bind();

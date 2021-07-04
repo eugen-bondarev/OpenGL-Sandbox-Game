@@ -14,10 +14,9 @@ Game::Game(int seed) {
 		toolsTileMapTexture.GetSize(),
 		toolsTileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MIN_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_MAG_FILTER, GL_NEAREST },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT },
-		Werwel::Texture::param_t { Werwel::Texture::ParamType::Int, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT }
+		Werwel::Texture::Parameters_t {
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		}
 	));
 	toolsTileMap->Add(ToolType::BronzePickaxe, Vec2(0, 0));
 	toolsTileMap->Add(ToolType::BronzeAxe, Vec2(1, 0));

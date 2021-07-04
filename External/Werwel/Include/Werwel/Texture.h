@@ -2,39 +2,37 @@
 
 #include "GpuEntity.h"
 
+#include <functional>
+
 namespace Werwel {
+
+enum class Interpolation
+{
+	Linear,
+	Constant
+};
 
 class Texture : public GpuEntity {
 public:
-	enum class ParamType {
-		Int = 0,
-		Float
-	};
+	using Pixels_t = const unsigned char*;
 
-	using param_t = std::tuple<ParamType, GLuint, GLfloat>;
-	using pixels_t = const unsigned char*;
+	using Parameter_t = std::function<void()>;
+	using Parameters_t = std::vector<Parameter_t>;
 
-	template <typename... Args>
-	Texture(Size size, pixels_t data, GLint internalFormat, GLuint format, GLuint type, Args... parameters) 
-		: size { size }, internalFormat { internalFormat }, format { format }, type { type } {		
+	static Parameter_t SetInterpolation(Interpolation interpolation);
+
+	Texture(Size size, Pixels_t data, GLint internalFormat, GLuint format, GLuint type, Parameters_t params = {}) 
+		: size { size }, internalFormat { internalFormat }, format { format }, type { type } 
+	{		
 		glGenTextures(1, &handle);
 		glBindTexture(GL_TEXTURE_2D, handle);
 		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, data);
 
-		std::vector<param_t> params { parameters... };
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		for (const auto param : params) {
-			switch (std::get<0>(param)) {
-				case Texture::ParamType::Int: {
-					glTexParameteri(GL_TEXTURE_2D, std::get<1>(param), static_cast<GLint>(std::get<2>(param)));
-					break;
-				}
-
-				case Texture::ParamType::Float: {
-					glTexParameterf(GL_TEXTURE_2D, std::get<1>(param), std::get<2>(param));
-					break;
-				}
-			}
+		for (int i = 0; i < params.size(); i++) {
+			params[i]();
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
