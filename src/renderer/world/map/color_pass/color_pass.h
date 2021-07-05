@@ -2,7 +2,7 @@
 
 #include "color_fbo.h"
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 #include "game/entities/camera.h"
 

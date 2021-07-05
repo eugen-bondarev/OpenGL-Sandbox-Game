@@ -4,7 +4,7 @@
 #include "game/entities/camera.h"
 #include "renderer/renderer.h"
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 class WoodsRenderer : public IRenderer
 {

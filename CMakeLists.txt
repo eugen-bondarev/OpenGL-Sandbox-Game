@@ -38,7 +38,7 @@ target_precompile_headers(${PROJ_APP_NAME} PUBLIC ${PROJ_SRC_DIR_NAME}/Pch/Pch.h
 add_subdirectory(external/mgcwel)
 
 target_include_directories(${PROJ_APP_NAME} PUBLIC 
-	${CMAKE_SOURCE_DIR}/external/werwel/include 
+	${CMAKE_SOURCE_DIR}/external/mgcwel/include 
 	${CMAKE_SOURCE_DIR}/src
 	${PROJ_SRC_DIR_NAME}/external
 )

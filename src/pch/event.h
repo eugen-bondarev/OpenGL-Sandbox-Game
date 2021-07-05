@@ -1,6 +1,6 @@
 #pragma once
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 #define NF_KEY_PRESSED(KEY) 		::ww::Input::KeyPressed(KEY)
 #define NF_KEY_RELEASED(KEY) 		::ww::Input::KeyReleased(KEY)

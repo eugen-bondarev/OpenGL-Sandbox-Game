@@ -1,6 +1,6 @@
 #pragma once
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 class LightFBO : public ww::FBO
 {

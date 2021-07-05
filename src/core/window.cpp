@@ -1,6 +1,6 @@
 // #include "window.h"
 
-// #include "werwel/werwel.h"
+// #include "mgcwel/werwel.h"
 
 // #include "input/input.h"
 // #include "gui.h"

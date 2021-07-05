@@ -7,7 +7,7 @@
 
 #include "core/window.h"
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>> &characters, const Ref<Camera> &camera) : characters{characters}, camera{camera}
 {

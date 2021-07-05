@@ -1,6 +1,6 @@
 #pragma once
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 #include "game/entities/character.h"
 #include "game/entities/camera.h"

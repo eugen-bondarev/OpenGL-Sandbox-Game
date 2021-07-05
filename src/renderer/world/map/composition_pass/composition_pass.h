@@ -1,6 +1,6 @@
 #pragma once
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 #include "assets/text_asset.h"
 #include "../color_pass/color_pass.h"

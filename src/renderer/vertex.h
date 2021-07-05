@@ -2,7 +2,7 @@
 
 #include "maths/maths.h"
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 struct Vertex2D
 {

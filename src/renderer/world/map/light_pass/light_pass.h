@@ -2,7 +2,7 @@
 
 #include "light_fbo.h"
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 #include "core/window.h"
 

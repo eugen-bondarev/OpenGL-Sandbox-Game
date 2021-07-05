@@ -1,6 +1,6 @@
 #pragma once
 
-#include "werwel/werwel.h"
+#include "mgcwel/werwel.h"
 
 #include "game/world/blocks.h"
 #include "game/tools.h"
