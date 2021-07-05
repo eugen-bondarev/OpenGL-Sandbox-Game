@@ -7,21 +7,22 @@
 
 #include "renderer/renderer.h"
 
-class WorldRenderer {
+class WorldRenderer 
+{
 public:
-  WorldRenderer(const Ref<World>& world);
+	WorldRenderer(const Ref<World>& world);
 
-  void Render(const std::vector<Ref<IRenderer>> &additionalRenderers);
+	void Render(const std::vector<Ref<IRenderer>> &additionalRenderers);
 
-  Ref<MapRenderer>& GetMapRenderer();
-  Ref<WoodsRenderer>& GetWoodsRenderer();
+	Ref<MapRenderer>& GetMapRenderer();
+	Ref<WoodsRenderer>& GetWoodsRenderer();
 
 private:
-  const Ref<World>& world;
+	const Ref<World>& world;
 
-  Ref<MapRenderer> mapRenderer;
-  Ref<WoodsRenderer> woodsRenderer;
+	Ref<MapRenderer> mapRenderer;
+	Ref<WoodsRenderer> woodsRenderer;
 
-  WorldRenderer(const WorldRenderer&) = delete;
-  WorldRenderer& operator=(const WorldRenderer&) = delete;
+	WorldRenderer(const WorldRenderer&) = delete;
+	WorldRenderer& operator=(const WorldRenderer&) = delete;
 };

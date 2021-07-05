@@ -1,6 +1,7 @@
 #pragma once
 
-class IRenderer {
+class IRenderer
+{
 public:
-  virtual void Render() {}
+  	virtual void Render() {}
 };

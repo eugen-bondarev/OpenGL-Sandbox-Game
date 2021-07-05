@@ -2,22 +2,24 @@
 
 #include "game/game.h"
 
-enum class MenuLocation {
-  Main = 0,
-  Settings
+enum class MenuLocation
+{
+	Main = 0,
+	Settings
 };
 
-class MainMenu {
+class MainMenu
+{
 public:
-  MainMenu(Ref<Game>& game);
+	MainMenu(Ref<Game> &game);
 
-  void Show();
+	void Show();
 
 private:
-  Ref<Game>& game;
+	Ref<Game> &game;
 
-  void Settings();
-  void Main();
+	void Settings();
+	void Main();
 
-  MenuLocation location { MenuLocation::Main };
+	MenuLocation location{MenuLocation::Main};
 };

@@ -9,12 +9,13 @@
 
 namespace Input {
 
-inline static GLFWwindow* glfwWindow { nullptr };
+inline static GLFWwindow *glfwWindow{nullptr};
 inline static std::map<int, State> mouseButtons;
 inline static std::map<int, State> keys;
 inline static MouseWheelState mouseWheelState;
 
-enum class Key {
+enum class Key
+{
 	W = NF_KEY_W,
 	A = NF_KEY_A,
 	S = NF_KEY_S,
@@ -29,16 +30,17 @@ enum class Key {
 	Num4 = NF_KEY_4,
 };
 
-enum class Button {
+enum class Button
+{
 	Left = NF_MOUSE_BUTTON_LEFT,
 	Right = NF_MOUSE_BUTTON_RIGHT
 };
 
-void MouseWheelCallback(GLFWwindow* glfwWindow, double xOffset, double yOffset);
-void MouseButtonCallback(GLFWwindow* glfwWindow, int button, int action, int mods);
-void KeyboardKeyCallback(GLFWwindow* glfwWindow, int key, int scancode, int action, int mods);
+void MouseWheelCallback(GLFWwindow *glfwWindow, double xOffset, double yOffset);
+void MouseButtonCallback(GLFWwindow *glfwWindow, int button, int action, int mods);
+void KeyboardKeyCallback(GLFWwindow *glfwWindow, int key, int scancode, int action, int mods);
 
-void Create(GLFWwindow* window);
+void Create(GLFWwindow *window);
 
 bool MouseButtonPressed(int button);
 bool MouseButtonReleased(int button);
@@ -60,7 +62,5 @@ void BeginFrame();
 void EndFrame();
 
 MouseWheelState GetMouseWheelState();
-
-
 
 }

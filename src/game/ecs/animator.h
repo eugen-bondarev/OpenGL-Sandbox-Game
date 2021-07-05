@@ -8,23 +8,24 @@
 
 class Entity;
 
-class Animator : public Component {
+class Animator : public Component
+{
 public:
-  Animator(Entity* entity);
+	Animator(Entity *entity);
 
-  void SetDirection(int direction);
-  int GetDirection() const;
+	void SetDirection(int direction);
+	int GetDirection() const;
 
-  Animation::Clip* walkingAnimation;
-  Animation::Clip* attackingAnimation;
+	Animation::Clip *walkingAnimation;
+	Animation::Clip *attackingAnimation;
 
-  std::vector<Ref<Animation::Clip>> animations;
-  Ref<Animation::Clip>& GetCurrentAnimation();
+	std::vector<Ref<Animation::Clip>> animations;
+	Ref<Animation::Clip> &GetCurrentAnimation();
 
-  float GetState() const;
-  void SetState(float newState);
+	float GetState() const;
+	void SetState(float newState);
 
 private:
-  float state { 0 };
-  int direction { 1 };
+	float state{0};
+	int direction{1};
 };

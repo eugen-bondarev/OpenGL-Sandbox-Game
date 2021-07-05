@@ -1,21 +1,23 @@
 #pragma once
 
-#include "Werwel/werwel.h"
+#include "werwel/werwel.h"
 
 #include "assets/text_asset.h"
 #include "../color_pass/color_pass.h"
 #include "../light_pass/light_pass.h"
 
-class CompositionPass {
+class CompositionPass
+{
 public:
-  CompositionPass();
-  void Perform(const Ref<ColorPass>& colorPass, const Ref<LightPass>& lightPass);
+	CompositionPass();
+	void Perform(const Ref<ColorPass> &colorPass, const Ref<LightPass> &lightPass);
 
-  Ref<Werwel::Shader> shader;
-  Ref<Werwel::VAO> canvas;
-  
+	Ref<Werwel::Shader> shader;
+	Ref<Werwel::VAO> canvas;
+
 private:
-  struct {
-    Ref<Werwel::Shader> shader;
-  } sky;
+	struct
+	{
+		Ref<Werwel::Shader> shader;
+	} sky;
 };

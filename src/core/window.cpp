@@ -1,6 +1,6 @@
 #include "window.h"
 
-#include "Werwel/werwel.h"
+#include "werwel/werwel.h"
 
 #include "input/input.h"
 #include "gui.h"
@@ -60,21 +60,21 @@ void Create(Settings windowSettings, bool resizable, const std::string &title)
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow *window, int width, int height)
-	{
-		if (width == 0 || height == 0)
-		{
-			return;
-		}
+								{
+									if (width == 0 || height == 0)
+									{
+										return;
+									}
 
-		size.x = width;
-		size.y = height;
-		CalculateSpace();
-		
-		for (int i = 0; i < callbacks.size(); i++) 
-		{
-			callbacks[i]();
-		}
-	});
+									size.x = width;
+									size.y = height;
+									CalculateSpace();
+
+									for (int i = 0; i < callbacks.size(); i++)
+									{
+										callbacks[i]();
+									}
+								});
 
 	glfwSwapInterval(windowSettings.vSync);
 
@@ -186,6 +186,6 @@ void Recreate(Settings windowSettings)
 GLFWwindow *GetGlfwWindow()
 {
 	return glfwWindow;
-}
+	}
 
 }

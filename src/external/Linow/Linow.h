@@ -34,7 +34,7 @@
 #pragma once
 
 #ifdef LINOW_USE_GLM
-# include <glm/glm.hpp>
+#include <glm/glm.hpp>
 #endif
 
 /*
@@ -57,13 +57,14 @@ namespace Linow {
 template <typename T>
 using Ptr = std::unique_ptr<T>;
 
-template<typename T, typename ... Args>
-constexpr Ptr<T> CreatePtr(Args&& ... args) {
-  return std::make_unique<T>(std::forward<Args>(args)...);
+template <typename T, typename... Args>
+constexpr Ptr<T> CreatePtr(Args &&...args)
+{
+	return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
 /*
-  --------------------- Aliases and debugging --------------------- 
+--------------------- Aliases and debugging --------------------- 
 */
 using Str = std::string;
 
@@ -79,41 +80,59 @@ using Map = std::map<T0, T1>;
 /*
   This doesn't create any assembly code.
 */
-#define LINOW_VOID_ASSEMBLY         ((void)0)
+#define LINOW_VOID_ASSEMBLY ((void)0)
 
 #ifdef LINOW_DEBUGGING
-# define LINOW_LOG_OUT(x)           std::cout << "[Linow] " << x << '\n'
-# define LINOW_NEW_LINE()           std::cout << '\n'
+#define LINOW_LOG_OUT(x) std::cout << "[Linow] " << x << '\n'
+#define LINOW_NEW_LINE() std::cout << '\n'
 #else
-# define LINOW_LOG_OUT(x)           LINOW_VOID_ASSEMBLY
-# define LINOW_NEW_LINE()           LINOW_VOID_ASSEMBLY
+#define LINOW_LOG_OUT(x) LINOW_VOID_ASSEMBLY
+#define LINOW_NEW_LINE() LINOW_VOID_ASSEMBLY
 #endif
 
 /*
   --------------------- Aliases to use with GLM --------------------- 
 */
 #ifndef LINOW_USE_GLM
-  struct Vec2 {
-    float x, y;
-    Vec2(float x = 0.0f, float y = 0.0f) { this->x = x; this->y = y; }
-  };
+	struct Vec2
+	{
+		float x, y;
+		Vec2(float x = 0.0f, float y = 0.0f)
+		{
+			this->x = x;
+			this->y = y;
+		}
+	};
 
-  struct Vec3 {
-    float x, y, z;
-    Vec3(float x = 0.0f, float y = 0.0f, float z = 0.0f) { this->x = x; this->y = y; this->z = z; }
-  };
+	struct Vec3
+	{
+		float x, y, z;
+		Vec3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+		{
+			this->x = x;
+			this->y = y;
+			this->z = z;
+		}
+	};
 
-  struct Vec4 {
-    float x, y, z, w;
-    Vec4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f) { this->x = x; this->y = y; this->z = z; this->w = w; }
-  };
+	struct Vec4
+	{
+		float x, y, z, w;
+		Vec4(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f)
+		{
+			this->x = x;
+			this->y = y;
+			this->z = z;
+			this->w = w;
+		}
+	};
 
-  using Color = Vec4;
+	using Color = Vec4;
 #else
-  using Vec2 = glm::vec2;
-  using Vec3 = glm::vec3;
-  using Vec4 = glm::vec4;
-  using Color = Vec4;
+	using Vec2 = glm::vec2;
+	using Vec3 = glm::vec3;
+	using Vec4 = glm::vec4;
+	using Color = Vec4;
 #endif
 
 /*
@@ -138,354 +157,394 @@ inline Ptr<Shader> lineShader;
 /*
   --------------------- Interface --------------------- 
 */
-void Init(const float* projection);
-  void Render(const float* projection, const float* view);
-  void Clear();
+void Init(const float *projection);
+void Render(const float *projection, const float *view);
+void Clear();
 void Shutdown();
 
 template <typename... Args>
-void AddLine(Args&&... args);
+void AddLine(Args &&...args);
 void AddQuad(Vec2 start, Vec2 end, Color color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 void AddQuad(Vec3 start, Vec3 end, Color color = Color(1.0f, 0.0f, 0.0f, 1.0f));
 
 /*
   --------------------- Implementation --------------------- 
 */
-struct Line {
-  Array<Vec3, 2> points;
-  Color color { 1, 0, 0, 1 };
-  
-  inline Line(const Vec3& start, const Vec3& end, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f)) {
-    points[0] = start;
-    points[1] = end;
-    this->color = color;
-  }
-  
-  inline Line(const Vec2& start, const Vec2& end, const Color& color = Color(1.0f, 0.0f, 0.0f, 1.0f)) {
-    points[0] = Vec3(start, 0.0f);
-    points[1] = Vec3(end, 0.0f);
-    this->color = color;
-  }
+struct Line
+{
+	Array<Vec3, 2> points;
+	Color color{1, 0, 0, 1};
+
+	inline Line(const Vec3 &start, const Vec3 &end, const Color &color = Color(1.0f, 0.0f, 0.0f, 1.0f))
+	{
+		points[0] = start;
+		points[1] = end;
+		this->color = color;
+	}
+
+	inline Line(const Vec2 &start, const Vec2 &end, const Color &color = Color(1.0f, 0.0f, 0.0f, 1.0f))
+	{
+		points[0] = Vec3(start, 0.0f);
+		points[1] = Vec3(end, 0.0f);
+		this->color = color;
+	}
 };
 
 const Str vsCode = R"(
-  #version 440 core
+	#version 440 core
 
-  layout (location = 0) in vec3 in_Point0;
-  layout (location = 1) in vec3 in_Point1;
-  layout (location = 2) in vec4 in_Color;
+	layout (location = 0) in vec3 in_Point0;
+	layout (location = 1) in vec3 in_Point1;
+	layout (location = 2) in vec4 in_Color;
 
-  uniform mat4 u_ProjView;
-  out vec4 color;
-  void main() {
-    color = in_Color;
-    gl_Position = u_ProjView * vec4(gl_VertexID == 0 ? in_Point0 : in_Point1, 1.0);
-  }
+	uniform mat4 u_ProjView;
+	out vec4 color;
+	void main() {
+		color = in_Color;
+		gl_Position = u_ProjView * vec4(gl_VertexID == 0 ? in_Point0 : in_Point1, 1.0);
+	}
 )";
 
 const Str fsCode = R"(
-  #version 440 core
-  in vec4 color;
-  out vec4 out_Color;
-  uniform vec4 u_Color;
-  void main() {
-    out_Color = color;
-  }
+	#version 440 core
+	in vec4 color;
+	out vec4 out_Color;
+	uniform vec4 u_Color;
+	void main() {
+		out_Color = color;
+	}
 )";
 
-class Shader {
+class Shader
+{
 public:
 	template <typename... Args>
-	Shader(const Str& vsCode, const Str& fsCode, Args&&... args) {
+	Shader(const Str &vsCode, const Str &fsCode, Args &&...args)
+	{
 		handle = glCreateProgram();
 		vsHandle = CreateShader(vsCode, GL_VERTEX_SHADER);
 		fsHandle = CreateShader(fsCode, GL_FRAGMENT_SHADER);
 
 		Link();
 
-		Vec<Str> uniforms{ args... };
+		Vec<Str> uniforms{args...};
 
-		for (int i = 0; i < uniforms.size(); i++) {
+		for (int i = 0; i < uniforms.size(); i++)
+		{
 			CreateUniform(uniforms[i]);
 		}
 
-    LINOW_LOG_OUT("Shader created.");
+		LINOW_LOG_OUT("Shader created.");
 	}
 
-	~Shader() {    
-    Unbind();
-    glDeleteProgram(handle);
+	~Shader()
+	{
+		Unbind();
+		glDeleteProgram(handle);
 
-    LINOW_LOG_OUT("Shader destroyed.");
-  }
+		LINOW_LOG_OUT("Shader destroyed.");
+	}
 
-	void Bind() const {
-    glUseProgram(handle);
-  }
+	void Bind() const
+	{
+		glUseProgram(handle);
+	}
 
-	void Unbind() const {
-    glUseProgram(0);
-  }
+	void Unbind() const
+	{
+		glUseProgram(0);
+	}
 
-	void CreateUniform(const Str& name) {
-    int location = glGetUniformLocation(handle, name.c_str());
+	void CreateUniform(const Str &name)
+	{
+		int location = glGetUniformLocation(handle, name.c_str());
 
-    uniformLocations.insert(
-      std::pair<Str, int>(
-        name.c_str(),
-        location
-        )
-    );
-  }
+		uniformLocations.insert(
+			std::pair<Str, int>(
+				name.c_str(),
+				location));
+	}
 
 	template <typename T>
-	inline void SetListVec2(const Str& name, const Vec<T>& vec) {
-		glUniform2fv(uniformLocations.at(name), vec.size(), reinterpret_cast<const float*>(&vec[0]));
+	inline void SetListVec2(const Str &name, const Vec<T> &vec)
+	{
+		glUniform2fv(uniformLocations.at(name), vec.size(), reinterpret_cast<const float *>(&vec[0]));
 	}
 
-	void SetMat4x4(const Str& name, float const* const matrix) {
-	  glUniformMatrix4fv(uniformLocations.at(name), 1, GL_FALSE, matrix);
-  }
+	void SetMat4x4(const Str &name, float const *const matrix)
+	{
+		glUniformMatrix4fv(uniformLocations.at(name), 1, GL_FALSE, matrix);
+	}
 
 private:
-  GLuint handle { 0 };
-	GLuint vsHandle { 0 };
-	GLuint fsHandle { 0 };
+	GLuint handle{0};
+	GLuint vsHandle{0};
+	GLuint fsHandle{0};
 	Map<Str, GLuint> uniformLocations;
 
-	void Link() const {
-    glLinkProgram(handle);
+	void Link() const
+	{
+		glLinkProgram(handle);
 
-    if (vsHandle != 0) glDetachShader(handle, vsHandle); glDeleteShader(vsHandle);
-    if (fsHandle != 0) glDetachShader(handle, fsHandle); glDeleteShader(fsHandle);
+		if (vsHandle != 0)
+			glDetachShader(handle, vsHandle);
+		glDeleteShader(vsHandle);
+		if (fsHandle != 0)
+			glDetachShader(handle, fsHandle);
+		glDeleteShader(fsHandle);
 
-    glValidateProgram(handle);
-  }
+		glValidateProgram(handle);
+	}
 
-	GLuint CreateShader(const Str& shaderCode, GLuint shaderType) const {
-    const unsigned int shaderID = glCreateShader(shaderType);
-    const char* c_str = shaderCode.c_str();
+	GLuint CreateShader(const Str &shaderCode, GLuint shaderType) const
+	{
+		const unsigned int shaderID = glCreateShader(shaderType);
+		const char *c_str = shaderCode.c_str();
 
-    glShaderSource(shaderID, 1, &c_str, NULL);
-    glCompileShader(shaderID);
+		glShaderSource(shaderID, 1, &c_str, NULL);
+		glCompileShader(shaderID);
 
-    int status;
-    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &status);
-    if (!status) {
-      int length;
-      glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length);
-      Str log;
-      log.resize(length);
-      glGetShaderInfoLog(shaderID, length, &length, &log[0]);
+		int status;
+		glGetShaderiv(shaderID, GL_COMPILE_STATUS, &status);
+		if (!status)
+		{
+			int length;
+			glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length);
+			Str log;
+			log.resize(length);
+			glGetShaderInfoLog(shaderID, length, &length, &log[0]);
 
-      Str errorFunctionName = "--------[ " "Linow shader" " ]--------";
-      LINOW_LOG_OUT(errorFunctionName);
-      LINOW_LOG_OUT("Error occured while compiling a shader: " << log);
-      LINOW_NEW_LINE();
+			Str errorFunctionName = "--------[ "
+									"Linow shader"
+									" ]--------";
+			LINOW_LOG_OUT(errorFunctionName);
+			LINOW_LOG_OUT("Error occured while compiling a shader: " << log);
+			LINOW_NEW_LINE();
 
-      return -1;
-    }
+			return -1;
+		}
 
-    glAttachShader(handle, shaderID);
+		glAttachShader(handle, shaderID);
 
-    return shaderID;
-  }
+		return shaderID;
+	}
 
-	Shader(const Shader&) = delete;
-	Shader operator=(const Shader&) = delete;
+	Shader(const Shader &) = delete;
+	Shader operator=(const Shader &) = delete;
 };
 
-class VBO {
+class VBO
+{
 public:
-  VBO(int attribute = 0) {
-    GLuint startAttribute = attribute;
-    
+	VBO(int attribute = 0)
+	{
+		GLuint startAttribute = attribute;
+
 		glGenBuffers(1, &handle);
 		glBindBuffer(GL_ARRAY_BUFFER, handle);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Line), reinterpret_cast<void *>(0));
-      glVertexAttribDivisor(0, 1);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Line), reinterpret_cast<void *>(0));
+		glVertexAttribDivisor(0, 1);
 
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Line), reinterpret_cast<void *>(3 * sizeof(float)));
-      glVertexAttribDivisor(1, 1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Line), reinterpret_cast<void *>(3 * sizeof(float)));
+		glVertexAttribDivisor(1, 1);
 
-      glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Line), reinterpret_cast<void *>(3 * sizeof(float) + 3 * sizeof(float)));
-      glVertexAttribDivisor(2, 1);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Line), reinterpret_cast<void *>(3 * sizeof(float) + 3 * sizeof(float)));
+		glVertexAttribDivisor(2, 1);
 
-      attributes.push_back(0);
-      attributes.push_back(1);
-      attributes.push_back(2);
+		attributes.push_back(0);
+		attributes.push_back(1);
+		attributes.push_back(2);
 
-      glBufferData(GL_ARRAY_BUFFER, 0 * sizeof(Line), nullptr, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, 0 * sizeof(Line), nullptr, GL_STREAM_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    LINOW_LOG_OUT("Dynamic VBO created.");
-  }
+		LINOW_LOG_OUT("Dynamic VBO created.");
+	}
 
-  ~VBO() {
-    Unbind();
-    glDeleteBuffers(1, &handle);   
+	~VBO()
+	{
+		Unbind();
+		glDeleteBuffers(1, &handle);
 
-    LINOW_LOG_OUT("Dynamic VBO destroyed."); 
-  }
+		LINOW_LOG_OUT("Dynamic VBO destroyed.");
+	}
 
-  void Bind() const {
+	void Bind() const
+	{
 		glBindBuffer(GL_ARRAY_BUFFER, handle);
-    
-    for (const auto attrib : attributes) {
-      glEnableVertexAttribArray(attrib);
-    }
-  }
 
-  void Unbind() const {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-  }
+		for (const auto attrib : attributes)
+		{
+			glEnableVertexAttribArray(attrib);
+		}
+	}
 
-  template <typename T, bool bind = true>
-  inline void Update(const Vec<T>& vec, int amount, int pos = 0) const {
-    if (bind) {
-      Bind();
-    }
-    // glBufferSubData(GL_ARRAY_BUFFER, pos, amount * sizeof(Line), vec.data());
-    glBufferData(GL_ARRAY_BUFFER, amount * sizeof(Line), vec.data(), GL_DYNAMIC_DRAW);
-  }
+	void Unbind() const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	template <typename T, bool bind = true>
+	inline void Update(const Vec<T> &vec, int amount, int pos = 0) const
+	{
+		if (bind)
+		{
+			Bind();
+		}
+		// glBufferSubData(GL_ARRAY_BUFFER, pos, amount * sizeof(Line), vec.data());
+		glBufferData(GL_ARRAY_BUFFER, amount * sizeof(Line), vec.data(), GL_DYNAMIC_DRAW);
+	}
 
 private:
-  GLuint handle { 0 };
-  Vec<GLuint> attributes;
+	GLuint handle{0};
+	Vec<GLuint> attributes;
 
-	VBO(const VBO&) = delete;
-	VBO operator=(const VBO&) = delete;
+	VBO(const VBO &) = delete;
+	VBO operator=(const VBO &) = delete;
 };
 
-class VAO {
+class VAO
+{
 public:
-  VAO() {
+	VAO()
+	{
 		glGenVertexArrays(1, &handle);
 
-    LINOW_LOG_OUT("VAO created.");
-  }
+		LINOW_LOG_OUT("VAO created.");
+	}
 
-  ~VAO() {
-    Unbind();
-    glDeleteVertexArrays(1, &handle);
+	~VAO()
+	{
+		Unbind();
+		glDeleteVertexArrays(1, &handle);
 
-    LINOW_LOG_OUT("VAO destroyed.");
-  }
+		LINOW_LOG_OUT("VAO destroyed.");
+	}
 
-  void Bind() {    
+	void Bind()
+	{
 		glBindVertexArray(handle);
-  }
+	}
 
-  void Unbind() {
+	void Unbind()
+	{
 		glBindVertexArray(0);
-  }
+	}
 
 private:
-  GLuint handle { 0 };
+	GLuint handle{0};
 
-  Ptr<VBO> vbo;
+	Ptr<VBO> vbo;
 
-	VAO(const VAO&) = delete;
-	VAO operator=(const VAO&) = delete;
+	VAO(const VAO &) = delete;
+	VAO operator=(const VAO &) = delete;
 };
 
-inline static void MultiplyMat4x4Mat4x4(float R[4][4], const float A[4][4], const float B[4][4]) {
-  R[0][0] = B[0][0] * A[0][0] + B[0][1] * A[1][0] + B[0][2] * A[2][0] + B[0][3] * A[3][0];
-  R[0][1] = B[0][0] * A[0][1] + B[0][1] * A[1][1] + B[0][2] * A[2][1] + B[0][3] * A[3][1];
-  R[0][2] = B[0][0] * A[0][2] + B[0][1] * A[1][2] + B[0][2] * A[2][2] + B[0][3] * A[3][2];
-  R[0][3] = B[0][0] * A[0][3] + B[0][1] * A[1][3] + B[0][2] * A[2][3] + B[0][3] * A[3][3];
+inline static void MultiplyMat4x4Mat4x4(float R[4][4], const float A[4][4], const float B[4][4])
+{
+	R[0][0] = B[0][0] * A[0][0] + B[0][1] * A[1][0] + B[0][2] * A[2][0] + B[0][3] * A[3][0];
+	R[0][1] = B[0][0] * A[0][1] + B[0][1] * A[1][1] + B[0][2] * A[2][1] + B[0][3] * A[3][1];
+	R[0][2] = B[0][0] * A[0][2] + B[0][1] * A[1][2] + B[0][2] * A[2][2] + B[0][3] * A[3][2];
+	R[0][3] = B[0][0] * A[0][3] + B[0][1] * A[1][3] + B[0][2] * A[2][3] + B[0][3] * A[3][3];
 
-  R[1][0] = B[1][0] * A[0][0] + B[1][1] * A[1][0] + B[1][2] * A[2][0] + B[1][3] * A[3][0];
-  R[1][1] = B[1][0] * A[0][1] + B[1][1] * A[1][1] + B[1][2] * A[2][1] + B[1][3] * A[3][1];
-  R[1][2] = B[1][0] * A[0][2] + B[1][1] * A[1][2] + B[1][2] * A[2][2] + B[1][3] * A[3][2];
-  R[1][3] = B[1][0] * A[0][3] + B[1][1] * A[1][3] + B[1][2] * A[2][3] + B[1][3] * A[3][3];
+	R[1][0] = B[1][0] * A[0][0] + B[1][1] * A[1][0] + B[1][2] * A[2][0] + B[1][3] * A[3][0];
+	R[1][1] = B[1][0] * A[0][1] + B[1][1] * A[1][1] + B[1][2] * A[2][1] + B[1][3] * A[3][1];
+	R[1][2] = B[1][0] * A[0][2] + B[1][1] * A[1][2] + B[1][2] * A[2][2] + B[1][3] * A[3][2];
+	R[1][3] = B[1][0] * A[0][3] + B[1][1] * A[1][3] + B[1][2] * A[2][3] + B[1][3] * A[3][3];
 
-  R[2][0] = B[2][0] * A[0][0] + B[2][1] * A[1][0] + B[2][2] * A[2][0] + B[2][3] * A[3][0];
-  R[2][1] = B[2][0] * A[0][1] + B[2][1] * A[1][1] + B[2][2] * A[2][1] + B[2][3] * A[3][1];
-  R[2][2] = B[2][0] * A[0][2] + B[2][1] * A[1][2] + B[2][2] * A[2][2] + B[2][3] * A[3][2];
-  R[2][3] = B[2][0] * A[0][3] + B[2][1] * A[1][3] + B[2][2] * A[2][3] + B[2][3] * A[3][3];
+	R[2][0] = B[2][0] * A[0][0] + B[2][1] * A[1][0] + B[2][2] * A[2][0] + B[2][3] * A[3][0];
+	R[2][1] = B[2][0] * A[0][1] + B[2][1] * A[1][1] + B[2][2] * A[2][1] + B[2][3] * A[3][1];
+	R[2][2] = B[2][0] * A[0][2] + B[2][1] * A[1][2] + B[2][2] * A[2][2] + B[2][3] * A[3][2];
+	R[2][3] = B[2][0] * A[0][3] + B[2][1] * A[1][3] + B[2][2] * A[2][3] + B[2][3] * A[3][3];
 
-  R[3][0] = B[3][0] * A[0][0] + B[3][1] * A[1][0] + B[3][2] * A[2][0] + B[3][3] * A[3][0];
-  R[3][1] = B[3][0] * A[0][1] + B[3][1] * A[1][1] + B[3][2] * A[2][1] + B[3][3] * A[3][1];
-  R[3][2] = B[3][0] * A[0][2] + B[3][1] * A[1][2] + B[3][2] * A[2][2] + B[3][3] * A[3][2];
-  R[3][3] = B[3][0] * A[0][3] + B[3][1] * A[1][3] + B[3][2] * A[2][3] + B[3][3] * A[3][3];
+	R[3][0] = B[3][0] * A[0][0] + B[3][1] * A[1][0] + B[3][2] * A[2][0] + B[3][3] * A[3][0];
+	R[3][1] = B[3][0] * A[0][1] + B[3][1] * A[1][1] + B[3][2] * A[2][1] + B[3][3] * A[3][1];
+	R[3][2] = B[3][0] * A[0][2] + B[3][1] * A[1][2] + B[3][2] * A[2][2] + B[3][3] * A[3][2];
+	R[3][3] = B[3][0] * A[0][3] + B[3][1] * A[1][3] + B[3][2] * A[2][3] + B[3][3] * A[3][3];
 }
 
-inline void Init() {
-  lineShader = CreatePtr<Shader>(vsCode, fsCode, "u_ProjView");
+inline void Init()
+{
+	lineShader = CreatePtr<Shader>(vsCode, fsCode, "u_ProjView");
 
-  vao = CreatePtr<VAO>();
-  vao->Bind();
-  vbo = CreatePtr<VBO>();
+	vao = CreatePtr<VAO>();
+	vao->Bind();
+	vbo = CreatePtr<VBO>();
 
-  LINOW_LOG_OUT("Initialization succeeded.");
+	LINOW_LOG_OUT("Initialization succeeded.");
 }
 
-inline void Render(const float* projection, const float* view) {
-  if (!lines.size())
-    return;
+inline void Render(const float *projection, const float *view)
+{
+	if (!lines.size())
+		return;
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  float R[4][4];
-  float A[4][4];
-  float B[4][4];
+	float R[4][4];
+	float A[4][4];
+	float B[4][4];
 
-  memcpy(&A[0][0], projection, sizeof(float) * 4 * 4);
-  memcpy(&B[0][0],       view, sizeof(float) * 4 * 4);
-  MultiplyMat4x4Mat4x4(R, A, B);
+	memcpy(&A[0][0], projection, sizeof(float) * 4 * 4);
+	memcpy(&B[0][0], view, sizeof(float) * 4 * 4);
+	MultiplyMat4x4Mat4x4(R, A, B);
 
-  lineShader->Bind();
-    lineShader->SetMat4x4("u_ProjView", &R[0][0]);
+	lineShader->Bind();
+	lineShader->SetMat4x4("u_ProjView", &R[0][0]);
 
-  vao->Bind();
-  vbo->Update(lines, lines.size());
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 3, lines.size());
+	vao->Bind();
+	vbo->Update(lines, lines.size());
+	glDrawArraysInstanced(GL_TRIANGLES, 0, 3, lines.size());
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-inline void Clear() {
-  lines.clear();
+inline void Clear()
+{
+	lines.clear();
 }
 
-inline void Shutdown() {
-  lineShader.reset();
-  vao.reset();
-  vbo.reset();
+inline void Shutdown()
+{
+	lineShader.reset();
+	vao.reset();
+	vbo.reset();
 
-  Clear();
+	Clear();
 
-  LINOW_LOG_OUT("Shutdown succeeded.");
+	LINOW_LOG_OUT("Shutdown succeeded.");
 }
 
 template <typename... Args>
-inline void AddLine(Args&&... args) {
-  lines.emplace_back(std::forward<Args>(args)...);
+inline void AddLine(Args &&...args)
+{
+	lines.emplace_back(std::forward<Args>(args)...);
 }
 
-inline void AddQuad(Vec2 start, Vec2 end, Color color) {
-  Line left(start, Vec2(start.x, end.y), color);
-  Line right(Vec2(end.x, start.y), end, color);
-  Line top(start, Vec2(end.x, start.y), color);
-  Line bottom(Vec2(start.x, end.y), end, color);
+inline void AddQuad(Vec2 start, Vec2 end, Color color)
+{
+	Line left(start, Vec2(start.x, end.y), color);
+	Line right(Vec2(end.x, start.y), end, color);
+	Line top(start, Vec2(end.x, start.y), color);
+	Line bottom(Vec2(start.x, end.y), end, color);
 
-  AddLine(left);
-  AddLine(right);
-  AddLine(top);
-  AddLine(bottom);
+	AddLine(left);
+	AddLine(right);
+	AddLine(top);
+	AddLine(bottom);
 }
 
-inline void AddQuad(Vec3 start, Vec3 end, Color color) {
-  Line left(start, Vec3(start.x, end.y, 0), color);
-  Line right(Vec3(end.x, start.y, 0), end, color);
-  Line top(start, Vec3(end.x, start.y, 0), color);
-  Line bottom(Vec3(start.x, end.y, 0), end, color);
+inline void AddQuad(Vec3 start, Vec3 end, Color color)
+{
+	Line left(start, Vec3(start.x, end.y, 0), color);
+	Line right(Vec3(end.x, start.y, 0), end, color);
+	Line top(start, Vec3(end.x, start.y, 0), color);
+	Line bottom(Vec3(start.x, end.y, 0), end, color);
 
-  AddLine(left);
-  AddLine(right);
-  AddLine(top);
-  AddLine(bottom);
+	AddLine(left);
+	AddLine(right);
+	AddLine(top);
+	AddLine(bottom);
 }
 
 }

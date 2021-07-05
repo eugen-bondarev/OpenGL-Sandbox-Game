@@ -1,9 +1,10 @@
 #include "tree.h"
 
-Tree::Tree(Vec2 position) : position { position } {
-
+Tree::Tree(Vec2 position) : position{position}
+{
 }
 
-Vec2 Tree::GetPosition() const {
-  return position;
+Vec2 Tree::GetPosition() const
+{
+	return position;
 }

@@ -11,18 +11,19 @@
 
 #include "../subcomponents/inventory/inventory.h"
 
-class Player : public IUpdatable, public Component {
+class Player : public IUpdatable, public Component
+{
 public:
-  Player(Entity* entity, Ref<World> world);
+	Player(Entity *entity, Ref<World> world);
 
-  void Update() override;
+	void Update() override;
 
-  Icon GetCurrentItem() const;
+	Icon GetCurrentItem() const;
 
-  Inventory& GetInventory();
+	Inventory &GetInventory();
 
 private:
-  const Ref<World> world;
+	const Ref<World> world;
 
-  Inventory inventory;
+	Inventory inventory;
 };

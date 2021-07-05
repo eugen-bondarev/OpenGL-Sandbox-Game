@@ -8,7 +8,7 @@
 #include "imgui/imgui.h"
 
 Game::Game(int seed) {
-	const ImageAsset toolsTileMapTexture("assets/images/tools.png");
+	const Werwel::ImageAsset toolsTileMapTexture("assets/images/tools.png", NF_ROOT);
 	toolsTileMap = TextureAtlas::Add<ToolsTileMap>(TextureAtlasType::Tools, CreateRef<ToolsTileMap>(
 		Vec2(16.0f),
 		toolsTileMapTexture.GetSize(),

@@ -7,63 +7,73 @@ class Rigidbody;
 class Player;
 class ITransform;
 
-class Entity : public ITransform {
+class Entity : public ITransform
+{
 public:
-  inline Entity() {
-    static unsigned int ids = 0;
+	inline Entity()
+	{
+		static unsigned int ids = 0;
 
-    id = ids++;
-  }
+		id = ids++;
+	}
 
-  inline unsigned int GetID() const {
-    return id;
-  }
+	inline unsigned int GetID() const
+	{
+		return id;
+	}
 
-  Animator* animator;
-  Rigidbody* rigidbody;
-  Player* player;
-  std::map<std::string, Ref<Component>> components;
+	Animator *animator;
+	Rigidbody *rigidbody;
+	Player *player;
+	std::map<std::string, Ref<Component>> components;
 
-  template <typename T, typename... Args>
-  T* AddComponent(Args... args) {
-    std::string prettyName = NF_CLASS_NAME(T);
+	template <typename T, typename... Args>
+	T *AddComponent(Args... args)
+	{
+		std::string prettyName = NF_CLASS_NAME(T);
 
-    Ref<T> r = CreateRef<T>(this, std::forward<Args>(args)...);
-    components[prettyName] = r;
+		Ref<T> r = CreateRef<T>(this, std::forward<Args>(args)...);
+		components[prettyName] = r;
 
-    if (prettyName == "Animator") {
-      animator = dynamic_cast<Animator*>(r.get());
-    }
+		if (prettyName == "Animator")
+		{
+			animator = dynamic_cast<Animator *>(r.get());
+		}
 
-    if (prettyName == "Rigidbody") {
-      rigidbody = dynamic_cast<Rigidbody*>(r.get());
-    }
+		if (prettyName == "Rigidbody")
+		{
+			rigidbody = dynamic_cast<Rigidbody *>(r.get());
+		}
 
-    if (prettyName == "Player") {
-      player = dynamic_cast<Player*>(r.get());
-    }
+		if (prettyName == "Player")
+		{
+			player = dynamic_cast<Player *>(r.get());
+		}
 
-    if (IUpdatable* updatable = dynamic_cast<IUpdatable*>(r.get())) {
-      IUpdatable::updatableComponents.push_back(updatable);
-    }
+		if (IUpdatable *updatable = dynamic_cast<IUpdatable *>(r.get()))
+		{
+			IUpdatable::updatableComponents.push_back(updatable);
+		}
 
-    return r.get();
-  }
+		return r.get();
+	}
 
-  template <typename T>
-  void DeleteComponent() {
-    std::string prettyName = NF_CLASS_NAME(T);
-    
-    components.erase(components.find(prettyName));
-  }
+	template <typename T>
+	void DeleteComponent()
+	{
+		std::string prettyName = NF_CLASS_NAME(T);
 
-  template <typename T>
-  T* GetComponent() {
-    std::string prettyName = NF_CLASS_NAME(T);
+		components.erase(components.find(prettyName));
+	}
 
-    return dynamic_cast<T*>(components[prettyName].get());
-  }
+	template <typename T>
+	T *GetComponent()
+	{
+		std::string prettyName = NF_CLASS_NAME(T);
+
+		return dynamic_cast<T *>(components[prettyName].get());
+	}
 
 private:
-  unsigned int id;
+	unsigned int id;
 };

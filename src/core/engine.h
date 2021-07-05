@@ -5,7 +5,8 @@
 #include "game/game.h"
 #include "menu/main_menu.h"
 
-class Engine {
+class Engine
+{
 public:
 	Engine();
 	bool IsRunning() const;
@@ -15,10 +16,10 @@ public:
 	~Engine();
 
 private:
-	bool resetGame { false };
+	bool resetGame{false};
 	Ref<Game> game;
 	Ref<MainMenu> mainMenu;
 
-	Engine(const Engine&) = delete;
-	Engine& operator=(const Engine&) = delete;
+	Engine(const Engine &) = delete;
+	Engine &operator=(const Engine &) = delete;
 };

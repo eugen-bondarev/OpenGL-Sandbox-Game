@@ -7,14 +7,15 @@
 
 #include "input/input.h"
 
-void Gui::Create() {
+void Gui::Create()
+{
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-		io.IniFilename = nullptr;
-    io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
-		defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 16);
-		titleFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 48);
+	ImGuiIO &io = ImGui::GetIO();
+	io.IniFilename = nullptr;
+	io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
+	defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 16);
+	titleFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 48);
 
 	Theme0();
 
@@ -22,25 +23,29 @@ void Gui::Create() {
 	ImGui_ImplOpenGL3_Init();
 }
 
-void Gui::Destroy() {
+void Gui::Destroy()
+{
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
 
-void Gui::BeginFrame() {
+void Gui::BeginFrame()
+{
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
 
-void Gui::EndFrame() {
+void Gui::EndFrame()
+{
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+	ImGuiIO &io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		GLFWwindow *backupCurrentContext = glfwGetCurrentContext();
 
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();

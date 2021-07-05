@@ -6,22 +6,24 @@
 
 #include "../ecs/itransform.h"
 
-class Camera : public ITransform {
+class Camera : public ITransform
+{
 public:
-  Camera() = default;
+	Camera() = default;
 
-  const Vec2& GetLastPosition() const;
+	const Vec2 &GetLastPosition() const;
 
-  template <typename... Args>
-  inline void SetLastPosition(Args... args) {
-    lastPosition = Vec2(std::forward<Args>(args)...);
-  }
+	template <typename... Args>
+	inline void SetLastPosition(Args... args)
+	{
+		lastPosition = Vec2(std::forward<Args>(args)...);
+	}
 
-  Vec2 GetPositionOnScreen(Vec2 worldPosition) const;
-  void OnPositionChange(std::function<void()> Callback);
+	Vec2 GetPositionOnScreen(Vec2 worldPosition) const;
+	void OnPositionChange(std::function<void()> Callback);
 
 private:
-  Vec2 lastPosition; 
+	Vec2 lastPosition;
 
-  virtual void CalculateTransform() override;
+	virtual void CalculateTransform() override;
 };

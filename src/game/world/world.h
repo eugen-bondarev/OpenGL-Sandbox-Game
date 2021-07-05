@@ -4,20 +4,21 @@
 #include "woods/woods.h"
 #include "game/entities/camera.h"
 
-class World {
+class World
+{
 public:
-  World(int seed);
+	World(int seed);
 
-  Ref<Map>& GetMap();
-  Ref<Camera>& GetCamera();
-  Ref<Woods>& GetWoods();
+	Ref<Map> &GetMap();
+	Ref<Camera> &GetCamera();
+	Ref<Woods> &GetWoods();
 
 private:
 	Ref<Map> map;
 	Ref<Camera> camera;
 
-  Ref<Woods> woods;
+	Ref<Woods> woods;
 
-  World(const World&) = delete;
-  World& operator=(const World&) = delete;
+	World(const World &) = delete;
+	World &operator=(const World &) = delete;
 };

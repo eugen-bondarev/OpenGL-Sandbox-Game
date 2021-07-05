@@ -1,10 +1,11 @@
 #pragma once
 
-class IUpdatable {
+class IUpdatable
+{
 public:
-  inline static std::vector<IUpdatable*> updatableComponents;
+	inline static std::vector<IUpdatable *> updatableComponents;
 
-  static void UpdateComponents();
+	static void UpdateComponents();
 
-  virtual void Update() = 0;
+	virtual void Update() = 0;
 };

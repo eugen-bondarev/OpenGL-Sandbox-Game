@@ -4,9 +4,10 @@
 
 class Player;
 
-struct GameState {
-  GameState(World* world = nullptr, Player* player = nullptr);
+struct GameState
+{
+	GameState(World *world = nullptr, Player *player = nullptr);
 
-  World* world    { nullptr };
-  Player* player  { nullptr };
+	World *world{nullptr};
+	Player *player{nullptr};
 };

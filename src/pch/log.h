@@ -9,9 +9,9 @@
 #define ERR_OUT(x) std::cout << x << '\n'
 
 #ifdef NF_DEBUG
-# define LOG_OUT_D(x) LOG_OUT(x)
+#   define LOG_OUT_D(x) LOG_OUT(x)
 #else
-# define LOG_OUT_D(x) NF_VOID_ASSEMBLY
+#   define LOG_OUT_D(x) NF_VOID_ASSEMBLY
 #endif
 
 #define NF_ERROR_POPUP(message, title) boxer::show(std::string(message).c_str(), std::string(title).c_str(), boxer::Style::Error)

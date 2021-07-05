@@ -1,57 +1,67 @@
 #pragma once
 
-#include "Werwel/texture.h"
+#include "werwel/werwel.h"
 
 #include "game/world/blocks.h"
 #include "game/tools.h"
 
-class TileMap : public Werwel::Texture {
+class TileMap : public Werwel::Texture
+{
 public:
-  template <typename... Args>
-  TileMap(Vec2 tileSize, Args&&... args) : Werwel::Texture(std::forward<Args>(args)...) {
-    amountOfTiles = size / tileSize;
-  }
+	template <typename... Args>
+	TileMap(Vec2 tileSize, Args &&...args) : Werwel::Texture(std::forward<Args>(args)...)
+	{
+		amountOfTiles = size / tileSize;
+	}
 
-  inline Vec2 GetAmountOfTiles() const {
-    return amountOfTiles;
-  }
+	inline Vec2 GetAmountOfTiles() const
+	{
+		return amountOfTiles;
+	}
 
-  inline Vec2 GetTileSize() const {
-    return size / amountOfTiles;
-  }
+	inline Vec2 GetTileSize() const
+	{
+		return size / amountOfTiles;
+	}
 
 private:
-  Vec2 amountOfTiles;
+	Vec2 amountOfTiles;
 };
 
 template <typename T>
-class ITileMapDictionary {
+class ITileMapDictionary
+{
 public:
-  template <typename... Args>
-  void Setup(Args&&... args) {
-    dictionary = { std::forward<Args>(args)... };
-  }
+	template <typename... Args>
+	void Setup(Args &&...args)
+	{
+		dictionary = {std::forward<Args>(args)...};
+	}
 
-  void Add(T t, Vec2 vec) {
-    dictionary[t] = vec;
-  }
+	void Add(T t, Vec2 vec)
+	{
+		dictionary[t] = vec;
+	}
 
-  Vec2 Get(T t) const {
-    return dictionary.at(t);
-  }
+	Vec2 Get(T t) const
+	{
+		return dictionary.at(t);
+	}
 
 public:
-  std::map<T, Vec2> dictionary;
+	std::map<T, Vec2> dictionary;
 };
 
-class BlocksTileMap : public TileMap, public ITileMapDictionary<BlockType> {
+class BlocksTileMap : public TileMap, public ITileMapDictionary<BlockType>
+{
 public:
-  template <typename... Args>
-  BlocksTileMap(Args&&... args) : TileMap(std::forward<Args>(args)...) {}
+	template <typename... Args>
+	BlocksTileMap(Args &&...args) : TileMap(std::forward<Args>(args)...) {}
 };
 
-class ToolsTileMap : public TileMap, public ITileMapDictionary<ToolType> {
+class ToolsTileMap : public TileMap, public ITileMapDictionary<ToolType>
+{
 public:
-  template <typename... Args>
-  ToolsTileMap(Args&&... args) : TileMap(std::forward<Args>(args)...) {}
+	template <typename... Args>
+	ToolsTileMap(Args &&...args) : TileMap(std::forward<Args>(args)...) {}
 };

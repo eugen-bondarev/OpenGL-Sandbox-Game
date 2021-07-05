@@ -6,21 +6,23 @@
 
 #include "renderer/atlas/texture_atlas.h"
 
-class Tool : public Item {
+class Tool : public Item
+{
 public:
-  Tool(ToolType type, int amount = 1);
+	Tool(ToolType type, int amount = 1);
 
-  void Use(GameState state) override;
+	void Use(GameState state) override;
 
-  ToolType GetToolType() const;
+	ToolType GetToolType() const;
 
-  Icon GetIcon() override {
-    return {
-      TextureAtlas::Get<ToolsTileMap>(TextureAtlasType::Tools),
-      TextureAtlas::Get<ToolsTileMap>(TextureAtlasType::Tools)->Get(type),
-    };
-  }
+	Icon GetIcon() override
+	{
+		return {
+			TextureAtlas::Get<ToolsTileMap>(TextureAtlasType::Tools),
+			TextureAtlas::Get<ToolsTileMap>(TextureAtlasType::Tools)->Get(type),
+		};
+	}
 
 private:
-  ToolType type;
+	ToolType type;
 };

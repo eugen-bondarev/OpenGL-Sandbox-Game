@@ -5,10 +5,11 @@
 #include "blocks.h"
 #include "types.h"
 
-struct MapGenerationDataSet {
+struct MapGenerationDataSet
+{
 	int maxHeight = 50;
 	int maxDepth = 25;
-	int maxSlopeMistake = 2;	
+	int maxSlopeMistake = 2;
 
 	int maxLength = 200;
 	int minLength = 15;
@@ -22,29 +23,32 @@ inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
 
 using TileToUpdate = Vec2;
 
-class Map {
+class Map
+{
 public:
-  Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
+	Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
 
-	struct BlockSettingData {
-		Vec2 block { -1, -1 };
-		Vec2 chunk { -1, -1 };
-		
+	struct BlockSettingData
+	{
+		Vec2 block{-1, -1};
+		Vec2 chunk{-1, -1};
+
 		BlockType blockType;
 		BlockType oldBlock;
 
-		inline bool IsSet() const {
-			return chunk != Vec2 { -1, -1 };
+		inline bool IsSet() const
+		{
+			return chunk != Vec2{-1, -1};
 		}
 	};
 
-	TileType GetTileUnderCursor(const Vec2& cameraPosition, const tiles_t& tiles) const;
-	BlockType GetBlockUnderCursor(const Vec2& cameraPosition) const;
-	WallType GetWallUnderCursor(const Vec2& cameraPosition) const;
+	TileType GetTileUnderCursor(const Vec2 &cameraPosition, const tiles_t &tiles) const;
+	BlockType GetBlockUnderCursor(const Vec2 &cameraPosition) const;
+	WallType GetWallUnderCursor(const Vec2 &cameraPosition) const;
 
-	BlockSettingData Place(const Vec2& cameraPosition, BlockType blockType, TilePos tilePos);
-	BlockSettingData PlaceBlock(const Vec2& cameraPosition, BlockType blockType);
-	BlockSettingData PlaceWall(const Vec2& cameraPosition, WallType wallType);
+	BlockSettingData Place(const Vec2 &cameraPosition, BlockType blockType, TilePos tilePos);
+	BlockSettingData PlaceBlock(const Vec2 &cameraPosition, BlockType blockType);
+	BlockSettingData PlaceWall(const Vec2 &cameraPosition, WallType wallType);
 
 	bool HasNeighbor(int x, int y, BlockType block) const;
 	bool HasEmptyNeighbor(int x, int y) const;
@@ -54,20 +58,20 @@ public:
 
 	Vec2 WhatChunk(Vec2 block) const;
 	chunk_t WhatBlocks(Vec2 chunk) const;
-	
-	Vec2 WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4& projectionMatrix, const Mat4& viewMatrix) const;
+
+	Vec2 WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4 &projectionMatrix, const Mat4 &viewMatrix) const;
 
 	Vec2 GetChunkSize() const;
 	Vec2 GetAmountOfChunks() const;
 	Vec2 GetCenter() const;
 
-	void CalculateVisibleChunks(Vec2 viewPos);	
+	void CalculateVisibleChunks(Vec2 viewPos);
 
-	const bounds_t& GetVisibleChunks() const;
+	const bounds_t &GetVisibleChunks() const;
 	float GetBlockSize() const;
 
-	blocks_t& GetBlocks();
-	walls_t& GetWalls();
+	blocks_t &GetBlocks();
+	walls_t &GetWalls();
 
 	bool BlockIs(int x, int y, BlockType type) const;
 	bool WallIs(int x, int y, WallType type) const;
@@ -81,18 +85,18 @@ public:
 	int GetSizeInKilobytes() const;
 	int GetSizeInMegabytes() const;
 
-	bool blocksUpdated { true };
-	bool chunksUpdated { true };
+	bool blocksUpdated{true};
+	bool chunksUpdated{true};
 
-	TileToUpdate blockToUpdate { -1 };
-	TileToUpdate wallToUpdate { -1 };
+	TileToUpdate blockToUpdate{-1};
+	TileToUpdate wallToUpdate{-1};
 
 private:
 	blocks_t blocks;
 	walls_t walls;
 
-  Vec2 chunkSize;
-  Vec2 amountOfChunks;
+	Vec2 chunkSize;
+	Vec2 amountOfChunks;
 	Vec2 amountOfBlocks;
 
 	float blockSize;

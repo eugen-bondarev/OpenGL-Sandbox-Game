@@ -1,6 +1,7 @@
 #include "animator.h"
 
-Animator::Animator(Entity* entity) : Component(entity) {
+Animator::Animator(Entity *entity) : Component(entity)
+{
 	animations.emplace_back(new Animation::Humanoid::Walking());
 	animations.emplace_back(new Animation::Humanoid::Attacking());
 
@@ -8,17 +9,22 @@ Animator::Animator(Entity* entity) : Component(entity) {
 	attackingAnimation = animations[1].get();
 }
 
-void Animator::SetDirection(int direction) {
-  this->direction = direction;
+void Animator::SetDirection(int direction)
+{
+	this->direction = direction;
 }
 
-int Animator::GetDirection() const {
-  return direction;
+int Animator::GetDirection() const
+{
+	return direction;
 }
 
-Ref<Animation::Clip>& Animator::GetCurrentAnimation() {
-	for (int i = 0; i < animations.size(); i++) {
-		if (animations[i]->InUse(state)) {
+Ref<Animation::Clip> &Animator::GetCurrentAnimation()
+{
+	for (int i = 0; i < animations.size(); i++)
+	{
+		if (animations[i]->InUse(state))
+		{
 			return animations[i];
 		}
 	}
@@ -26,10 +32,12 @@ Ref<Animation::Clip>& Animator::GetCurrentAnimation() {
 	return animations[0];
 }
 
-float Animator::GetState() const {
+float Animator::GetState() const
+{
 	return state;
 }
 
-void Animator::SetState(float newState) {
+void Animator::SetState(float newState)
+{
 	state = newState;
 }

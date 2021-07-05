@@ -4,12 +4,14 @@
 
 class Entity;
 
-class Component {
+class Component
+{
 public:
-  Component(Entity* entity) : entity { entity } {
-  }
-  
-  virtual ~Component() = default;
+	Component(Entity *entity) : entity{entity}
+	{
+	}
 
-  Entity* entity;
+	virtual ~Component() = default;
+
+	Entity *entity;
 };

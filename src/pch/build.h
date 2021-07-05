@@ -10,7 +10,7 @@
 inline std::string NF_ROOT;
 
 #ifdef NDEBUG
-# define NF_RELEASE
+#   define NF_RELEASE
 #else
-# define NF_DEBUG
+#   define NF_DEBUG
 #endif

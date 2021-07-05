@@ -2,9 +2,7 @@
 
 #include "light_fbo.h"
 
-#include "Werwel/texture.h"
-#include "Werwel/shader.h"
-#include "Werwel/vao.h"
+#include "werwel/werwel.h"
 
 #include "core/window.h"
 
@@ -15,27 +13,31 @@
 
 #include "game/entities/camera.h"
 
-class LightPass {
-public:  
-  LightPass();
-  void Perform(const Ref<Camera>& camera, int amountOfBlocks);
+class LightPass
+{
+public:
+	LightPass();
+	void Perform(const Ref<Camera> &camera, int amountOfBlocks);
 
-  inline const Ref<LightFBO>& GetFBO() const {
-    return fbo;
-  }
+	inline const Ref<LightFBO> &GetFBO() const
+	{
+		return fbo;
+	}
 
-  inline const Ref<Werwel::VBO>& GetVBO() const {
-    return vbo;
-  }
+	inline const Ref<Werwel::VBO> &GetVBO() const
+	{
+		return vbo;
+	}
 
 private:
-  Ref<LightFBO> fbo;
-  Ref<Werwel::Shader> shader;
-  Ref<Werwel::VBO> vbo;
+	Ref<LightFBO> fbo;
+	Ref<Werwel::Shader> shader;
+	Ref<Werwel::VBO> vbo;
 
-  struct {
-    Ref<Werwel::VAO> vao;
-    Ref<Werwel::Texture> texture;
-  } lightMesh;
-  std::vector<Vec2> lightPositions;
+	struct
+	{
+		Ref<Werwel::VAO> vao;
+		Ref<Werwel::Texture> texture;
+	} lightMesh;
+	std::vector<Vec2> lightPositions;
 };

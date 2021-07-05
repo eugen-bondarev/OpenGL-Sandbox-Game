@@ -2,11 +2,12 @@
 
 #include "core/window.h"
 
-LightPass::LightPass() {
+LightPass::LightPass()
+{
 	fbo = CreateRef<LightFBO>(Vec2(300, 168));
 
-	TextAsset vsCode("assets/shaders/terrain/light_pass_shader.vs");
-	TextAsset fsCode("assets/shaders/terrain/light_pass_shader.fs");
+	Werwel::TextAsset vsCode("assets/shaders/terrain/light_pass_shader.vs", NF_ROOT);
+	Werwel::TextAsset fsCode("assets/shaders/terrain/light_pass_shader.fs", NF_ROOT);
 	shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ProjectionView");
 
 	/**
@@ -18,11 +19,10 @@ LightPass::LightPass() {
 	 * Empirical constant.
 	 */
 	const float lightTextureGradientConstant = 1.55f;
-	const auto& vertices = Primitives::Block::Vertices(
-	16 * (lightBlocks * lightTextureGradientConstant) * 2,
-	16 * (lightBlocks * lightTextureGradientConstant) * 2
-	);
-	const auto& indices = Primitives::Block::indices;
+	const auto &vertices = Primitives::Block::Vertices(
+		16 * (lightBlocks * lightTextureGradientConstant) * 2,
+		16 * (lightBlocks * lightTextureGradientConstant) * 2);
+	const auto &indices = Primitives::Block::indices;
 
 	lightMesh.vao = CreateRef<Werwel::VAO>();
 	lightMesh.vao->Bind();
@@ -30,20 +30,17 @@ LightPass::LightPass() {
 	lightMesh.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 	vbo = lightMesh.vao->AddVBO(
 		Werwel::VBO::Type::Array, Werwel::VBO::Usage::Stream, 0, sizeof(Vec2), nullptr,
-		Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
-	);
+		Werwel::VertexBufferLayouts{{2, sizeof(Vec2), 0, 1}});
 
-	ImageAsset lightTexture("assets/images/light_mask_32.png");
+	Werwel::ImageAsset lightTexture("assets/images/light_mask_32.png", NF_ROOT);
 	lightMesh.texture = CreateRef<Werwel::Texture>(
-	lightTexture.GetSize(),
-	lightTexture.GetData(),
-	GL_RGBA,
-	GL_RGBA,
-	GL_UNSIGNED_BYTE,
-		Werwel::Texture::Parameters_t {
-			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Linear)
-		}
-	);
+		lightTexture.GetSize(),
+		lightTexture.GetData(),
+		GL_RGBA,
+		GL_RGBA,
+		GL_UNSIGNED_BYTE,
+		Werwel::Texture::Parameters_t{
+			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Linear)});
 
 	/**
 	 * VERY IMPORTANT!
@@ -57,7 +54,8 @@ LightPass::LightPass() {
 	// });
 }
 
-void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {
+void LightPass::Perform(const Ref<Camera> &camera, int amountOfLights)
+{
 	NF_PROFILER_SCOPE();
 
 	glViewport(0, 0, 300, 168);
@@ -66,12 +64,12 @@ void LightPass::Perform(const Ref<Camera>& camera, int amountOfLights) {
 
 	fbo->Bind();
 	fbo->Clear();
-		shader->Bind();
-		shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
-		lightMesh.vao->Bind();
-		lightMesh.vao->GetIndexBuffer()->Bind();
-			lightMesh.texture->Bind();
-			glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
+	shader->Bind();
+	shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
+	lightMesh.vao->Bind();
+	lightMesh.vao->GetIndexBuffer()->Bind();
+	lightMesh.texture->Bind();
+	glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
 	fbo->Unbind();
 
 	glViewport(0, 0, Window::GetSize().x, Window::GetSize().y);

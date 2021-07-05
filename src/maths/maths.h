@@ -24,12 +24,14 @@ inline Vec3 round(Vec3 value) { return Vec3(roundf(value.x), roundf(value.y), ro
 inline Vec2 ToInt(Vec2 value) { return Vec2(static_cast<int>(value.x), static_cast<int>(value.y)); }
 inline Vec3 ToInt(Vec3 value) { return Vec3(static_cast<int>(value.x), static_cast<int>(value.y), static_cast<int>(value.z)); }
 
-inline static void ForEachComp(float* vec, int components, std::function<float(float)> action) {
-	float* address = vec;
-	for (int i = 0; i < components; i++) {
+inline static void ForEachComp(float *vec, int components, std::function<float(float)> action)
+{
+	float *address = vec;
+	for (int i = 0; i < components; i++)
+	{
 		float newValue = action(*address);
 		memcpy(address++, &newValue, sizeof(float));
-	}	
+	}
 }
 
 inline static Color RED_COLOR = Color(1, 0, 0, 1);
@@ -40,11 +42,12 @@ inline static Color PURPLE_COLOR = Color(1, 0, 1, 1);
 inline static Color WHITE_COLOR = Color(1, 1, 1, 1);
 inline static Color BLACK_COLOR = Color(0, 0, 0, 1);
 
-#define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF) \
-template<typename... Args> \
-inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(args)...)) { \
-	return lowLevelF(std::forward<Args>(args)...); \
-}
+#define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF)                                       \
+	template <typename... Args>                                                              \
+	inline auto highLevelF(Args &&...args)->decltype(lowLevelF(std::forward<Args>(args)...)) \
+	{                                                                                        \
+		return lowLevelF(std::forward<Args>(args)...);                                       \
+	}
 
 namespace Math {
 
@@ -66,5 +69,5 @@ ALIAS_TEMPLATE_FUNCTION(Distance, glm::distance)
 namespace Physics {
 
 inline static constexpr float g = 9.81f;
-	
+
 }

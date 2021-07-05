@@ -7,3 +7,6 @@
 #include "vao.h"
 #include "vbo.h"
 #include "vertex_buffer_layout.h"
+
+#include "assets/image_asset.h"
+#include "assets/text_asset.h"

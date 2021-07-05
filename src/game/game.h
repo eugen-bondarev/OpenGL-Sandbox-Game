@@ -8,29 +8,30 @@
 
 #include "renderer/interface/interface_renderer.h"
 
-class Game {
+class Game
+{
 public:
-  Game(int seed = 669);
-  ~Game();
+	Game(int seed = 669);
+	~Game();
 
-  void Play(bool& resetGame);
+	void Play(bool &resetGame);
 
 private:
-  void Logic(bool& resetGame);
-  void Render();
-  
-  Ref<ToolsTileMap> toolsTileMap;
+	void Logic(bool &resetGame);
+	void Render();
+
+	Ref<ToolsTileMap> toolsTileMap;
 
 	std::vector<Ref<Character>> characters;
 
-  Ref<World> world;
-  Ref<WorldRenderer> worldRenderer;
+	Ref<World> world;
+	Ref<WorldRenderer> worldRenderer;
 
 	Ref<Character> character;
-	Ref<CharacterRenderer> characterRenderer;	
+	Ref<CharacterRenderer> characterRenderer;
 
-  Ref<InterfaceRenderer> interfaceRenderer;
+	Ref<InterfaceRenderer> interfaceRenderer;
 
-  Game(const Game&) = delete;
-  Game& operator=(const Game&) = delete;
+	Game(const Game &) = delete;
+	Game &operator=(const Game &) = delete;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
-enum class ToolType {
+enum class ToolType
+{
 	Empty = 0,
 	BronzePickaxe,
 	BronzeAxe,

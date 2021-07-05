@@ -2,9 +2,10 @@
 
 #include "item.h"
 
-class Empty : public Item {
+class Empty : public Item
+{
 public:
-  Empty();
+	Empty();
 
-  void Use(GameState state) override;
+	void Use(GameState state) override;
 };

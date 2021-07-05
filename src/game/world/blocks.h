@@ -2,7 +2,8 @@
 
 #include "maths/maths.h"
 
-enum class TileType {
+enum class TileType
+{
 	Empty = 0,
 	Dirt,
 	Grass,
@@ -13,7 +14,8 @@ enum class TileType {
 namespace Blocks {
 namespace Representations {
 
-struct IndexAndPosition {
+struct IndexAndPosition
+{
 	Vec2 index;
 	Vec2 worldPosition;
 };
@@ -22,4 +24,4 @@ struct IndexAndPosition {
 }
 
 using BlockType = TileType;
-using WallType  = TileType;
+using WallType = TileType;

@@ -9,35 +9,36 @@
 
 #include "entity.h"
 
-class Rigidbody : public IUpdatable, public Component {
+class Rigidbody : public IUpdatable, public Component
+{
 public:
-  inline static constexpr float velocityFactor = 150.0f;
+	inline static constexpr float velocityFactor = 150.0f;
 
-  Blocks::Representations::IndexAndPosition GetBlockNearby(Vec2 fix, Vec2 offset = Vec2(0, 0)) const;
+	Blocks::Representations::IndexAndPosition GetBlockNearby(Vec2 fix, Vec2 offset = Vec2(0, 0)) const;
 
-  Rigidbody(Entity* entity, const Ref<Map> map);
+	Rigidbody(Entity *entity, const Ref<Map> map);
 
-  void Update() override;
-  void CheckCollisions();
-  void Jump();
+	void Update() override;
+	void CheckCollisions();
+	void Jump();
 
-  void SetCeiling(bool value);
-  void SetOnGround(bool value);
-  void CanMoveLeft(bool value);
-  void CanMoveRight(bool value);
+	void SetCeiling(bool value);
+	void SetOnGround(bool value);
+	void CanMoveLeft(bool value);
+	void CanMoveRight(bool value);
 
-  bool GetCeiling() const;
-  bool GetOnGround() const;
-  bool CanMoveLeft() const;
-  bool CanMoveRight() const;
+	bool GetCeiling() const;
+	bool GetOnGround() const;
+	bool CanMoveLeft() const;
+	bool CanMoveRight() const;
 
 private:
-  const Ref<Map> map;
+	const Ref<Map> map;
 
-  bool ceiling      { false };
-  bool onGround     { false };
-  bool canMoveLeft  { true };
-  bool canMoveRight { true };
+	bool ceiling{false};
+	bool onGround{false};
+	bool canMoveLeft{true};
+	bool canMoveRight{true};
 
-  Vec2 velocity { 0 };
+	Vec2 velocity{0};
 };
