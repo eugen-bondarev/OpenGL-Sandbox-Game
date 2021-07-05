@@ -1,18 +1,18 @@
-#pragma once
+// #pragma once
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+// #include "imgui/imgui.h"
+// #include "imgui/imgui_impl_glfw.h"
+// #include "imgui/imgui_impl_opengl3.h"
 
-class Gui
-{
-public:
-	static void Create();
-	static void Destroy();
+// class Gui
+// {
+// public:
+// 	static void Create();
+// 	static void Destroy();
 
-	static void BeginFrame();
-	static void EndFrame();
+// 	static void BeginFrame();
+// 	static void EndFrame();
 
-	inline static ImFont *defaultFont{nullptr};
-	inline static ImFont *titleFont{nullptr};
-};
+// 	inline static ImFont *defaultFont{nullptr};
+// 	inline static ImFont *titleFont{nullptr};
+// };

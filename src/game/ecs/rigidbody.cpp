@@ -107,8 +107,8 @@ void Rigidbody::Update()
 
 	if (!onGround)
 	{
-		entity->SetPosition(entity->position + velocity * Vec2(0, 1) * Time::GetDelta());
-		velocity += -Physics::g * Time::GetDelta() * velocityFactor;
+		entity->SetPosition(entity->position + velocity * Vec2(0, 1) * ww::Time::GetDelta());
+		velocity += -Physics::g * ww::Time::GetDelta() * velocityFactor;
 
 		if (ceiling)
 		{

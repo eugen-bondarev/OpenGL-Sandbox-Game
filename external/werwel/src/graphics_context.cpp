@@ -1,6 +1,6 @@
 #include "graphics_context.h"
 
-namespace Werwel {
+namespace ww {
 namespace GraphicsContext {
 
 void ClearColor(GLclampf r, GLclampf g, GLclampf b, GLclampf a)

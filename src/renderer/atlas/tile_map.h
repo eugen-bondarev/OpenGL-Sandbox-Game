@@ -5,11 +5,11 @@
 #include "game/world/blocks.h"
 #include "game/tools.h"
 
-class TileMap : public Werwel::Texture
+class TileMap : public ww::Texture
 {
 public:
 	template <typename... Args>
-	TileMap(Vec2 tileSize, Args &&...args) : Werwel::Texture(std::forward<Args>(args)...)
+	TileMap(Vec2 tileSize, Args &&...args) : ww::Texture(std::forward<Args>(args)...)
 	{
 		amountOfTiles = size / tileSize;
 	}

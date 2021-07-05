@@ -1,5 +1,8 @@
 #pragma once
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include <functional>
 #include <iostream>
 #include <vector>
@@ -28,7 +31,7 @@
 #	define WERWEL_DEBUG_LOG_OUT(x) WERWEL_VOID_ASSEMBLY
 #endif
 
-namespace Werwel {
+namespace ww {
 
 #ifdef WERWEL_USE_GLM
 	using Vec2 = glm::vec2;

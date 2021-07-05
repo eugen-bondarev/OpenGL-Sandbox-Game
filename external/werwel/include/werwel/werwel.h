@@ -10,3 +10,8 @@
 
 #include "assets/image_asset.h"
 #include "assets/text_asset.h"
+
+#include "window/window.h"
+#include "window/input.h"
+#include "window/time.h"
+#include "window/gui.h"

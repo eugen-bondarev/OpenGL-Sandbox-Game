@@ -6,7 +6,7 @@
 
 namespace ImGui {
 
-static void MyImage(const std::string &name, const Ref<Werwel::Texture> &texture, ImVec2 size = ImVec2(0, 0))
+static void MyImage(const std::string &name, const Ref<ww::Texture> &texture, ImVec2 size = ImVec2(0, 0))
 {
 	ImGui::Begin(name.c_str());
 	if (size.x == 0 || size.y == 0)

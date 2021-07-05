@@ -8,14 +8,14 @@
 #include "imgui/imgui.h"
 
 Game::Game(int seed) {
-	const Werwel::ImageAsset toolsTileMapTexture("assets/images/tools.png", NF_ROOT);
+	const ww::ImageAsset toolsTileMapTexture("assets/images/tools.png", NF_ROOT);
 	toolsTileMap = TextureAtlas::Add<ToolsTileMap>(TextureAtlasType::Tools, CreateRef<ToolsTileMap>(
 		Vec2(16.0f),
 		toolsTileMapTexture.GetSize(),
 		toolsTileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		Werwel::Texture::Parameters_t {
-			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		ww::Texture::Parameters_t {
+			ww::Texture::SetInterpolation(ww::Interpolation::Constant)
 		}
 	));
 	
@@ -45,7 +45,7 @@ void Game::Play(bool& resetGame) {
 }
 
 void Game::Logic(bool& resetGame) {
-	if (Input::KeyPressed(Input::Key::Esc)) {
+	if (ww::Input::KeyPressed(ww::Input::Key::Esc)) {
 		resetGame = true;
 	}
 }
@@ -77,7 +77,7 @@ void Game::Render() {
 
 	interfaceRenderer->Render();
 
-	Linow::Render(Math::ToPtr(Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
+	Linow::Render(Math::ToPtr(ww::Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 
 #ifdef NF_SHOW_DEBUG_GUI
 	ImGui::SetNextWindowSize(ImVec2(220, 120));

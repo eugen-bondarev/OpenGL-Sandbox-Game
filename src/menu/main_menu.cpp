@@ -11,28 +11,28 @@ MainMenu::MainMenu(Ref<Game> &game) : game{game}
 
 void MainMenu::Settings()
 {
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
-	ImGui::PushFont(Gui::titleFont);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
+	ImGui::PushFont(ww::Gui::titleFont);
 	ImGui::Text("Settings");
 	ImGui::PopFont();
 
-	static Window::Settings windowSettings = {};
+	static ww::Window::Settings windowSettings = {};
 
-	static Vec2i s = {Window::GetSize().x, Window::GetSize().y};
+	static Vec2i s = {ww::Window::GetSize().x, ww::Window::GetSize().y};
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::Button("Recreate the window"))
 	{
-		Window::Recreate(windowSettings);
+		ww::Window::Recreate(windowSettings);
 	}
 
 	ImGui::PushItemWidth(150);
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::InputInt("Width", &s.x))
 	{
 		windowSettings.size = s;
 	}
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::InputInt("Height", &s.y))
 	{
 		windowSettings.size = s;
@@ -41,20 +41,20 @@ void MainMenu::Settings()
 	const char *items[] = {"Fullscreen", "Borderless", "Windowed"};
 	static int item_current = static_cast<int>(windowSettings.mode);
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::Combo("Window mode", &item_current, items, 3))
 	{
-		windowSettings.mode = static_cast<Window::Mode>(item_current);
+		windowSettings.mode = static_cast<ww::Window::Mode>(item_current);
 	}
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	ImGui::Checkbox("Maximize window", &windowSettings.maximize);
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	ImGui::Checkbox("vSync", &windowSettings.vSync);
 	ImGui::PopItemWidth();
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::Button("Back"))
 	{
 		location = MenuLocation::Main;
@@ -63,24 +63,24 @@ void MainMenu::Settings()
 
 void MainMenu::Main()
 {
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
-	ImGui::PushFont(Gui::titleFont);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
+	ImGui::PushFont(ww::Gui::titleFont);
 	ImGui::Text("NaturaForge");
 	ImGui::PopFont();
 
 	static int seed = 27655;
 
 	ImGui::SetNextItemWidth(100);
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	ImGui::InputInt("Seed", &seed);
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::Button("Start game"))
 	{
 		game = CreatePtr<Game>(seed);
 	}
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::Button("Settings"))
 	{
 		location = MenuLocation::Settings;
@@ -88,7 +88,7 @@ void MainMenu::Main()
 
 	static bool exitPopup = false;
 
-	ImGui::SetCursorPosX(Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(ww::Window::GetSize().x / 2.0f);
 	if (ImGui::Button("Exit"))
 	{
 		exitPopup = true;
@@ -102,7 +102,7 @@ void MainMenu::Main()
 		{
 			if (ImGui::Button("Yes"))
 			{
-				Window::Close();
+				ww::Window::Close();
 			}
 
 			ImGui::SameLine();
@@ -123,11 +123,11 @@ void MainMenu::Show()
 	windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 	windowFlags |= ImGuiWindowFlags_NoResize;
 
-	ImGui::SetNextWindowSize(ImVec2(Window::GetSize().x, Window::GetSize().y));
+	ImGui::SetNextWindowSize(ImVec2(ww::Window::GetSize().x, ww::Window::GetSize().y));
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::Begin("Menu", nullptr, windowFlags);
 
-	ImGui::SetCursorPosY(Window::GetSize().y / 2.0f - 100);
+	ImGui::SetCursorPosY(ww::Window::GetSize().y / 2.0f - 100);
 
 	switch (location)
 	{

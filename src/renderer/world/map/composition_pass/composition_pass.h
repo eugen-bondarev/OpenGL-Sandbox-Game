@@ -12,12 +12,12 @@ public:
 	CompositionPass();
 	void Perform(const Ref<ColorPass> &colorPass, const Ref<LightPass> &lightPass);
 
-	Ref<Werwel::Shader> shader;
-	Ref<Werwel::VAO> canvas;
+	Ref<ww::Shader> shader;
+	Ref<ww::VAO> canvas;
 
 private:
 	struct
 	{
-		Ref<Werwel::Shader> shader;
+		Ref<ww::Shader> shader;
 	} sky;
 };

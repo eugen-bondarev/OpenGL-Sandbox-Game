@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace Werwel {
+namespace ww {
 
 struct VertexBufferLayout 
 {

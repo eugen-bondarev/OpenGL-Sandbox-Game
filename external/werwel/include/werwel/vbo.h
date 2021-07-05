@@ -4,7 +4,7 @@
 
 #include "vertex_buffer_layout.h"
 
-namespace Werwel {
+namespace ww {
 
 class VBO : public GPUEntity
 {

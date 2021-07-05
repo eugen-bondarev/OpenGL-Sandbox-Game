@@ -1,8 +1,8 @@
 #include "FBO.h"
 
-namespace Werwel {
+namespace ww {
 
-FBO::FBO(Size size, GLbitfield buffersToClear, std::vector<GLuint> drawBuffers)
+FBO::FBO(Vec2 size, GLbitfield buffersToClear, std::vector<GLuint> drawBuffers)
 	: size { size }, buffersToClear{ buffersToClear }, drawBuffers{ drawBuffers }
 {
 }
@@ -49,7 +49,7 @@ void FBO::Clear() const {
 	glClear(buffersToClear);
 }
 
-void FBO::Resize(Size size) {
+void FBO::Resize(Vec2 size) {
 	size = size;
 
 	for (auto& attachment : attachments) {
@@ -59,7 +59,7 @@ void FBO::Resize(Size size) {
 	}
 }
 
-Size FBO::GetSize() const {
+Vec2 FBO::GetSize() const {
 	return size;
 }
 

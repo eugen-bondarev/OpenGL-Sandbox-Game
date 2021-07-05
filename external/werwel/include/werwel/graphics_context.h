@@ -2,7 +2,7 @@
 
 #include <GL/glew.h>
 
-namespace Werwel {
+namespace ww {
 namespace GraphicsContext {
 
 void ClearColor(GLclampf r, GLclampf g, GLclampf b, GLclampf a = 1.0f);

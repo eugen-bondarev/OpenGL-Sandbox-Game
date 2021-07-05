@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Werwel {
+namespace ww {
 
 class Asset
 {

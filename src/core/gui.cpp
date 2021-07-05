@@ -1,55 +1,55 @@
-#include "gui.h"
+// #include "gui.h"
 
-#include "window.h"
+// #include "window.h"
 
-#include "themes/theme0.h"
-#include "themes/theme1.h"
+// #include "themes/theme0.h"
+// #include "themes/theme1.h"
 
-#include "input/input.h"
+// #include "input/input.h"
 
-void Gui::Create()
-{
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO &io = ImGui::GetIO();
-	io.IniFilename = nullptr;
-	io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
-	defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 16);
-	titleFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 48);
+// void Gui::Create()
+// {
+// 	IMGUI_CHECKVERSION();
+// 	ImGui::CreateContext();
+// 	ImGuiIO &io = ImGui::GetIO();
+// 	io.IniFilename = nullptr;
+// 	io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
+// 	defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 16);
+// 	titleFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 48);
 
-	Theme0();
+// 	Theme0();
 
-	ImGui_ImplGlfw_InitForOpenGL(Window::GetGlfwWindow(), true);
-	ImGui_ImplOpenGL3_Init();
-}
+// 	ImGui_ImplGlfw_InitForOpenGL(Window::GetGlfwWindow(), true);
+// 	ImGui_ImplOpenGL3_Init();
+// }
 
-void Gui::Destroy()
-{
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
+// void Gui::Destroy()
+// {
+// 	ImGui_ImplOpenGL3_Shutdown();
+// 	ImGui_ImplGlfw_Shutdown();
+// 	ImGui::DestroyContext();
+// }
 
-void Gui::BeginFrame()
-{
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-}
+// void Gui::BeginFrame()
+// {
+// 	ImGui_ImplOpenGL3_NewFrame();
+// 	ImGui_ImplGlfw_NewFrame();
+// 	ImGui::NewFrame();
+// }
 
-void Gui::EndFrame()
-{
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+// void Gui::EndFrame()
+// {
+// 	ImGui::Render();
+// 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	ImGuiIO &io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		GLFWwindow *backupCurrentContext = glfwGetCurrentContext();
+// 	ImGuiIO &io = ImGui::GetIO();
+// 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+// 	{
+// 		GLFWwindow *backupCurrentContext = glfwGetCurrentContext();
 
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
+// 		ImGui::UpdatePlatformWindows();
+// 		ImGui::RenderPlatformWindowsDefault();
 
-		glfwMakeContextCurrent(backupCurrentContext);
-	}
-}
+// 		glfwMakeContextCurrent(backupCurrentContext);
+// 	}
+// }

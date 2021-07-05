@@ -2,7 +2,7 @@
 
 #include "asset.h"
 
-namespace Werwel {
+namespace ww {
 
 class TextAsset : public Asset
 {

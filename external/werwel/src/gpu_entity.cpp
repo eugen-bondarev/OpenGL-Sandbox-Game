@@ -1,6 +1,6 @@
 #include "gpu_entity.h"
 
-namespace Werwel {
+namespace ww {
 
 GLuint GPUEntity::GetHandle() const 
 {

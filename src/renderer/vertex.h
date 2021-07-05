@@ -9,7 +9,7 @@ struct Vertex2D
 	Vec2 position;
 	Vec2 uv;
 
-	inline static Werwel::VertexBufferLayouts GetLayout()
+	inline static ww::VertexBufferLayouts GetLayout()
 	{
 		return {
 			{2, sizeof(Vertex2D), offsetof(Vertex2D, position)},

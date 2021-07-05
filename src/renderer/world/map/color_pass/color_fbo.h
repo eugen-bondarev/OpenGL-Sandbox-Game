@@ -2,7 +2,7 @@
 
 #include "werwel/werwel.h"
 
-class ColorFBO : public Werwel::FBO
+class ColorFBO : public ww::FBO
 {
 public:
 	ColorFBO(Vec2 size);
@@ -11,5 +11,5 @@ public:
 	void UnbindTexture(GLuint slot) const;
 
 	GLuint GetTextureHandle() const;
-	const Ref<Werwel::Texture> &GetTexture() const;
+	const Ref<ww::Texture> &GetTexture() const;
 };

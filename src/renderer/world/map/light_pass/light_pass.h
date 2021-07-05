@@ -24,20 +24,20 @@ public:
 		return fbo;
 	}
 
-	inline const Ref<Werwel::VBO> &GetVBO() const
+	inline const Ref<ww::VBO> &GetVBO() const
 	{
 		return vbo;
 	}
 
 private:
 	Ref<LightFBO> fbo;
-	Ref<Werwel::Shader> shader;
-	Ref<Werwel::VBO> vbo;
+	Ref<ww::Shader> shader;
+	Ref<ww::VBO> vbo;
 
 	struct
 	{
-		Ref<Werwel::VAO> vao;
-		Ref<Werwel::Texture> texture;
+		Ref<ww::VAO> vao;
+		Ref<ww::Texture> texture;
 	} lightMesh;
 	std::vector<Vec2> lightPositions;
 };

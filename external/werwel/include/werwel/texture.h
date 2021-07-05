@@ -2,7 +2,7 @@
 
 #include "gpu_entity.h"
 
-namespace Werwel {
+namespace ww {
 
 enum class Interpolation
 {
@@ -18,22 +18,22 @@ public:
 	using Parameter_t = std::function<void()>;
 	using Parameters_t = std::vector<Parameter_t>;
 
-	Texture(Size size, Pixels_t data, GLint internalFormat, GLuint format, GLuint type, Parameters_t params = {});
+	Texture(Vec2 size, Pixels_t data, GLint internalFormat, GLuint format, GLuint type, Parameters_t params = {});
 	~Texture() override;
 
 	static Parameter_t SetInterpolation(Interpolation interpolation);
 
-	void Resize(Size size);
+	void Resize(Vec2 size);
 
 	void Bind() const override;
 	void Bind(GLuint unit) const;
 	void Unbind() const override;
 	void Unbind(GLuint unit) const;
 
-	Size GetSize() const;
+	Vec2 GetSize() const;
 	
 protected:
-	Size size;
+	Vec2 size;
 
 	GLint internalFormat;
 	GLuint format;

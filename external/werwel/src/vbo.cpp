@@ -1,6 +1,6 @@
 #include "vbo.h"
 
-namespace Werwel {
+namespace ww {
 
 VBO::VBO(GLuint attribute, Type type, Usage usage, size_t amount, size_t size, const void *data, std::vector<VertexBufferLayout> layouts)
 {

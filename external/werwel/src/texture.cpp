@@ -1,8 +1,8 @@
 #include "Texture.h"
 
-namespace Werwel {
+namespace ww {
 
-Texture::Texture(Size size, Pixels_t data, GLint internalFormat, GLuint format, GLuint type, Parameters_t params) : size{size}, internalFormat{internalFormat}, format{format}, type{type}
+Texture::Texture(Vec2 size, Pixels_t data, GLint internalFormat, GLuint format, GLuint type, Parameters_t params) : size{size}, internalFormat{internalFormat}, format{format}, type{type}
 {
 	glGenTextures(1, &handle);
 	glBindTexture(GL_TEXTURE_2D, handle);
@@ -22,12 +22,12 @@ Texture::~Texture()
 	glDeleteTextures(1, &handle);
 }
 
-Size Texture::GetSize() const
+Vec2 Texture::GetSize() const
 {
 	return size;
 }
 
-void Texture::Resize(Size size)
+void Texture::Resize(Vec2 size)
 {
 	this->size = size;
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 0, format, type, nullptr);

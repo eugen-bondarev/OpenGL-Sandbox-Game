@@ -11,23 +11,23 @@
 
 ColorPass::ColorPass(int amountOfBlocks)
 {
-	fbo = CreateRef<ColorFBO>(Window::GetSize());
+	fbo = CreateRef<ColorFBO>(ww::Window::GetSize());
 
-	Werwel::TextAsset vsCode("assets/shaders/terrain/color_pass_shader.vs", NF_ROOT);
-	Werwel::TextAsset fsCode("assets/shaders/terrain/color_pass_shader.fs", NF_ROOT);
-	shader = CreateRef<Werwel::Shader>(
-		vsCode.GetContent(), fsCode.GetContent(),
-		"u_ProjectionView");
+	ww::TextAsset vsCode("assets/shaders/terrain/color_pass_shader.vs", NF_ROOT);
+	ww::TextAsset fsCode("assets/shaders/terrain/color_pass_shader.fs", NF_ROOT);
+	shader = CreateRef<ww::Shader>(
+		vsCode.GetContent(), fsCode.GetContent(), 
+		ww::Uniforms { "u_ProjectionView" });
 
-	const Werwel::ImageAsset tileMapTexture("assets/images/map.png", NF_ROOT);
+	const ww::ImageAsset tileMapTexture("assets/images/map.png", NF_ROOT);
 
 	tileMap = TextureAtlas::Add<BlocksTileMap>(TextureAtlasType::Map, CreateRef<BlocksTileMap>(
 		Vec2(8.0f),
 		tileMapTexture.GetSize(),
 		tileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		Werwel::Texture::Parameters_t{
-			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
+		ww::Texture::Parameters_t{
+			ww::Texture::SetInterpolation(ww::Interpolation::Constant)
 		}
 	));
 
@@ -39,39 +39,39 @@ ColorPass::ColorPass(int amountOfBlocks)
 	const auto &vers = Primitives::Block::Vertices(16, 16);
 	const auto &inds = Primitives::Block::indices;
 
-	blocks.vao = CreateRef<Werwel::VAO>();
+	blocks.vao = CreateRef<ww::VAO>();
 	blocks.vao->Bind();
-	blocks.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-	blocks.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+	blocks.vao->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+	blocks.vao->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 	blocks.vbo = blocks.vao->AddVBO(
-		Werwel::VBO::Type::Array,
-		Werwel::VBO::Usage::Stream,
+		ww::VBO::Type::Array,
+		ww::VBO::Usage::Stream,
 		0, //amountOfBlocks,
 		sizeof(Vec4),
 		nullptr,
-		std::vector<Werwel::VertexBufferLayout>{
+		std::vector<ww::VertexBufferLayout>{
 			{4, sizeof(Vec4), 0, 1}
 		}
 	);
 
-	walls.vao = CreateRef<Werwel::VAO>();
+	walls.vao = CreateRef<ww::VAO>();
 	walls.vao->Bind();
-	walls.vao->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-	walls.vao->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+	walls.vao->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+	walls.vao->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 	walls.vbo = walls.vao->AddVBO(
-		Werwel::VBO::Type::Array,
-		Werwel::VBO::Usage::Stream,
+		ww::VBO::Type::Array,
+		ww::VBO::Usage::Stream,
 		0, //amountOfBlocks,
 		sizeof(BlockData),
 		nullptr,
-		std::vector<Werwel::VertexBufferLayout>{
+		std::vector<ww::VertexBufferLayout>{
 			{4, sizeof(BlockData), 0, 1}
 		}
 	);
 
-	Window::callbacks.push_back([&]()
+	ww::Window::callbacks.push_back([&]()
 	{ 
-		fbo->Resize(Window::GetSize()); 
+		fbo->Resize(ww::Window::GetSize()); 
 	});
 }
 
@@ -79,7 +79,7 @@ void ColorPass::Perform(const Ref<Camera> &camera, int amountOfWalls, int amount
 {
 	NF_PROFILER_SCOPE();
 
-	Mat4 projView = Window::GetSpace() * camera->GetTransform();
+	Mat4 projView = ww::Window::GetSpace() * camera->GetTransform();
 
 	fbo->Bind();
 	fbo->Clear();

@@ -19,11 +19,11 @@ private:
 	const std::vector<Ref<Character>> &characters;
 	const Ref<Camera> &camera;
 
-	Ref<Werwel::Texture> characterBodyTexture;
-	Ref<Werwel::Texture> characterHandTexture;
+	Ref<ww::Texture> characterBodyTexture;
+	Ref<ww::Texture> characterHandTexture;
 
-	Ref<Werwel::VAO> characterVAO;
-	Ref<Werwel::Shader> characterShader;
+	Ref<ww::VAO> characterVAO;
+	Ref<ww::Shader> characterShader;
 
 	CharacterRenderer(const CharacterRenderer &) = delete;
 	CharacterRenderer &operator=(const CharacterRenderer &) = delete;

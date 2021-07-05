@@ -41,12 +41,12 @@ public:
 
 	void Perform(const Ref<Camera> &camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>> &additionalRenderers = {});
 
-	inline const Ref<Werwel::VBO> &GetBlocksVBO() const
+	inline const Ref<ww::VBO> &GetBlocksVBO() const
 	{
 		return blocks.vbo;
 	}
 
-	inline const Ref<Werwel::VBO> &GetWallsVBO() const
+	inline const Ref<ww::VBO> &GetWallsVBO() const
 	{
 		return walls.vbo;
 	}
@@ -58,18 +58,18 @@ public:
 
 private:
 	Ref<ColorFBO> fbo;
-	Ref<Werwel::Shader> shader;
+	Ref<ww::Shader> shader;
 
 	struct
 	{
-		Ref<Werwel::VAO> vao;
-		Ref<Werwel::VBO> vbo;
+		Ref<ww::VAO> vao;
+		Ref<ww::VBO> vbo;
 	} blocks;
 
 	struct
 	{
-		Ref<Werwel::VAO> vao;
-		Ref<Werwel::VBO> vbo;
+		Ref<ww::VAO> vao;
+		Ref<ww::VBO> vbo;
 	} walls;
 
 	Ref<BlocksTileMap> tileMap;

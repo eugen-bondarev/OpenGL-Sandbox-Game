@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-namespace Werwel {
+namespace ww {
 
 TextAsset::TextAsset(const std::string &path, const std::string& root)
 {

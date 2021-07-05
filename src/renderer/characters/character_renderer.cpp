@@ -11,45 +11,48 @@
 
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>> &characters, const Ref<Camera> &camera) : characters{characters}, camera{camera}
 {
-	const Werwel::ImageAsset characterBodyTextureAsset("assets/images/characters/humanoid_body.png", NF_ROOT);
-	characterBodyTexture = CreateRef<Werwel::Texture>(
+	const ww::ImageAsset characterBodyTextureAsset("assets/images/characters/humanoid_body.png", NF_ROOT);
+	characterBodyTexture = CreateRef<ww::Texture>(
 		characterBodyTextureAsset.GetSize(),
 		characterBodyTextureAsset.GetData(),
 		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		Werwel::Texture::Parameters_t{
-			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)});
+		ww::Texture::Parameters_t{
+			ww::Texture::SetInterpolation(ww::Interpolation::Constant)});
 
-	const Werwel::ImageAsset characterHandTextureAsset("assets/images/characters/humanoid_hand.png", NF_ROOT);
-	characterHandTexture = CreateRef<Werwel::Texture>(
+	const ww::ImageAsset characterHandTextureAsset("assets/images/characters/humanoid_hand.png", NF_ROOT);
+	characterHandTexture = CreateRef<ww::Texture>(
 		characterHandTextureAsset.GetSize(),
 		characterHandTextureAsset.GetData(),
 		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		Werwel::Texture::Parameters_t{
-			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)});
+		ww::Texture::Parameters_t{
+			ww::Texture::SetInterpolation(ww::Interpolation::Constant)});
 
 	const auto &vertices = Primitives::Char::Vertices(HUMANOID_SIZE.x, HUMANOID_SIZE.y);
 	const auto &indices = Primitives::Char::indices;
 
-	characterVAO = CreateRef<Werwel::VAO>();
+	characterVAO = CreateRef<ww::VAO>();
 	characterVAO->Bind();
-	characterVAO->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
-	characterVAO->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+	characterVAO->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+	characterVAO->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 
-	Werwel::TextAsset vsCode("assets/shaders/characters/default.vs", NF_ROOT);
-	Werwel::TextAsset fsCode("assets/shaders/characters/default.fs", NF_ROOT);
-	characterShader = CreateRef<Werwel::Shader>(
-		vsCode.GetContent(), fsCode.GetContent(),
-		"u_Proj", "u_View", "u_Model",
-		"u_Frame", "u_AmountOfFrames",
-		"u_Direction", "u_Weapon");
+	ww::TextAsset vsCode("assets/shaders/characters/default.vs", NF_ROOT);
+	ww::TextAsset fsCode("assets/shaders/characters/default.fs", NF_ROOT);
+	characterShader = CreateRef<ww::Shader>(
+		vsCode.GetContent(), fsCode.GetContent(), 
+		ww::Uniforms {
+			"u_Proj", "u_View", "u_Model",
+			"u_Frame", "u_AmountOfFrames",
+			"u_Direction", "u_Weapon"
+		}
+	);
 }
 
 void CharacterRenderer::Render()
 {
 	characterShader->Bind();
-	characterShader->SetMat4x4("u_Proj", Math::ToPtr(Window::GetSpace()));
+	characterShader->SetMat4x4("u_Proj", Math::ToPtr(ww::Window::GetSpace()));
 	characterShader->SetMat4x4("u_View", Math::ToPtr(camera->GetTransform()));
 
 	characterVAO->Bind();
@@ -69,7 +72,7 @@ void CharacterRenderer::Render()
 		characterShader->SetFloat("u_Weapon", 0.0f);
 
 		characterBodyTexture->Bind();
-		Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+		ww::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 
 		Ref<Animation::Clip> &animation = character->animator->GetCurrentAnimation();
 
@@ -86,7 +89,7 @@ void CharacterRenderer::Render()
 			characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(icon.first->GetAmountOfTiles()));
 
 			icon.first->Bind();
-			Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+			ww::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 		}
 
 		characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
@@ -94,6 +97,6 @@ void CharacterRenderer::Render()
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
 		characterHandTexture->Bind();
-		Werwel::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+		ww::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 	}
 }

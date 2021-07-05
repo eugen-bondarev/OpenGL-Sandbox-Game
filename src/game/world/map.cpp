@@ -9,8 +9,8 @@ Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunk
 
 TileType Map::GetTileUnderCursor(const Vec2 &cameraPosition, const tiles_t &tiles) const
 {
-	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
-	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
+	Vec2 mousePos = ww::Window::GetMousePosition() - ww::Window::GetSize() / 2.0f;
+	mousePos.y = ww::Window::GetSize().y - ww::Window::GetMousePosition().y - ww::Window::GetSize().y / 2.0f;
 	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
 	Vec2 tilePos = mousePosWorldSpace / Vec2(GetBlockSize());
 
@@ -31,8 +31,8 @@ WallType Map::GetWallUnderCursor(const Vec2 &cameraPosition) const
 
 Map::BlockSettingData Map::Place(const Vec2 &cameraPosition, BlockType blockType, TilePos tilePos)
 {
-	Vec2 mousePos = Window::GetMousePosition() - Window::GetSize() / 2.0f;
-	mousePos.y = Window::GetSize().y - Window::GetMousePosition().y - Window::GetSize().y / 2.0f;
+	Vec2 mousePos = ww::Window::GetMousePosition() - ww::Window::GetSize() / 2.0f;
+	mousePos.y = ww::Window::GetSize().y - ww::Window::GetMousePosition().y - ww::Window::GetSize().y / 2.0f;
 	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
 
 	Vec2 chunkPos = mousePosWorldSpace / Vec2(GetBlockSize() * GetChunkSize());
@@ -87,7 +87,7 @@ void Map::CalculateVisibleChunks(Vec2 viewPos)
 	const Vec2 middle = WhatChunk(GetCenter());
 	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
 	const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
-	const Vec2 shift = (Window::GetSize() / chunkSizeInPixels / 2.0f);
+	const Vec2 shift = (ww::Window::GetSize() / chunkSizeInPixels / 2.0f);
 	const Vec2 additionalBlocks = Vec2(-1.0f); // when map size is 25x25 chunks.
 
 	visibleChunks.x.start = middle.x - shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x * 3;
@@ -281,7 +281,7 @@ Vec2 Map::WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4 &projectionMat
 {
 	const Vec2 &viewPos = viewMatrix[0];
 
-	const Vec2 screenCoords = (windowCoords / Window::GetSize() - Vec2(0.5f, 0.5f)) * Vec2(1.0f, -1.0f) * 2.0f;
+	const Vec2 screenCoords = (windowCoords / ww::Window::GetSize() - Vec2(0.5f, 0.5f)) * Vec2(1.0f, -1.0f) * 2.0f;
 	const Vec4 projCoords = Math::Inverse(projectionMatrix) * Vec4(screenCoords, 0.0f, 1.0f);
 	const Vec4 projViewCoords = Math::Inverse(viewMatrix) * projCoords;
 

@@ -27,13 +27,13 @@ private:
 
 	struct
 	{
-		Ref<Werwel::Texture> barkTexture;
-		Ref<Werwel::Texture> leavesTexture;
+		Ref<ww::Texture> barkTexture;
+		Ref<ww::Texture> leavesTexture;
 
-		Ref<Werwel::Shader> shader;
+		Ref<ww::Shader> shader;
 
-		Ref<Werwel::VAO> barkVAO;
-		Ref<Werwel::VBO> vbo;
+		Ref<ww::VAO> barkVAO;
+		Ref<ww::VBO> vbo;
 	} pipeline;
 
 	WoodsRenderer(const WoodsRenderer &) = delete;
