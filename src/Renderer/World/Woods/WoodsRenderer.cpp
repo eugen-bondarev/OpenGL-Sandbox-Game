@@ -6,8 +6,8 @@
 #include "Maths/Primitive.h"
 
 WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera) : woods { woods }, camera { camera } {
-	TextAsset vsCode("Assets/Shaders/Woods/VS_Woods.glsl");
-	TextAsset fsCode("Assets/Shaders/Woods/FS_Woods.glsl");
+	TextAsset vsCode("assets/shaders/woods/vs_woods.glsl");
+	TextAsset fsCode("assets/shaders/woods/fs_woods.glsl");
 
   	pipeline.shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ProjectionView", "u_Model");
 
@@ -38,7 +38,7 @@ WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera)
   	pipeline.vbo->Bind();
     pipeline.vbo->Store(positions);
 
-	const ImageAsset tileMapTexture("Assets/Images/Bark.png");
+	const ImageAsset tileMapTexture("assets/images/bark.png");
 	pipeline.barkTexture = CreateRef<Werwel::Texture>(
 		tileMapTexture.GetSize(),
 		tileMapTexture.GetData(),
@@ -48,7 +48,7 @@ WoodsRenderer::WoodsRenderer(const Ref<Woods>& woods, const Ref<Camera>& camera)
 		}
 	);
 
-	const ImageAsset leavesTextureAsset("Assets/Images/Leaves_Stroke.png");
+	const ImageAsset leavesTextureAsset("assets/images/leaves_stroke.png");
 	pipeline.leavesTexture = CreateRef<Werwel::Texture>(
 		leavesTextureAsset.GetSize(),
 		leavesTextureAsset.GetData(),

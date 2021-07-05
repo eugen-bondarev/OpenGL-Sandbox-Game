@@ -13,14 +13,14 @@ ColorPass::ColorPass(int amountOfBlocks)
 {
   	fbo = CreateRef<ColorFBO>(Window::GetSize());
 
-	TextAsset vsCode("Assets/Shaders/Terrain/ColorPassShader.vs");
-	TextAsset fsCode("Assets/Shaders/Terrain/ColorPassShader.fs");
+	TextAsset vsCode("assets/shaders/terrain/color_pass_shader.vs");
+	TextAsset fsCode("assets/shaders/terrain/color_pass_shader.fs");
 	shader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
 		"u_ProjectionView"
 	);
 
-	const ImageAsset tileMapTexture("Assets/Images/Map.png");
+	const ImageAsset tileMapTexture("assets/images/map.png");
 
 	tileMap = TextureAtlas::Add<BlocksTileMap>(TextureAtlasType::Map, CreateRef<BlocksTileMap>(
 		Vec2(8.0f),

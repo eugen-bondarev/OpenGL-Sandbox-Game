@@ -13,8 +13,8 @@ void Gui::Create() {
 	ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = nullptr;
     io.ConfigFlags = ImGuiConfigFlags_DockingEnable;
-		defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 16);
-		titleFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "Assets/Fonts/Roboto-400.ttf").c_str(), 48);
+		defaultFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 16);
+		titleFont = io.Fonts->AddFontFromFileTTF(std::string(NF_ROOT + "assets/fonts/Roboto-400.ttf").c_str(), 48);
 
 	Theme0();
 

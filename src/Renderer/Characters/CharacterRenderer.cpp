@@ -10,7 +10,7 @@
 #include "Werwel/werwel.h"
 
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characters, const Ref<Camera>& camera) : characters { characters }, camera { camera } {
-	const ImageAsset characterBodyTextureAsset("Assets/Images/Characters/Humanoid_Body.png");
+	const ImageAsset characterBodyTextureAsset("assets/images/characters/humanoid_body.png");
 	characterBodyTexture = CreateRef<Werwel::Texture>(
 		characterBodyTextureAsset.GetSize(),
 		characterBodyTextureAsset.GetData(),
@@ -21,7 +21,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		}
 	);
 
-	const ImageAsset characterHandTextureAsset("Assets/Images/Characters/Humanoid_Hand.png");
+	const ImageAsset characterHandTextureAsset("assets/images/characters/humanoid_hand.png");
 	characterHandTexture = CreateRef<Werwel::Texture>(
 		characterHandTextureAsset.GetSize(),
 		characterHandTextureAsset.GetData(),
@@ -40,8 +40,8 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>>& characte
 		characterVAO->AddVBO(Werwel::VBO::Type::Array, Werwel::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
 		characterVAO->AddVBO(Werwel::VBO::Type::Indices, Werwel::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 
-	TextAsset vsCode("Assets/Shaders/Characters/Default.vs");
-	TextAsset fsCode("Assets/Shaders/Characters/Default.fs");
+	TextAsset vsCode("assets/shaders/characters/default.vs");
+	TextAsset fsCode("assets/shaders/characters/default.fs");
 	characterShader = CreateRef<Werwel::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(),
 		"u_Proj", "u_View", "u_Model", 

@@ -24,13 +24,13 @@ add_compile_definitions(
 file(GLOB_RECURSE src ${PROJ_SRC_DIR_NAME}/*.cpp)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	file(COPY Assets DESTINATION 			${CMAKE_BINARY_DIR}/bin)
+	file(COPY assets DESTINATION 			${CMAKE_BINARY_DIR}/bin)
 	set(CMAKE_CXX_STANDARD_LIBRARIES 		"-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CXX_STANDARD_LIBRARIES}")
 	set(CMAKE_EXE_LINKER_FLAGS 				"${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
-	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
-	file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
+	file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Release)
+	file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/Debug)
+	file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin)
 endif()
 
 add_executable(${PROJ_APP_NAME} ${src})

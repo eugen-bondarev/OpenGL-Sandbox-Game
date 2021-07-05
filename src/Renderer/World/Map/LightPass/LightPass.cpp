@@ -5,8 +5,8 @@
 LightPass::LightPass() {
 	fbo = CreateRef<LightFBO>(Vec2(300, 168));
 
-	TextAsset vsCode("Assets/Shaders/Terrain/LightPassShader.vs");
-	TextAsset fsCode("Assets/Shaders/Terrain/LightPassShader.fs");
+	TextAsset vsCode("assets/shaders/terrain/light_pass_shader.vs");
+	TextAsset fsCode("assets/shaders/terrain/light_pass_shader.fs");
 	shader = CreateRef<Werwel::Shader>(vsCode.GetContent(), fsCode.GetContent(), "u_ProjectionView");
 
 	/**
@@ -33,7 +33,7 @@ LightPass::LightPass() {
 		Werwel::VertexBufferLayouts { { 2, sizeof(Vec2), 0, 1 } }
 	);
 
-	ImageAsset lightTexture("Assets/Images/LightMask32.png");
+	ImageAsset lightTexture("assets/images/light_mask_32.png");
 	lightMesh.texture = CreateRef<Werwel::Texture>(
 	lightTexture.GetSize(),
 	lightTexture.GetData(),
