@@ -4,12 +4,12 @@ set(CMAKE_CXX_STANDARD						17)
 set(PROJ_PROJECT_VERSION					0.3.0)
 set(PROJ_PROJECT_NAME						Naturaforge)
 set(PROJ_APP_NAME							Naturaforge)
-set(PROJ_SRC_DIR_NAME						Source)
+set(PROJ_SRC_DIR_NAME						src)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 			${CMAKE_BINARY_DIR}/bin)
 
-set(GLEW_INCLUDE_DIR						External/glew/include)
-set(GLM_INCLUDE_DIR							External/glm)
+set(GLEW_INCLUDE_DIR						external/glew/include)
+set(GLM_INCLUDE_DIR							external/glm)
 
 project(${PROJ_PROJECT_NAME} VERSION ${PROJ_PROJECT_VERSION})
 
@@ -37,19 +37,19 @@ add_executable(${PROJ_APP_NAME} ${src})
 
 target_precompile_headers(${PROJ_APP_NAME} PUBLIC ${PROJ_SRC_DIR_NAME}/Pch/Pch.h)
 
-add_subdirectory(External/glfw)
-add_subdirectory(External/boxer)
-add_subdirectory(External/werwel)
-add_subdirectory(External/glew/build/cmake)
+add_subdirectory(external/glfw)
+add_subdirectory(external/boxer)
+add_subdirectory(external/werwel)
+add_subdirectory(external/glew/build/cmake)
 
 target_include_directories(${PROJ_APP_NAME} PUBLIC 
-	External/glfw/include 
-	External/boxer/include 
-	External/werwel/Include 
+	external/glfw/include 
+	external/boxer/include 
+	external/werwel/Include 
 	${GLM_INCLUDE_DIR}
 	${GLEW_INCLUDE_DIR} 
-	${CMAKE_SOURCE_DIR}/Source
-	${PROJ_SRC_DIR_NAME}/External
+	${CMAKE_SOURCE_DIR}/src
+	${PROJ_SRC_DIR_NAME}/external
 )
 
 target_link_libraries(werwel glew_s ole32 oleaut32 imm32)

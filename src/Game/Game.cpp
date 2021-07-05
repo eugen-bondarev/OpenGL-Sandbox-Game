@@ -18,6 +18,7 @@ Game::Game(int seed) {
 			Werwel::Texture::SetInterpolation(Werwel::Interpolation::Constant)
 		}
 	));
+	
 	toolsTileMap->Add(ToolType::BronzePickaxe, Vec2(0, 0));
 	toolsTileMap->Add(ToolType::BronzeAxe, Vec2(1, 0));
 	toolsTileMap->Add(ToolType::BronzeShovel, Vec2(2, 0));

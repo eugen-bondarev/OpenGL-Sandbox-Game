@@ -10,7 +10,8 @@ enum class Interpolation
 	Constant
 };
 
-class Texture : public GPUEntity {
+class Texture : public GPUEntity 
+{
 public:
 	using Pixels_t = const unsigned char*;
 
