@@ -8,9 +8,6 @@ set(PROJ_SRC_DIR_NAME						src)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 			${CMAKE_BINARY_DIR}/bin)
 
-set(GLEW_INCLUDE_DIR						external/glew/include)
-set(GLM_INCLUDE_DIR							external/glm)
-
 project(${PROJ_PROJECT_NAME} VERSION ${PROJ_PROJECT_VERSION})
 
 add_compile_definitions(
@@ -37,20 +34,12 @@ add_executable(${PROJ_APP_NAME} ${src})
 
 target_precompile_headers(${PROJ_APP_NAME} PUBLIC ${PROJ_SRC_DIR_NAME}/Pch/Pch.h)
 
-# add_subdirectory(external/werwel/external/glfw)
-# add_subdirectory(external/werwel/external/boxer)
-# add_subdirectory(external/werwel/external/glew/build/cmake)
 add_subdirectory(external/werwel)
-# target_precompile_headers(werwel PUBLIC external/werwel/include/werwel/pch.h)
 
 target_include_directories(${PROJ_APP_NAME} PUBLIC 
-	external/glfw/include 
-	external/boxer/include 
-	external/werwel/Include 
-	${GLM_INCLUDE_DIR}
-	${GLEW_INCLUDE_DIR} 
+	${CMAKE_SOURCE_DIR}/external/werwel/include 
 	${CMAKE_SOURCE_DIR}/src
 	${PROJ_SRC_DIR_NAME}/external
 )
 	
-target_link_libraries(${PROJ_APP_NAME} glfw glew_s Boxer werwel)
+target_link_libraries(${PROJ_APP_NAME} werwel)
