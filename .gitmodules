@@ -1,0 +1,12 @@
+[submodule "external/mgcwel/external/glew"]
+	path = external/mgcwel/external/glew
+	url = https://github.com/Perlmint/glew-cmake
+[submodule "external/mgcwel/external/glfw"]
+	path = external/mgcwel/external/glfw
+	url = https://github.com/glfw/glfw
+[submodule "external/mgcwel/external/boxer"]
+	path = external/mgcwel/external/boxer
+	url = https://github.com/aaronmjacobs/Boxer
+[submodule "external/mgcwel/external/glm"]
+	path = external/mgcwel/external/glm
+	url = https://github.com/g-truc/glm

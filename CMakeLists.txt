@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD						17)
-set(PROJ_PROJECT_VERSION					0.3.0)
+set(PROJ_PROJECT_VERSION					0.3.1)
 set(PROJ_PROJECT_NAME						Naturaforge)
 set(PROJ_APP_NAME							Naturaforge)
 set(PROJ_SRC_DIR_NAME						src)
