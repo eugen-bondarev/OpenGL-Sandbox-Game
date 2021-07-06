@@ -1,12 +1,11 @@
 #pragma once
 
-#include "entities/character.h"
-#include "renderer/characters/character_renderer.h"
-
 #include "world/world.h"
-#include "renderer/world/world_renderer.h"
+#include "entities/character.h"
 
+#include "renderer/world/world_renderer.h"
 #include "renderer/interface/interface_renderer.h"
+#include "renderer/characters/character_renderer.h"
 
 class Game
 {

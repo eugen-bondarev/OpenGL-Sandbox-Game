@@ -1,15 +1,15 @@
 #pragma once
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 #include "game/world/blocks.h"
 #include "game/tools.h"
 
-class TileMap : public ww::Texture
+class TileMap : public mw::Texture
 {
 public:
 	template <typename... Args>
-	TileMap(Vec2 tileSize, Args &&...args) : ww::Texture(std::forward<Args>(args)...)
+	TileMap(Vec2 tileSize, Args &&...args) : mw::Texture(std::forward<Args>(args)...)
 	{
 		amountOfTiles = size / tileSize;
 	}

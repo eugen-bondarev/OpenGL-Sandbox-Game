@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
-class LightFBO : public ww::FBO
+class LightFBO : public mw::FBO
 {
 public:
 	LightFBO(Vec2 size);
@@ -11,5 +11,5 @@ public:
 	void UnbindTexture(GLuint slot) const;
 
 	GLuint GetTextureHandle() const;
-	const Ref<ww::Texture> &GetTexture() const;
+	const Ref<mw::Texture> &GetTexture() const;
 };

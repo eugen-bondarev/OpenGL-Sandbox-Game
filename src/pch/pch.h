@@ -9,6 +9,8 @@
 #include <array>
 #include <map>
 
+#include "mgcwel/mgcwel.h"
+
 #include "../util/structures.h"
 #include "../util/memory.h"
 #include "../util/types.h"
@@ -23,4 +25,3 @@
 #include "log.h"
 #include "platform.h"
 #include "console.h"
-#include "event.h"

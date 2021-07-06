@@ -2,20 +2,17 @@
 
 #include "Linow/Linow.h"
 
-#include "core/input/input.h"
-#include "core/time.h"
-
 #include "imgui/imgui.h"
 
 Game::Game(int seed) {
-	const ww::ImageAsset toolsTileMapTexture("assets/images/tools.png", NF_ROOT);
+	const mw::ImageAsset toolsTileMapTexture("assets/images/tools.png");
 	toolsTileMap = TextureAtlas::Add<ToolsTileMap>(TextureAtlasType::Tools, CreateRef<ToolsTileMap>(
 		Vec2(16.0f),
 		toolsTileMapTexture.GetSize(),
 		toolsTileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		ww::Texture::Parameters_t {
-			ww::Texture::SetInterpolation(ww::Interpolation::Constant)
+		mw::Texture::Parameters_t {
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)
 		}
 	));
 	
@@ -45,7 +42,7 @@ void Game::Play(bool& resetGame) {
 }
 
 void Game::Logic(bool& resetGame) {
-	if (ww::Input::KeyPressed(ww::Input::Key::Esc)) {
+	if (mw::Input::KeyPressed(mw::Input::Key::Esc)) {
 		resetGame = true;
 	}
 }
@@ -77,7 +74,7 @@ void Game::Render() {
 
 	interfaceRenderer->Render();
 
-	Linow::Render(Math::ToPtr(ww::Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
+	Linow::Render(Math::ToPtr(mw::Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 
 #ifdef NF_SHOW_DEBUG_GUI
 	ImGui::SetNextWindowSize(ImVec2(220, 120));

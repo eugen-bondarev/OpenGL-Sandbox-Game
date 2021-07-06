@@ -1,9 +1,5 @@
 #include "interface_renderer.h"
 
-#include "core/window.h"
-
-#include "imgui/imgui.h"
-
 #include "renderer/world/map/map_renderer.h"
 
 InterfaceRenderer::InterfaceRenderer(Inventory &inventory) : inventory{inventory}
@@ -24,11 +20,11 @@ void InterfaceRenderer::Render()
 
 void InterfaceRenderer::RenderSideMenu()
 {
-	ImGui::SetNextWindowPos(ImVec2(20, ww::Window::GetSize().y - 100 - 20));
+	ImGui::SetNextWindowPos(ImVec2(20, mw::Window::GetSize().y - 100 - 20));
 	ImGui::SetNextWindowSize(ImVec2(100, 100));
 
 	ImGui::Begin("Side menu");
-	if (NF_KEY_PRESSED(NF_KEY_E) || ImGui::Button("Inventory (E)"))
+	if (MW_KEY_PRESSED(MW_KEY_E) || ImGui::Button("Inventory (E)"))
 	{
 		inventoryOpen = !inventoryOpen;
 	}
@@ -42,7 +38,7 @@ void InterfaceRenderer::RenderBottomBar(const std::string &windowID, Vec2 positi
 	static Vec2 innerPadding = Vec2(4, 3);
 	static Vec2 fullButtonSize = buttonSize + (innerPadding + padding) * 2.0f;
 	Vec2 barSize = fullButtonSize * amountOfButtons + Vec2(0, 20 /* title bar */) + (Vec2(ImGui::GetStyle().WindowPadding.x, ImGui::GetStyle().WindowPadding.y) - ImGui::GetStyle().WindowBorderSize) * 2.0f;
-	Vec2 barPosition = Vec2((ww::Window::GetSize().x - barSize.x) / 2.0f, ww::Window::GetSize().y - barSize.y - position.y);
+	Vec2 barPosition = Vec2((mw::Window::GetSize().x - barSize.x) / 2.0f, mw::Window::GetSize().y - barSize.y - position.y);
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 	// windowFlags |= ImGuiWindowFlags_NoBackground;

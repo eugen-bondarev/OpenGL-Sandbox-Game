@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 #include "assets/text_asset.h"
 #include "../color_pass/color_pass.h"
@@ -12,12 +12,12 @@ public:
 	CompositionPass();
 	void Perform(const Ref<ColorPass> &colorPass, const Ref<LightPass> &lightPass);
 
-	Ref<ww::Shader> shader;
-	Ref<ww::VAO> canvas;
+	Ref<mw::Shader> shader;
+	Ref<mw::VAO> canvas;
 
 private:
 	struct
 	{
-		Ref<ww::Shader> shader;
+		Ref<mw::Shader> shader;
 	} sky;
 };

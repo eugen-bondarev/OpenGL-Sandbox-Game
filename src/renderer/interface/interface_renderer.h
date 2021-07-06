@@ -2,7 +2,7 @@
 
 #include "game/subcomponents/inventory/inventory.h"
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 class InterfaceRenderer
 {

@@ -1,14 +1,12 @@
 #include "light_pass.h"
 
-#include "core/window.h"
-
 LightPass::LightPass()
 {
 	fbo = CreateRef<LightFBO>(Vec2(300, 168));
 
-	ww::TextAsset vsCode("assets/shaders/terrain/light_pass_shader.vs", NF_ROOT);
-	ww::TextAsset fsCode("assets/shaders/terrain/light_pass_shader.fs", NF_ROOT);
-	shader = CreateRef<ww::Shader>(vsCode.GetContent(), fsCode.GetContent(), ww::Uniforms { "u_ProjectionView" });
+	mw::TextAsset vsCode("assets/shaders/terrain/light_pass_shader.vs");
+	mw::TextAsset fsCode("assets/shaders/terrain/light_pass_shader.fs");
+	shader = CreateRef<mw::Shader>(vsCode.GetContent(), fsCode.GetContent(), mw::Uniforms { "u_ProjectionView" });
 
 	/**
 	 * Amount of blocks that each light reaches.
@@ -24,23 +22,23 @@ LightPass::LightPass()
 		16 * (lightBlocks * lightTextureGradientConstant) * 2);
 	const auto &indices = Primitives::Block::indices;
 
-	lightMesh.vao = CreateRef<ww::VAO>();
+	lightMesh.vao = CreateRef<mw::VAO>();
 	lightMesh.vao->Bind();
-	lightMesh.vao->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
-	lightMesh.vao->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+	lightMesh.vao->AddVBO(mw::VBO::Type::Array, mw::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+	lightMesh.vao->AddVBO(mw::VBO::Type::Indices, mw::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 	vbo = lightMesh.vao->AddVBO(
-		ww::VBO::Type::Array, ww::VBO::Usage::Stream, 0, sizeof(Vec2), nullptr,
-		ww::VertexBufferLayouts{{2, sizeof(Vec2), 0, 1}});
+		mw::VBO::Type::Array, mw::VBO::Usage::Stream, 0, sizeof(Vec2), nullptr,
+		mw::VertexBufferLayouts{{2, sizeof(Vec2), 0, 1}});
 
-	ww::ImageAsset lightTexture("assets/images/light_mask_32.png", NF_ROOT);
-	lightMesh.texture = CreateRef<ww::Texture>(
+	mw::ImageAsset lightTexture("assets/images/light_mask_32.png");
+	lightMesh.texture = CreateRef<mw::Texture>(
 		lightTexture.GetSize(),
 		lightTexture.GetData(),
 		GL_RGBA,
 		GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		ww::Texture::Parameters_t{
-			ww::Texture::SetInterpolation(ww::Interpolation::Linear)});
+		mw::Texture::Parameters_t{
+			mw::Texture::SetInterpolation(mw::Interpolation::Linear)});
 
 	/**
 	 * VERY IMPORTANT!
@@ -60,7 +58,7 @@ void LightPass::Perform(const Ref<Camera> &camera, int amountOfLights)
 
 	glViewport(0, 0, 300, 168);
 
-	Mat4 projView = ww::Window::GetSpace() * camera->GetTransform();
+	Mat4 projView = mw::Window::GetSpace() * camera->GetTransform();
 
 	fbo->Bind();
 	fbo->Clear();
@@ -72,7 +70,7 @@ void LightPass::Perform(const Ref<Camera> &camera, int amountOfLights)
 	glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
 	fbo->Unbind();
 
-	glViewport(0, 0, ww::Window::GetSize().x, ww::Window::GetSize().y);
+	glViewport(0, 0, mw::Window::GetSize().x, mw::Window::GetSize().y);
 
 	NF_SYNC_GPU();
 }

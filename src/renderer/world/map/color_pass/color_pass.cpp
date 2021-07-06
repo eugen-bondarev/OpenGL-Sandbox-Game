@@ -1,33 +1,28 @@
 #include "color_pass.h"
 
-#include "core/window.h"
-
-#include "assets/text_asset.h"
-#include "assets/image_asset.h"
-
 #include "maths/primitive.h"
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 ColorPass::ColorPass(int amountOfBlocks)
 {
-	fbo = CreateRef<ColorFBO>(ww::Window::GetSize());
+	fbo = CreateRef<ColorFBO>(mw::Window::GetSize());
 
-	ww::TextAsset vsCode("assets/shaders/terrain/color_pass_shader.vs", NF_ROOT);
-	ww::TextAsset fsCode("assets/shaders/terrain/color_pass_shader.fs", NF_ROOT);
-	shader = CreateRef<ww::Shader>(
+	mw::TextAsset vsCode("assets/shaders/terrain/color_pass_shader.vs");
+	mw::TextAsset fsCode("assets/shaders/terrain/color_pass_shader.fs");
+	shader = CreateRef<mw::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(), 
-		ww::Uniforms { "u_ProjectionView" });
+		mw::Uniforms { "u_ProjectionView" });
 
-	const ww::ImageAsset tileMapTexture("assets/images/map.png", NF_ROOT);
+	const mw::ImageAsset tileMapTexture("assets/images/map.png");
 
 	tileMap = TextureAtlas::Add<BlocksTileMap>(TextureAtlasType::Map, CreateRef<BlocksTileMap>(
 		Vec2(8.0f),
 		tileMapTexture.GetSize(),
 		tileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
-		ww::Texture::Parameters_t{
-			ww::Texture::SetInterpolation(ww::Interpolation::Constant)
+		mw::Texture::Parameters_t{
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)
 		}
 	));
 
@@ -39,39 +34,39 @@ ColorPass::ColorPass(int amountOfBlocks)
 	const auto &vers = Primitives::Block::Vertices(16, 16);
 	const auto &inds = Primitives::Block::indices;
 
-	blocks.vao = CreateRef<ww::VAO>();
+	blocks.vao = CreateRef<mw::VAO>();
 	blocks.vao->Bind();
-	blocks.vao->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-	blocks.vao->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+	blocks.vao->AddVBO(mw::VBO::Type::Array, mw::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+	blocks.vao->AddVBO(mw::VBO::Type::Indices, mw::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 	blocks.vbo = blocks.vao->AddVBO(
-		ww::VBO::Type::Array,
-		ww::VBO::Usage::Stream,
+		mw::VBO::Type::Array,
+		mw::VBO::Usage::Stream,
 		0, //amountOfBlocks,
 		sizeof(Vec4),
 		nullptr,
-		std::vector<ww::VertexBufferLayout>{
+		std::vector<mw::VertexBufferLayout>{
 			{4, sizeof(Vec4), 0, 1}
 		}
 	);
 
-	walls.vao = CreateRef<ww::VAO>();
+	walls.vao = CreateRef<mw::VAO>();
 	walls.vao->Bind();
-	walls.vao->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-	walls.vao->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+	walls.vao->AddVBO(mw::VBO::Type::Array, mw::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+	walls.vao->AddVBO(mw::VBO::Type::Indices, mw::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 	walls.vbo = walls.vao->AddVBO(
-		ww::VBO::Type::Array,
-		ww::VBO::Usage::Stream,
+		mw::VBO::Type::Array,
+		mw::VBO::Usage::Stream,
 		0, //amountOfBlocks,
 		sizeof(BlockData),
 		nullptr,
-		std::vector<ww::VertexBufferLayout>{
+		std::vector<mw::VertexBufferLayout>{
 			{4, sizeof(BlockData), 0, 1}
 		}
 	);
 
-	ww::Window::callbacks.push_back([&]()
+	mw::Window::callbacks.push_back([&]()
 	{ 
-		fbo->Resize(ww::Window::GetSize()); 
+		fbo->Resize(mw::Window::GetSize()); 
 	});
 }
 
@@ -79,7 +74,7 @@ void ColorPass::Perform(const Ref<Camera> &camera, int amountOfWalls, int amount
 {
 	NF_PROFILER_SCOPE();
 
-	Mat4 projView = ww::Window::GetSpace() * camera->GetTransform();
+	Mat4 projView = mw::Window::GetSpace() * camera->GetTransform();
 
 	fbo->Bind();
 	fbo->Clear();

@@ -2,12 +2,7 @@
 
 #include "light_fbo.h"
 
-#include "mgcwel/werwel.h"
-
-#include "core/window.h"
-
-#include "assets/text_asset.h"
-#include "assets/image_asset.h"
+#include "mgcwel/mgcwel.h"
 
 #include "maths/primitive.h"
 
@@ -24,20 +19,20 @@ public:
 		return fbo;
 	}
 
-	inline const Ref<ww::VBO> &GetVBO() const
+	inline const Ref<mw::VBO> &GetVBO() const
 	{
 		return vbo;
 	}
 
 private:
 	Ref<LightFBO> fbo;
-	Ref<ww::Shader> shader;
-	Ref<ww::VBO> vbo;
+	Ref<mw::Shader> shader;
+	Ref<mw::VBO> vbo;
 
 	struct
 	{
-		Ref<ww::VAO> vao;
-		Ref<ww::Texture> texture;
+		Ref<mw::VAO> vao;
+		Ref<mw::Texture> texture;
 	} lightMesh;
 	std::vector<Vec2> lightPositions;
 };

@@ -1,9 +1,5 @@
 #pragma once
 
-#include "maths/maths.h"
-
-#include "core/window.h"
-
 #include "../ecs/itransform.h"
 
 class Camera : public ITransform

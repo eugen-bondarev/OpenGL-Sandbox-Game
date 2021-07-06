@@ -1,47 +1,42 @@
 #include "character_renderer.h"
 
-#include "assets/image_asset.h"
-#include "assets/text_asset.h"
-
 #include "maths/primitive.h"
 
-#include "core/window.h"
-
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>> &characters, const Ref<Camera> &camera) : characters{characters}, camera{camera}
 {
-	const ww::ImageAsset characterBodyTextureAsset("assets/images/characters/humanoid_body.png", NF_ROOT);
-	characterBodyTexture = CreateRef<ww::Texture>(
+	const mw::ImageAsset characterBodyTextureAsset("assets/images/characters/humanoid_body.png");
+	characterBodyTexture = CreateRef<mw::Texture>(
 		characterBodyTextureAsset.GetSize(),
 		characterBodyTextureAsset.GetData(),
 		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		ww::Texture::Parameters_t{
-			ww::Texture::SetInterpolation(ww::Interpolation::Constant)});
+		mw::Texture::Parameters_t{
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)});
 
-	const ww::ImageAsset characterHandTextureAsset("assets/images/characters/humanoid_hand.png", NF_ROOT);
-	characterHandTexture = CreateRef<ww::Texture>(
+	const mw::ImageAsset characterHandTextureAsset("assets/images/characters/humanoid_hand.png");
+	characterHandTexture = CreateRef<mw::Texture>(
 		characterHandTextureAsset.GetSize(),
 		characterHandTextureAsset.GetData(),
 		GL_RGBA, GL_RGBA,
 		GL_UNSIGNED_BYTE,
-		ww::Texture::Parameters_t{
-			ww::Texture::SetInterpolation(ww::Interpolation::Constant)});
+		mw::Texture::Parameters_t{
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)});
 
 	const auto &vertices = Primitives::Char::Vertices(HUMANOID_SIZE.x, HUMANOID_SIZE.y);
 	const auto &indices = Primitives::Char::indices;
 
-	characterVAO = CreateRef<ww::VAO>();
+	characterVAO = CreateRef<mw::VAO>();
 	characterVAO->Bind();
-	characterVAO->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
-	characterVAO->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
+	characterVAO->AddVBO(mw::VBO::Type::Array, mw::VBO::Usage::Static, vertices.size(), sizeof(Vertex2D), &vertices[0], Vertex2D::GetLayout());
+	characterVAO->AddVBO(mw::VBO::Type::Indices, mw::VBO::Usage::Static, indices.size(), sizeof(int), &indices[0]);
 
-	ww::TextAsset vsCode("assets/shaders/characters/default.vs", NF_ROOT);
-	ww::TextAsset fsCode("assets/shaders/characters/default.fs", NF_ROOT);
-	characterShader = CreateRef<ww::Shader>(
+	mw::TextAsset vsCode("assets/shaders/characters/default.vs");
+	mw::TextAsset fsCode("assets/shaders/characters/default.fs");
+	characterShader = CreateRef<mw::Shader>(
 		vsCode.GetContent(), fsCode.GetContent(), 
-		ww::Uniforms {
+		mw::Uniforms {
 			"u_Proj", "u_View", "u_Model",
 			"u_Frame", "u_AmountOfFrames",
 			"u_Direction", "u_Weapon"
@@ -52,7 +47,7 @@ CharacterRenderer::CharacterRenderer(const std::vector<Ref<Character>> &characte
 void CharacterRenderer::Render()
 {
 	characterShader->Bind();
-	characterShader->SetMat4x4("u_Proj", Math::ToPtr(ww::Window::GetSpace()));
+	characterShader->SetMat4x4("u_Proj", Math::ToPtr(mw::Window::GetSpace()));
 	characterShader->SetMat4x4("u_View", Math::ToPtr(camera->GetTransform()));
 
 	characterVAO->Bind();
@@ -72,7 +67,7 @@ void CharacterRenderer::Render()
 		characterShader->SetFloat("u_Weapon", 0.0f);
 
 		characterBodyTexture->Bind();
-		ww::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+		mw::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 
 		Ref<Animation::Clip> &animation = character->animator->GetCurrentAnimation();
 
@@ -89,7 +84,7 @@ void CharacterRenderer::Render()
 			characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(icon.first->GetAmountOfTiles()));
 
 			icon.first->Bind();
-			ww::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+			mw::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 		}
 
 		characterShader->SetMat4x4("u_Model", Math::ToPtr(bodyTransform));
@@ -97,6 +92,6 @@ void CharacterRenderer::Render()
 		characterShader->SetVec2("u_AmountOfFrames", Math::ToPtr(Vec2(14.0f, 2.0f)));
 		characterShader->SetFloat("u_Weapon", 0.0f);
 		characterHandTexture->Bind();
-		ww::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
+		mw::GraphicsContext::DrawIndexed(characterVAO->GetIndexBuffer()->GetIndexCount());
 	}
 }

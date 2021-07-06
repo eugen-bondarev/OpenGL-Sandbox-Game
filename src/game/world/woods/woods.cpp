@@ -1,7 +1,5 @@
 #include "woods.h"
 
-#include "core/window.h"
-
 Woods::Woods(const Ref<Map> &map)
 {
 	for (int x = 0; x < map->GetBlocks().size(); x++)
@@ -28,7 +26,7 @@ void Woods::GetVisibleTrees(std::vector<Vec2> &vector, const Ref<Camera> &camera
 
 	for (int i = 0; i < trees.size(); i++)
 	{
-		if (Math::Distance(trees[i].GetPosition(), camera->GetPosition()) < (NF_WINDOW_WIDTH() + offset) / 2.0f)
+		if (Math::Distance(trees[i].GetPosition(), camera->GetPosition()) < (MW_WINDOW_WIDTH() + offset) / 2.0f)
 		{
 			tree = i;
 			break;
@@ -37,7 +35,7 @@ void Woods::GetVisibleTrees(std::vector<Vec2> &vector, const Ref<Camera> &camera
 
 	for (int i = tree; i < std::min<int>(tree + 25, trees.size()); i++)
 	{
-		if (Math::Distance(trees[i].GetPosition(), camera->GetPosition()) < (NF_WINDOW_WIDTH() + offset) / 2.0f)
+		if (Math::Distance(trees[i].GetPosition(), camera->GetPosition()) < (MW_WINDOW_WIDTH() + offset) / 2.0f)
 		{
 			vector.push_back(trees[i].GetPosition());
 		}
@@ -45,7 +43,7 @@ void Woods::GetVisibleTrees(std::vector<Vec2> &vector, const Ref<Camera> &camera
 
 	for (int i = tree - 1; i > std::max<int>(tree - 25, 0); i--)
 	{
-		if (Math::Distance(trees[i].GetPosition(), camera->GetPosition()) < (NF_WINDOW_WIDTH() + offset) / 2.0f)
+		if (Math::Distance(trees[i].GetPosition(), camera->GetPosition()) < (MW_WINDOW_WIDTH() + offset) / 2.0f)
 		{
 			vector.push_back(trees[i].GetPosition());
 		}

@@ -7,7 +7,7 @@ const Vec2 &Camera::GetLastPosition() const
 
 Vec2 Camera::GetPositionOnScreen(Vec2 worldPosition) const
 {
-	return ww::Window::GetSize() / 2.0f - (position - worldPosition) * Vec2(1, -1);
+	return mw::Window::GetSize() / 2.0f - (position - worldPosition) * Vec2(1, -1);
 }
 
 void Camera::OnPositionChange(std::function<void()> Callback)

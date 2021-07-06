@@ -2,17 +2,17 @@
 
 CompositionPass::CompositionPass()
 {
-	ww::TextAsset vsCode("assets/shaders/terrain/composition_shader.vs", NF_ROOT);
-	ww::TextAsset fsCode("assets/shaders/terrain/composition_shader.fs", NF_ROOT);
-	shader = CreateRef<ww::Shader>(vsCode.GetContent(), fsCode.GetContent(), ww::Uniforms { "u_ColorPassResult", "u_LightPassResult" });
+	mw::TextAsset vsCode("assets/shaders/terrain/composition_shader.vs");
+	mw::TextAsset fsCode("assets/shaders/terrain/composition_shader.fs");
+	shader = CreateRef<mw::Shader>(vsCode.GetContent(), fsCode.GetContent(), mw::Uniforms { "u_ColorPassResult", "u_LightPassResult" });
 	shader->Bind();
 	shader->SetInt("u_ColorPassResult", 0);
 	shader->SetInt("u_LightPassResult", 1);
 	shader->Unbind();
 
-	ww::TextAsset vsSky("assets/shaders/sky/sky.vs", NF_ROOT);
-	ww::TextAsset fsSky("assets/shaders/sky/sky.fs", NF_ROOT);
-	sky.shader = CreateRef<ww::Shader>(vsSky.GetContent(), fsSky.GetContent(), ww::Uniforms { "u_Color0", "u_Color1" });
+	mw::TextAsset vsSky("assets/shaders/sky/sky.vs");
+	mw::TextAsset fsSky("assets/shaders/sky/sky.fs");
+	sky.shader = CreateRef<mw::Shader>(vsSky.GetContent(), fsSky.GetContent(), mw::Uniforms { "u_Color0", "u_Color1" });
 	sky.shader->Bind();
 	sky.shader->SetVec3("u_Color0", Math::ToPtr(Vec3(176, 226, 255) / 255.0f));
 	sky.shader->SetVec3("u_Color1", Math::ToPtr(Vec3(99, 172, 255) / 255.0f));
@@ -21,17 +21,17 @@ CompositionPass::CompositionPass()
 	const auto &vers = Primitives::Block::Vertices(2, -2);
 	const auto &inds = Primitives::Block::indices;
 
-	canvas = CreateRef<ww::VAO>();
+	canvas = CreateRef<mw::VAO>();
 	canvas->Bind();
-	canvas->AddVBO(ww::VBO::Type::Array, ww::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
-	canvas->AddVBO(ww::VBO::Type::Indices, ww::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
+	canvas->AddVBO(mw::VBO::Type::Array, mw::VBO::Usage::Static, vers.size(), sizeof(Vertex2D), &vers[0], Vertex2D::GetLayout());
+	canvas->AddVBO(mw::VBO::Type::Indices, mw::VBO::Usage::Static, inds.size(), sizeof(int), &inds[0]);
 }
 
 void CompositionPass::Perform(const Ref<ColorPass> &colorPass, const Ref<LightPass> &lightPass)
 {
 	NF_PROFILER_SCOPE();
 
-	ww::GraphicsContext::Clear();
+	mw::GraphicsContext::Clear();
 
 	canvas->Bind();
 	canvas->GetIndexBuffer()->Bind();

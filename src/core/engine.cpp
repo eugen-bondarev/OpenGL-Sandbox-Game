@@ -1,22 +1,17 @@
 #include "engine.h"
 
-#include "core/input/input.h"
-#include "core/window.h"
-#include "core/time.h"
-#include "core/gui.h"
-
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 Engine::Engine()
 {
-	ww::Window::Create({
+	mw::Window::Create({
 		{ 1920, 1080 },
-		ww::Window::Mode::Borderless,
+		mw::Window::Mode::Borderless,
 		true
 	});
 
-	ww::Gui::Create();
-	ww::Input::Create(ww::Window::GetGlfwWindow());
+	mw::Gui::Create();
+	mw::Input::Create(mw::Window::GetGlfwWindow());
 	Linow::Init();
 
 	mainMenu = CreateRef<MainMenu>(game);
@@ -24,15 +19,15 @@ Engine::Engine()
 
 bool Engine::IsRunning() const
 {
-	return !ww::Window::ShouldClose();
+	return !mw::Window::ShouldClose();
 }
 
 void Engine::BeginFrame()
 {
-	ww::Window::BeginFrame();
-	ww::Gui::BeginFrame();
-	ww::Time::BeginFrame();
-	ww::Input::BeginFrame();
+	mw::Window::BeginFrame();
+	mw::Gui::BeginFrame();
+	mw::Time::BeginFrame();
+	mw::Input::BeginFrame();
 
 	Linow::Clear();
 }
@@ -51,7 +46,7 @@ void Engine::Run()
 	}
 	else
 	{
-		ww::GraphicsContext::Clear();
+		mw::GraphicsContext::Clear();
 		mainMenu->Show();
 	}
 
@@ -59,22 +54,22 @@ void Engine::Run()
 	ImGui::SetNextWindowSize(ImVec2(140, 120));
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::Begin("Info", nullptr, ImGuiWindowFlags_NoResize);
-	ImGui::Text(("FPS: " + std::to_string(ww::Time::GetFps())).c_str());
+	ImGui::Text(("FPS: " + std::to_string(mw::Time::GetFps())).c_str());
 	ImGui::End();
 #endif
 }
 
 void Engine::EndFrame()
 {
-	ww::Input::EndFrame();
-	ww::Time::EndFrame();
-	ww::Gui::EndFrame();
-	ww::Window::EndFrame();
+	mw::Input::EndFrame();
+	mw::Time::EndFrame();
+	mw::Gui::EndFrame();
+	mw::Window::EndFrame();
 }
 
 Engine::~Engine()
 {
-	ww::Gui::Destroy();
-	ww::Window::Destroy();
-	ww::Window::Shutdown();
+	mw::Gui::Destroy();
+	mw::Window::Destroy();
+	mw::Window::Shutdown();
 }

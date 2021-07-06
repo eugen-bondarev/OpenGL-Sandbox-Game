@@ -4,7 +4,7 @@
 #include "game/entities/camera.h"
 #include "renderer/renderer.h"
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 class WoodsRenderer : public IRenderer
 {
@@ -27,13 +27,13 @@ private:
 
 	struct
 	{
-		Ref<ww::Texture> barkTexture;
-		Ref<ww::Texture> leavesTexture;
+		Ref<mw::Texture> barkTexture;
+		Ref<mw::Texture> leavesTexture;
 
-		Ref<ww::Shader> shader;
+		Ref<mw::Shader> shader;
 
-		Ref<ww::VAO> barkVAO;
-		Ref<ww::VBO> vbo;
+		Ref<mw::VAO> barkVAO;
+		Ref<mw::VBO> vbo;
 	} pipeline;
 
 	WoodsRenderer(const WoodsRenderer &) = delete;

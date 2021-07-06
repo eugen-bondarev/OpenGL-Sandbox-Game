@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
-class ColorFBO : public ww::FBO
+class ColorFBO : public mw::FBO
 {
 public:
 	ColorFBO(Vec2 size);
@@ -11,5 +11,5 @@ public:
 	void UnbindTexture(GLuint slot) const;
 
 	GLuint GetTextureHandle() const;
-	const Ref<ww::Texture> &GetTexture() const;
+	const Ref<mw::Texture> &GetTexture() const;
 };

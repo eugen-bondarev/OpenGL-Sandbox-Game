@@ -1,8 +1,5 @@
 #include "player.h"
 
-#include "core/input/input.h"
-#include "core/time.h"
-
 #include "entity.h"
 #include "rigidbody.h"
 #include "animator.h"
@@ -15,7 +12,7 @@ Player::Player(Entity *entity, Ref<World> world) : Component(entity), world{worl
 
 void Player::Update()
 {
-	if (ww::Input::KeyPressed(ww::Input::Key::Space))
+	if (mw::Input::KeyPressed(mw::Input::Key::Space))
 	{
 		if (entity->rigidbody->GetOnGround())
 		{
@@ -35,16 +32,16 @@ void Player::Update()
 		entity->animator->walkingAnimation->SetTime(13);
 	}
 
-	if (ww::Input::KeyDown(ww::Input::Key::A) && entity->rigidbody->CanMoveLeft())
+	if (mw::Input::KeyDown(mw::Input::Key::A) && entity->rigidbody->CanMoveLeft())
 	{
-		entity->SetPosition(entity->GetPosition() + Vec2(-1, 0) * ww::Time::GetDelta() * defaultSpeed);
-		entity->animator->walkingAnimation->SetTime(entity->animator->walkingAnimation->GetTime() - 0.2f * ww::Time::GetDelta() * defaultSpeed);
+		entity->SetPosition(entity->GetPosition() + Vec2(-1, 0) * mw::Time::GetDelta() * defaultSpeed);
+		entity->animator->walkingAnimation->SetTime(entity->animator->walkingAnimation->GetTime() - 0.2f * mw::Time::GetDelta() * defaultSpeed);
 		entity->animator->SetDirection(-1);
 	}
-	else if (ww::Input::KeyDown(ww::Input::Key::D) && entity->rigidbody->CanMoveRight())
+	else if (mw::Input::KeyDown(mw::Input::Key::D) && entity->rigidbody->CanMoveRight())
 	{
-		entity->SetPosition(entity->GetPosition() + Vec2(1, 0) * ww::Time::GetDelta() * defaultSpeed);
-		entity->animator->walkingAnimation->SetTime(entity->animator->walkingAnimation->GetTime() + 0.2f * ww::Time::GetDelta() * defaultSpeed);
+		entity->SetPosition(entity->GetPosition() + Vec2(1, 0) * mw::Time::GetDelta() * defaultSpeed);
+		entity->animator->walkingAnimation->SetTime(entity->animator->walkingAnimation->GetTime() + 0.2f * mw::Time::GetDelta() * defaultSpeed);
 		entity->animator->SetDirection(1);
 	}
 	else
@@ -57,7 +54,7 @@ void Player::Update()
 		}
 	}
 
-	if (ww::Input::GetMouseWheelState() == MouseWheelState::Up)
+	if (mw::Input::GetMouseWheelState() == MouseWheelState::Up)
 	{
 		inventory.selectedItem -= 1;
 		if (inventory.selectedItem < 0)
@@ -67,7 +64,7 @@ void Player::Update()
 		world->GetMap()->blocksUpdated = true;
 	}
 
-	if (ww::Input::GetMouseWheelState() == MouseWheelState::Down)
+	if (mw::Input::GetMouseWheelState() == MouseWheelState::Down)
 	{
 		inventory.selectedItem += 1;
 		if (inventory.selectedItem > 9)
@@ -77,7 +74,7 @@ void Player::Update()
 		world->GetMap()->blocksUpdated = true;
 	}
 
-	if (ww::Input::MouseButtonDown(ww::Input::Button::Left))
+	if (mw::Input::MouseButtonDown(mw::Input::Button::Left))
 	{
 		inventory.items[inventory.selectedItem]->Use(GameState(world.get(), this));
 
@@ -91,7 +88,7 @@ void Player::Update()
 
 	if (entity->animator->GetState() != 0.0f)
 	{
-		entity->animator->attackingAnimation->SetTime(entity->animator->attackingAnimation->GetTime() + 0.2f * ww::Time::GetDelta() * defaultSpeed);
+		entity->animator->attackingAnimation->SetTime(entity->animator->attackingAnimation->GetTime() + 0.2f * mw::Time::GetDelta() * defaultSpeed);
 		if (entity->animator->attackingAnimation->GetTime() > 7.0f)
 		{
 			entity->animator->attackingAnimation->SetTime(0.0f);

@@ -7,8 +7,6 @@
 
 #define NF_BUILD_TYPE   NF_PRODUCTION
 
-inline std::string NF_ROOT;
-
 #ifdef NDEBUG
 #   define NF_RELEASE
 #else

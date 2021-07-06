@@ -1,7 +1,7 @@
 #pragma once
 
 #include "assets/image_asset.h"
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 #include "tile_map.h"
 
 enum class TextureAtlasType

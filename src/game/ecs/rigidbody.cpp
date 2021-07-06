@@ -1,7 +1,5 @@
 #include "rigidbody.h"
 
-#include "core/time.h"
-
 #include "Linow/Linow.h"
 
 Rigidbody::Rigidbody(Entity *entity, const Ref<Map> map) : Component(entity), map{map}
@@ -107,8 +105,8 @@ void Rigidbody::Update()
 
 	if (!onGround)
 	{
-		entity->SetPosition(entity->position + velocity * Vec2(0, 1) * ww::Time::GetDelta());
-		velocity += -Physics::g * ww::Time::GetDelta() * velocityFactor;
+		entity->SetPosition(entity->position + velocity * Vec2(0, 1) * mw::Time::GetDelta());
+		velocity += -Physics::g * mw::Time::GetDelta() * velocityFactor;
 
 		if (ceiling)
 		{

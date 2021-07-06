@@ -2,7 +2,7 @@
 
 #include "color_fbo.h"
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 #include "game/entities/camera.h"
 
@@ -41,12 +41,12 @@ public:
 
 	void Perform(const Ref<Camera> &camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>> &additionalRenderers = {});
 
-	inline const Ref<ww::VBO> &GetBlocksVBO() const
+	inline const Ref<mw::VBO> &GetBlocksVBO() const
 	{
 		return blocks.vbo;
 	}
 
-	inline const Ref<ww::VBO> &GetWallsVBO() const
+	inline const Ref<mw::VBO> &GetWallsVBO() const
 	{
 		return walls.vbo;
 	}
@@ -58,18 +58,18 @@ public:
 
 private:
 	Ref<ColorFBO> fbo;
-	Ref<ww::Shader> shader;
+	Ref<mw::Shader> shader;
 
 	struct
 	{
-		Ref<ww::VAO> vao;
-		Ref<ww::VBO> vbo;
+		Ref<mw::VAO> vao;
+		Ref<mw::VBO> vbo;
 	} blocks;
 
 	struct
 	{
-		Ref<ww::VAO> vao;
-		Ref<ww::VBO> vbo;
+		Ref<mw::VAO> vao;
+		Ref<mw::VBO> vbo;
 	} walls;
 
 	Ref<BlocksTileMap> tileMap;

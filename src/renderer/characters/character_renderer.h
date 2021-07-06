@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mgcwel/werwel.h"
+#include "mgcwel/mgcwel.h"
 
 #include "game/entities/character.h"
 #include "game/entities/camera.h"
@@ -19,11 +19,11 @@ private:
 	const std::vector<Ref<Character>> &characters;
 	const Ref<Camera> &camera;
 
-	Ref<ww::Texture> characterBodyTexture;
-	Ref<ww::Texture> characterHandTexture;
+	Ref<mw::Texture> characterBodyTexture;
+	Ref<mw::Texture> characterHandTexture;
 
-	Ref<ww::VAO> characterVAO;
-	Ref<ww::Shader> characterShader;
+	Ref<mw::VAO> characterVAO;
+	Ref<mw::Shader> characterShader;
 
 	CharacterRenderer(const CharacterRenderer &) = delete;
 	CharacterRenderer &operator=(const CharacterRenderer &) = delete;
