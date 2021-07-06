@@ -1,0 +1,3 @@
+[submodule "external/mgcwel"]
+	path = external/mgcwel
+	url = https://github.com/e-bondarev/mgcwel
