@@ -13,10 +13,6 @@
 
 #include "maths/maths.h"
 
-// #ifdef MW_USE_GLM
-// #	include <glm/vec2.hpp>
-// #endif
-
 #ifdef NDEBUG
 #	define MW_RELEASE
 #else
@@ -37,22 +33,6 @@ namespace mw {
 
 extern std::string ROOT_DIR;
 void DefRoot(int amountOfArguments, char *arguments[]);
-
-// #ifdef MW_USE_GLM
-// 	using Vec2 = glm::vec2;
-// #else
-// 	struct Vec2
-// 	{
-// 		float x;
-// 		float y;
-
-// 		Vec2(float x, float y)
-// 		{
-// 			this->x = x;
-// 			this->y = y;
-// 		}
-// 	};
-// #endif
 
 namespace Mem {
 
@@ -77,7 +57,5 @@ constexpr Ref<T> CreateRef(Args &&...args)
 }
 
 using Str = std::string;
-// using Size = Vec2;
-// using Pos = Vec2;
 
 }
