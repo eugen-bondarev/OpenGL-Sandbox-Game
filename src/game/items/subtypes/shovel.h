@@ -5,7 +5,7 @@
 class Shovel : public BlocksDestroyer
 {
 public:
-	NF_INHERIT_CONSTRUCTOR(Shovel, BlocksDestroyer) {}
+	MW_INHERIT_CONSTRUCTOR(Shovel, BlocksDestroyer) {}
 
 	std::vector<BlockType> GetDestroyableBlocks() const override
 	{

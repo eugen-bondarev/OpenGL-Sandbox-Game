@@ -17,7 +17,7 @@
 
 #pragma once
 
-#ifdef NF_ENABLE_PROFILING
+#ifdef MW_ENABLE_PROFILING
 
 #include <string>
 #include <chrono>
@@ -139,13 +139,13 @@ private:
 	bool m_Stopped;
 };
 
-#define NF_PROFILER_BEGIN(NAME) Instrumentor::Get().BeginSession(NAME)
-#define NF_PROFILER_END() Instrumentor::Get().EndSession()
-#define NF_PROFILER_SCOPE() InstrumentationTimer timer(NF_FUNC_SIG)
-#define NF_PROFILER_NAMED_SCOPE(NAME) InstrumentationTimer timer(NAME)
+#	define MW_PROFILER_BEGIN(NAME) 			Instrumentor::Get().BeginSession(NAME)
+#	define MW_PROFILER_END() 				Instrumentor::Get().EndSession()
+#	define MW_PROFILER_SCOPE() 				InstrumentationTimer timer(MW_FUNC_SIG)
+#	define MW_PROFILER_NAMED_SCOPE(NAME) 	InstrumentationTimer timer(NAME)
 #else
-#define NF_PROFILER_BEGIN(NAME) NF_VOID_ASSEMBLY
-#define NF_PROFILER_END() NF_VOID_ASSEMBLY
-#define NF_PROFILER_SCOPE() NF_VOID_ASSEMBLY
-#define NF_PROFILER_NAMED_SCOPE(NAME) NF_VOID_ASSEMBLY
+#	define MW_PROFILER_BEGIN(NAME) 			MW_VOID_ASSEMBLY
+#	define MW_PROFILER_END() 				MW_VOID_ASSEMBLY
+#	define MW_PROFILER_SCOPE() 				MW_VOID_ASSEMBLY
+#	define MW_PROFILER_NAMED_SCOPE(NAME) 	MW_VOID_ASSEMBLY
 #endif

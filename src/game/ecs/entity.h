@@ -30,7 +30,7 @@ public:
 	template <typename T, typename... Args>
 	T *AddComponent(Args... args)
 	{
-		std::string prettyName = NF_CLASS_NAME(T);
+		std::string prettyName = MW_CLASS_NAME(T);
 
 		Ref<T> r = CreateRef<T>(this, std::forward<Args>(args)...);
 		components[prettyName] = r;
@@ -69,7 +69,7 @@ public:
 	template <typename T>
 	T *GetComponent()
 	{
-		std::string prettyName = NF_CLASS_NAME(T);
+		std::string prettyName = MW_CLASS_NAME(T);
 
 		return dynamic_cast<T *>(components[prettyName].get());
 	}

@@ -54,7 +54,7 @@ void MapRenderer::PrepareTiles()
 
 void MapRenderer::RebuildScene()
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	blocksData.clear();
 	wallsData.clear();
@@ -139,7 +139,7 @@ void MapRenderer::RebuildScene()
 
 void MapRenderer::UpdateScene()
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
 	pipeline.colorPass->GetWallsVBO()->Store(wallsData);
@@ -151,7 +151,7 @@ void MapRenderer::UpdateScene()
 	}
 
 	pipeline.lightPass->GetVBO()->Store(copy);
-	NF_SYNC_GPU();
+	MW_SYNC_GPU();
 }
 
 void MapRenderer::CheckVisibleChunks()

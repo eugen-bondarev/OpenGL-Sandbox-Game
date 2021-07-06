@@ -12,7 +12,7 @@ Character::Character(const Ref<World> &world) : world{world}
 
 void Character::CollectLights(std::vector<Vec2> &lights) const
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	const auto &blocks = world->GetMap()->GetBlocks();
 	const auto &walls = world->GetMap()->GetWalls();

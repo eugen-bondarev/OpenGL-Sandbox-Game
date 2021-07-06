@@ -11,6 +11,17 @@
 #include <tuple>
 #include <map>
 
+#include "pch/compiler.h"
+#include "pch/function.h"
+#include "pch/class.h"
+#include "pch/void.h"
+#include "pch/instrumentor.h"
+#include "pch/gpu.h"
+#include "pch/build.h"
+#include "pch/log.h"
+#include "pch/platform.h"
+#include "pch/console.h"
+
 #include "maths/maths.h"
 
 #ifdef NDEBUG

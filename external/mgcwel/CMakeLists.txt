@@ -13,7 +13,7 @@ add_subdirectory(external/boxer)
 add_subdirectory(external/glew/build/cmake)
 add_subdirectory(external/glfw)
 
-target_link_libraries(mgcwel glew_s glfw ole32 oleaut32 imm32)
+target_link_libraries(mgcwel Boxer glew_s glfw ole32 oleaut32 imm32)
 
 target_include_directories(mgcwel PUBLIC include/mgcwel)
 target_include_directories(mgcwel PUBLIC external)

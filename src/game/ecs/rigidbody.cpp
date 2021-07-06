@@ -101,7 +101,7 @@ void Rigidbody::CheckCollisions()
 
 void Rigidbody::Update()
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	if (!onGround)
 	{

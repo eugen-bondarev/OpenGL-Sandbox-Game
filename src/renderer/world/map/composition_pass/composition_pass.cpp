@@ -29,7 +29,7 @@ CompositionPass::CompositionPass()
 
 void CompositionPass::Perform(const Ref<ColorPass> &colorPass, const Ref<LightPass> &lightPass)
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	mw::GraphicsContext::Clear();
 
@@ -43,5 +43,5 @@ void CompositionPass::Perform(const Ref<ColorPass> &colorPass, const Ref<LightPa
 	glDrawElements(GL_TRIANGLES, canvas->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
 	glActiveTexture(GL_TEXTURE0);
 
-	NF_SYNC_GPU();
+	MW_SYNC_GPU();
 }

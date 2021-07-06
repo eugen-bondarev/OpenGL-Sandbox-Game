@@ -72,7 +72,7 @@ ColorPass::ColorPass(int amountOfBlocks)
 
 void ColorPass::Perform(const Ref<Camera> &camera, int amountOfWalls, int amountOfBlocks, const std::vector<Ref<IRenderer>> &additionalRenderers)
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	Mat4 projView = mw::Window::GetSpace() * camera->GetTransform();
 
@@ -97,5 +97,5 @@ void ColorPass::Perform(const Ref<Camera> &camera, int amountOfWalls, int amount
 	blocks.vao->GetIndexBuffer()->Bind();
 	glDrawElementsInstanced(GL_TRIANGLES, blocks.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfBlocks);
 
-	NF_SYNC_GPU();
+	MW_SYNC_GPU();
 }

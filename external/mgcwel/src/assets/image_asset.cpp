@@ -17,8 +17,8 @@ void ImageAsset::Load(const std::string &path)
 	data = stbi_load(fullPath.c_str(), &width, &height, &amountOfChannels, 0);
 	if (!data)
 	{
-		// MW_ERROR_POPUP("Could not load an image asset: " + fullPath, "ImageAsset::Load()");
-		// MW_ERROR_EXIT();
+		MW_ERROR_POPUP("Could not load an image asset: " + fullPath, "ImageAsset::Load()");
+		MW_ERROR_EXIT();
 	}
 	size = {static_cast<float>(width), static_cast<float>(height)};
 }

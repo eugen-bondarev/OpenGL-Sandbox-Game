@@ -54,7 +54,7 @@ LightPass::LightPass()
 
 void LightPass::Perform(const Ref<Camera> &camera, int amountOfLights)
 {
-	NF_PROFILER_SCOPE();
+	MW_PROFILER_SCOPE();
 
 	glViewport(0, 0, 300, 168);
 
@@ -72,5 +72,5 @@ void LightPass::Perform(const Ref<Camera> &camera, int amountOfLights)
 
 	glViewport(0, 0, mw::Window::GetSize().x, mw::Window::GetSize().y);
 
-	NF_SYNC_GPU();
+	MW_SYNC_GPU();
 }

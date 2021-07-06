@@ -18,9 +18,8 @@ void TextAsset::Load(const std::string &path)
 
 	if (!file.is_open())
 	{
-		// Window::Minimize();
-		// MW_ERROR_POPUP("Could not load a text asset: " + fullPath, "TextAsset::Load()");
-		// MW_ERROR_EXIT();
+		MW_ERROR_POPUP("Could not load a text asset: " + fullPath, "TextAsset::Load()");
+		MW_ERROR_EXIT();
 	}
 
 	while (!file.eof())
