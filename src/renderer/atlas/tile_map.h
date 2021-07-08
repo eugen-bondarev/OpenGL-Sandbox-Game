@@ -2,6 +2,7 @@
 
 #include "mgcwel/mgcwel.h"
 
+#include "interface/interface_icon_type.h"
 #include "game/world/blocks.h"
 #include "game/tools.h"
 
@@ -50,6 +51,13 @@ public:
 
 public:
 	std::map<T, Vec2> dictionary;
+};
+
+class InterfaceIconTileMap : public TileMap, public ITileMapDictionary<InterfaceIconType>
+{
+public:
+	template <typename... Args>
+	InterfaceIconTileMap(Args &&...args) : TileMap(std::forward<Args>(args)...) {}
 };
 
 class BlocksTileMap : public TileMap, public ITileMapDictionary<BlockType>

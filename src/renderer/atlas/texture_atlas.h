@@ -7,7 +7,8 @@
 enum class TextureAtlasType
 {
 	Map,
-	Tools
+	Tools,
+	InterfaceIcons
 };
 
 class TextureAtlas

@@ -12,11 +12,15 @@ std::vector<std::function<void()>> callbacks = {};
 
 void Create(Settings windowSettings, bool resizable, const std::string &title)
 {
+	currentWindowSettings = windowSettings;
+
 	size = windowSettings.size;
 
 	glfwInit();
-
 	glfwDefaultWindowHints();
+
+	// glEnable(GL_MULTISAMPLE);
+	// glfwWindowHint(GLFW_SAMPLES, 16);
 	// glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
 
 	const GLFWvidmode *videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -41,7 +45,7 @@ void Create(Settings windowSettings, bool resizable, const std::string &title)
 		glfwWindow = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
 	}
 
-	if (windowSettings.maximize)
+	if (windowSettings.mode != Mode::Windowed)
 	{
 		glfwMaximizeWindow(glfwWindow);
 	}
@@ -56,9 +60,6 @@ void Create(Settings windowSettings, bool resizable, const std::string &title)
 	}
 
 	GraphicsContext::EnableTransparency();
-
-	glEnable(GL_MULTISAMPLE);
-	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	glfwSetWindowSizeCallback(glfwWindow, [](GLFWwindow *window, int width, int height)
 	{
@@ -156,8 +157,8 @@ void BeginFrame()
 		Destroy();
 
 		Create(newWindowSettings);
-		Gui::Create();
 		Input::Create(GetGlfwWindow());
+		Gui::Create();
 
 		recreate = false;
 	}
@@ -187,6 +188,11 @@ void Recreate(Settings windowSettings)
 GLFWwindow *GetGlfwWindow()
 {
 	return glfwWindow;
+}
+
+Settings& GetCurrentWindowSettings() 
+{
+	return currentWindowSettings;
 }
 
 }

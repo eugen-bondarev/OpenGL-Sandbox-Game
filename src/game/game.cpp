@@ -20,6 +20,19 @@ Game::Game(int seed) {
 	toolsTileMap->Add(ToolType::BronzeAxe, Vec2(1, 0));
 	toolsTileMap->Add(ToolType::BronzeShovel, Vec2(2, 0));
 
+	const mw::ImageAsset interfaceIconsTileMapAsset("assets/images/icons/icons1.png");
+	interfaceIconsTileMap = TextureAtlas::Add<InterfaceIconTileMap>(TextureAtlasType::InterfaceIcons, CreateRef<InterfaceIconTileMap>(
+		Vec2(16.0f),
+		interfaceIconsTileMapAsset.GetSize(),
+		interfaceIconsTileMapAsset.GetData(),
+		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
+		mw::Texture::Parameters_t {
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)
+		}
+	));
+	
+	interfaceIconsTileMap->Add(InterfaceIconType::Bag, Vec2(0, 0));
+
 	world = CreateRef<World>(seed);
 	worldRenderer = CreateRef<WorldRenderer>(world);
 

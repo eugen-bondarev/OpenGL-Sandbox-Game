@@ -6,76 +6,91 @@ MainMenu::MainMenu(Ref<Game> &game) : game{game}
 
 void MainMenu::Settings()
 {
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	float line = mw::Window::GetSize().x / 2.0f - 110.0f;
+
+	ImGui::SetCursorPosX(line);
 	ImGui::PushFont(mw::Gui::titleFont);
 	ImGui::Text("Settings");
 	ImGui::PopFont();
 
-	static mw::Window::Settings windowSettings = {};
-
 	static Vec2i s = {mw::Window::GetSize().x, mw::Window::GetSize().y};
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
-	if (ImGui::Button("Recreate the window"))
-	{
-		mw::Window::Recreate(windowSettings);
-	}
+	const char *resolutions[] =
+		{
+			"1920 x 1080",
+			"1366 x 768",
+			"1024 x 768",
+			"800 x 600",
+			"640 x 480",
+		};
+
+	std::array<Vec2, 5> sizes = {
+		Vec2(1920, 1080),
+		Vec2(1366, 768),
+		Vec2(1024, 768),
+		Vec2(800, 600),
+		Vec2(640, 480),
+	};
+
+	static int currentResolution = 0;
 
 	ImGui::PushItemWidth(150);
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
-	if (ImGui::InputInt("Width", &s.x))
+	ImGui::SetCursorPosX(line);
+	if (ImGui::Combo("Resolution", &currentResolution, resolutions, 5))
 	{
-		windowSettings.size = s;
-	}
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
-	if (ImGui::InputInt("Height", &s.y))
-	{
-		windowSettings.size = s;
+		mw::Window::GetCurrentWindowSettings().size = sizes[currentResolution];
 	}
 
 	const char *items[] = {"Fullscreen", "Borderless", "Windowed"};
-	static int item_current = static_cast<int>(windowSettings.mode);
+	static int item_current = static_cast<int>(mw::Window::GetCurrentWindowSettings().mode);
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(line);
 	if (ImGui::Combo("Window mode", &item_current, items, 3))
 	{
-		windowSettings.mode = static_cast<mw::Window::Mode>(item_current);
+		mw::Window::GetCurrentWindowSettings().mode = static_cast<mw::Window::Mode>(item_current);
 	}
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
-	ImGui::Checkbox("Maximize window", &windowSettings.maximize);
-
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
-	ImGui::Checkbox("vSync", &windowSettings.vSync);
+	ImGui::SetCursorPosX(line);
+	ImGui::Checkbox("Vertical synchronization", &mw::Window::GetCurrentWindowSettings().vSync);
 	ImGui::PopItemWidth();
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(line);
 	if (ImGui::Button("Back"))
 	{
 		location = MenuLocation::Main;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Apply"))
+	{
+		mw::Window::Recreate(mw::Window::GetCurrentWindowSettings());
 	}
 }
 
 void MainMenu::Main()
 {
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	float line = mw::Window::GetSize().x / 2.0f - 110.0f;
+
+	ImGui::SetCursorPosX(line);
 	ImGui::PushFont(mw::Gui::titleFont);
+
 	ImGui::Text("NaturaForge");
+
 	ImGui::PopFont();
 
 	static int seed = 27655;
 
 	ImGui::SetNextItemWidth(100);
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
-	ImGui::InputInt("Seed", &seed);
+	ImGui::SetCursorPosX(line);
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	ImGui::InputScalar("Seed", ImGuiDataType_U32, &seed, nullptr, nullptr);
+
+	ImGui::SetCursorPosX(line);
 	if (ImGui::Button("Start game"))
 	{
 		game = CreatePtr<Game>(seed);
 	}
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(line);
 	if (ImGui::Button("Settings"))
 	{
 		location = MenuLocation::Settings;
@@ -83,7 +98,7 @@ void MainMenu::Main()
 
 	static bool exitPopup = false;
 
-	ImGui::SetCursorPosX(mw::Window::GetSize().x / 2.0f);
+	ImGui::SetCursorPosX(line);
 	if (ImGui::Button("Exit"))
 	{
 		exitPopup = true;
@@ -91,17 +106,24 @@ void MainMenu::Main()
 
 	if (exitPopup)
 	{
-		ImGui::SetNextWindowSize(ImVec2(300, 100));
+		static const ImVec2 windowSize = ImVec2(200, 80);
+		static const ImVec2 buttonSize = ImVec2(50, 25);
+		static const int sidePadding = 25;
+
+		ImGui::SetNextWindowSize(windowSize);
 		ImGui::OpenPopup("Are you sure?");
-		if (ImGui::BeginPopupModal("Are you sure?", NULL))
+		if (ImGui::BeginPopupModal("Are you sure?", NULL, ImGuiWindowFlags_NoResize))
 		{
-			if (ImGui::Button("Yes"))
+			ImGui::SetCursorPosX(sidePadding);
+			if (ImGui::Button("Yes", buttonSize))
 			{
 				mw::Window::Close();
 			}
 
 			ImGui::SameLine();
-			if (ImGui::Button("No"))
+
+			ImGui::SetCursorPosX(windowSize.x - sidePadding - buttonSize.x);
+			if (ImGui::Button("No", buttonSize))
 			{
 				exitPopup = false;
 			}
@@ -112,6 +134,8 @@ void MainMenu::Main()
 
 void MainMenu::Show()
 {
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 15));
+
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 	windowFlags |= ImGuiWindowFlags_NoBackground;
 	windowFlags |= ImGuiWindowFlags_NoTitleBar;
@@ -134,4 +158,6 @@ void MainMenu::Show()
 		break;
 	}
 	ImGui::End();
+
+	ImGui::PopStyleVar();
 }

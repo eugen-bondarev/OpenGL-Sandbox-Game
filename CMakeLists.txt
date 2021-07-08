@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD						17)
-set(PROJ_PROJECT_VERSION					0.3.1)
+set(PROJ_PROJECT_VERSION					0.3.2)
 set(PROJ_PROJECT_NAME						Naturaforge)
 set(PROJ_APP_NAME							Naturaforge)
 set(PROJ_SRC_DIR_NAME						src)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 			${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 
 project(${PROJ_PROJECT_NAME} VERSION ${PROJ_PROJECT_VERSION})
 
@@ -14,7 +16,8 @@ add_compile_definitions(
 	# MW_ENABLE_PROFILING
 	# MW_ENABLE_GPU_SYNC
 
-	NF_SHOW_DEBUG_GUI
+	# NF_RENDER_GAME
+	# NF_SHOW_DEBUG_GUI
 	
 	LINOW_USE_GLM
 )

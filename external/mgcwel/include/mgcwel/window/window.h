@@ -27,12 +27,15 @@ inline static GLFWwindow *glfwWindow{nullptr};
 inline static Vec2 size{0};
 inline static Mat4 space{0};
 inline static bool recreate{false};
+inline static Settings currentWindowSettings{};
 inline static Settings newWindowSettings{};
 
 extern std::vector<std::function<void()>> callbacks;
 
 void Create(Settings windowSettings = {}, bool resizable = false, const std::string &title = "Naturaforge");
 void Recreate(Settings windowSettings = {});
+
+Settings& GetCurrentWindowSettings();
 
 void Destroy();
 void Shutdown();

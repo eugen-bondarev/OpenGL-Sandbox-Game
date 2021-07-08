@@ -20,6 +20,7 @@ private:
 	void Render();
 
 	Ref<ToolsTileMap> toolsTileMap;
+	Ref<InterfaceIconTileMap> interfaceIconsTileMap;
 
 	std::vector<Ref<Character>> characters;
 
