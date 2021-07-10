@@ -155,10 +155,8 @@ void MapRenderer::UpdateScene()
 			if (map->BLOCKS[x][y].type != BlockType::Empty)
 			{
 				const TileFunction &Function = PickTileFunction(map->BLOCKS[x][y].type);
-				const Vec2 tile = blocksTileMap->Get(map->BLOCKS[x][y].type) + Function(map->BLOCKS, x, y);
-
-				Vec4 vec = Vec4(map->BLOCKS[x][y].worldPosition, tile);
-				sortedBlocks.push_back(vec);
+				const Vec2 blockTextureTile = blocksTileMap->Get(map->BLOCKS[x][y].type) + Function(map->BLOCKS, x, y);
+				sortedBlocks.emplace_back(map->BLOCKS[x][y].worldPosition, blockTextureTile);
 				
 				if (x > 1 && y > 0)
 				{
@@ -166,9 +164,8 @@ void MapRenderer::UpdateScene()
 					{
 						if ((!map->BlockIs1(x, y, map->GetBlocks1()[x - 1][y].type)) || (!map->BlockIs1(x, y, map->GetBlocks1()[x][y - 1].type)) || (!map->BlockIs1(x, y, map->GetBlocks1()[x - 1][y - 1].type)))
 						{
-							const Vec2 tilew = blocksTileMap->Get(map->WALLS[x][y].type == WallType::Grass ? WallType::Dirt : map->WALLS[x][y].type) + PickRightAngularWall(map->WALLS, x, y) + Vec2(3, 0);
-							Vec4 vecw = Vec4(map->WALLS[x][y].worldPosition + offset, tilew);
-							sortedWalls.push_back(vecw);
+							const Vec2 wallTextureTile = blocksTileMap->Get(map->WALLS[x][y].type == WallType::Grass ? WallType::Dirt : map->WALLS[x][y].type) + PickRightAngularWall(map->WALLS, x, y) + Vec2(3, 0);
+							sortedWalls.emplace_back(map->WALLS[x][y].worldPosition + offset, wallTextureTile);
 						}
 					}
 				}
@@ -179,68 +176,61 @@ void MapRenderer::UpdateScene()
 				{
 					if (y + 6 < map->BLOCKS[0].size() && map->BlockIsEmpty1(x, y + 6) && map->WallIsEmpty1(x, y + 6))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
 					if (x + 6 < map->BLOCKS.size() && map->BlockIsEmpty1(x + 6, y) && map->WallIsEmpty1(x + 6, y))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
 					if (x - 10 >= 0 && map->BlockIsEmpty1(x - 10, y) && map->WallIsEmpty1(x - 10, y))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
-					const Vec2 tilew = blocksTileMap->Get(map->WALLS[x][y].type == WallType::Grass ? WallType::Dirt : map->WALLS[x][y].type) + PickRightAngularWall(map->WALLS, x, y) + Vec2(3, 0);
-					Vec4 vecw = Vec4(map->WALLS[x][y].worldPosition + offset, tilew);
-					sortedWalls.push_back(vecw);
+					const Vec2 textureTile = blocksTileMap->Get(map->WALLS[x][y].type == WallType::Grass ? WallType::Dirt : map->WALLS[x][y].type) + PickRightAngularWall(map->WALLS, x, y) + Vec2(3, 0);
+					sortedWalls.emplace_back(map->WALLS[x][y].worldPosition + offset, textureTile);
 				}
 				else
 				{					
 					if (y > 0 && !map->BlockIsEmpty1(x, y - 1) || !map->WallIsEmpty1(x, y - 1))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
 					if (y > 0 && y + 1 < map->BLOCKS[0].size() && !map->BlockIsEmpty1(x, y + 1) || !map->WallIsEmpty1(x, y - 1))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
 					if (x > 0 && (!map->BlockIsEmpty1(x - 1, y) || !map->WallIsEmpty1(x - 1, y)))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
 					if (x + 1 < map->BLOCKS.size() && (!map->BlockIsEmpty1(x + 1, y) || !map->WallIsEmpty1(x + 1, y)))
 					{
-						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
-						sortedLights.push_back(vec);
+						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 				}
 			}
 		}
 	}
-	
-	pipeline.colorPass->GetBlocksVBO()->Store(sortedBlocks);
-	pipeline.colorPass->GetWallsVBO()->Store(sortedWalls);
 
-	std::vector<Vec2> copy = lightData;
-	for (const Vec2 &light : additionalLightData)
+	for (const Vec2& light : additionalLightData)
 	{
-		copy.push_back(light);
+		sortedLights.push_back(light);
 	}
 
 	if (!sortedLights.size()) sortedLights.emplace_back(0);
+	if (!sortedBlocks.size()) sortedBlocks.emplace_back(0);
+	if (!sortedWalls.size()) sortedWalls.emplace_back(0);
 	
+	pipeline.colorPass->GetBlocksVBO()->Store(sortedBlocks);
+	pipeline.colorPass->GetWallsVBO()->Store(sortedWalls);	
 	pipeline.lightPass->GetVBO()->Store(sortedLights);
+
 	MW_SYNC_GPU();
 }
 
@@ -266,7 +256,7 @@ void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>> &additio
 {
 	// pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
 	pipeline.colorPass->Perform(camera, sortedWalls.size(), sortedBlocks.size(), additionalRenderers);
-	pipeline.lightPass->Perform(camera, sortedLights.size() + additionalLightData.size());
+	pipeline.lightPass->Perform(camera, sortedLights.size());
 }
 
 void MapRenderer::Compose()
@@ -278,40 +268,39 @@ void MapRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderers)
 {
 	CheckVisibleChunks();
 
-	if (map->blockToUpdate != Vec2(-1))
-	{
-		BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+	// if (map->blockToUpdate != Vec2(-1))
+	// {
+	// 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 
-		PrepareTile(TilePos::Foreground, map->blockToUpdate.x - 1, map->blockToUpdate.y, blocksTileMap);
-		PrepareTile(TilePos::Foreground, map->blockToUpdate.x + 1, map->blockToUpdate.y, blocksTileMap);
-		PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y, blocksTileMap);
-		PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y - 1, blocksTileMap);
-		PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y + 1, blocksTileMap);
+	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x - 1, map->blockToUpdate.y, blocksTileMap);
+	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x + 1, map->blockToUpdate.y, blocksTileMap);
+	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y, blocksTileMap);
+	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y - 1, blocksTileMap);
+	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y + 1, blocksTileMap);
 
-		map->blockToUpdate = Vec2(-1);
-	}
+	// 	map->blockToUpdate = Vec2(-1);
+	// }
 
-	if (map->wallToUpdate != Vec2(-1))
-	{
-		BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+	// if (map->wallToUpdate != Vec2(-1))
+	// {
+	// 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 
-		PrepareTile(TilePos::Background, map->wallToUpdate.x - 1, map->wallToUpdate.y, blocksTileMap);
-		PrepareTile(TilePos::Background, map->wallToUpdate.x + 1, map->wallToUpdate.y, blocksTileMap);
-		PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y, blocksTileMap);
-		PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y - 1, blocksTileMap);
-		PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y + 1, blocksTileMap);
+	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x - 1, map->wallToUpdate.y, blocksTileMap);
+	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x + 1, map->wallToUpdate.y, blocksTileMap);
+	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y, blocksTileMap);
+	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y - 1, blocksTileMap);
+	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y + 1, blocksTileMap);
 
-		map->wallToUpdate = Vec2(-1);
-	}
+	// 	map->wallToUpdate = Vec2(-1);
+	// }
 
 	if (map->blocksUpdated)
 	{
 		if (map->chunksUpdated)
 		{
-			// RebuildScene();
+			UpdateScene();
 			map->chunksUpdated = false;
 		}
-		UpdateScene();
 		PerformRenderPasses(additionalRenderers);
 	}
 	Compose();
