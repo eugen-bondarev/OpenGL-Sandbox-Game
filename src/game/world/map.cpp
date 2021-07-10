@@ -17,33 +17,41 @@ std::vector<Vec4> renderData;
 std::map<Vec2, ChunkData, Compare> light_associations;
 std::vector<Vec2> light_data;
 
-BlockRepresentation WhatBlock(float x, float y)
+BlockType WhatBlockType(float x, float y)
 {
-	BlockRepresentation representation;
+	BlockType type;
 
 	static float size = 0.5f;
 	float value = noise1.GetNoise(x * size, y * size) * 0.5f + 0.5f;
-	// float value = 0.4f;	
 
 	if (y > 32600 + 1000 * noise1.GetNoise(x * 0.1f, 0.0f))
 	{
 		value = 1.0f;
 	}
-
-	representation.position = Vec2(x, y);
 	
 	if (value > 0.75f) 
 	{
-		representation.type = BlockType::Empty;
+		type = BlockType::Empty;
 	}
 	if (value >= 0.3f && value < 0.75f)
 	{
-		representation.type = BlockType::Grass;
+		type = BlockType::Grass;
 	}
 	if (value < 0.3f)
 	{
-		representation.type = BlockType::Stone;
+		type = BlockType::Stone;
 	}
+
+	return type;
+}
+
+BlockRepresentation WhatBlock(float x, float y)
+{
+	BlockRepresentation representation;
+
+	representation.type = WhatBlockType(x, y);
+
+	representation.position = Vec2(x, y);
 	
 	Vec2 tile;
 	if (representation.type == BlockType::Empty)
@@ -75,8 +83,8 @@ void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, st
 	int i = 0;
 
 	auto& visibleChunks = map->GetVisibleChunks();
-	data.resize(visibleChunks.GetArea() * 8 * 8);
-	l_data.resize(visibleChunks.GetArea() * 8 * 8);
+	data.resize(visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y);
+	l_data.resize(visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y);
 
 	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; xChunk++)
 	{
@@ -88,11 +96,11 @@ void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, st
 
 			int start = i;
 
-			for (int x = 0; x < 8; x++)
+			for (int x = 0; x < map->GetChunkSize().x; x++)
 			{
-				for (int y = 0; y < 8; y++)
+				for (int y = 0; y < map->GetChunkSize().y; y++)
 				{
-					Vec2 blockPosition = (chunkPosition * Vec2(8, 8) + Vec2(x, y)) * 16.0f;
+					Vec2 blockPosition = (chunkPosition * map->GetChunkSize() + Vec2(x, y)) * 16.0f;
 					
 					BlockRepresentation representation = WhatBlock(blockPosition.x, blockPosition.y);
 					data[i] = Vec4(representation.position.x, representation.position.y, representation.tile.x, representation.tile.y);
@@ -219,10 +227,10 @@ Map::BlockSettingData Map::PlaceWall(const Vec2 &cameraPosition, WallType wallTy
 
 void Map::CalculateVisibleChunks(Vec2 viewPos)
 {
-	visibleChunks.x.start = (viewPos.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / 8.0f - 2;
+	visibleChunks.x.start = (viewPos.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / GetChunkSize().x - 2;
 	visibleChunks.x.end = visibleChunks.x.start + 15 + 4;
 
-	visibleChunks.y.start = (viewPos.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / 8.0f - 2;
+	visibleChunks.y.start = (viewPos.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / GetChunkSize().y - 2;
 	visibleChunks.y.end = visibleChunks.y.start + 9 + 4;
 
 	// const Vec2 middle = WhatChunk(GetCenter());

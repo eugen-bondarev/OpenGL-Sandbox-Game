@@ -11,6 +11,9 @@
 class MapRenderer
 {
 public:
+	std::vector<Vec4> sortedBlocks;
+	std::vector<Vec2> sortedLights;
+
 	MapRenderer(const Ref<Map> &map, const Ref<Camera> &camera);
 
 	void PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap *blocksTileMap);

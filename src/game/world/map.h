@@ -40,6 +40,7 @@ struct BlockRepresentation
 	Vec2 tile;
 };
 
+BlockType WhatBlockType(float x, float y);
 BlockRepresentation WhatBlock(float x, float y);
 
 struct ChunkData

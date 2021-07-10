@@ -142,8 +142,23 @@ void MapRenderer::UpdateScene()
 {
 	MW_PROFILER_SCOPE();
 
+	sortedBlocks.clear();
+	sortedLights.clear();
+
+	for (int i = 0; i < renderData.size(); i++)
+	{
+		if (!(renderData[i].z == 2 && renderData[i].w == 4))
+		{
+			sortedBlocks.push_back(renderData[i]);
+		}
+		else
+		{
+			sortedLights.push_back(renderData[i]);
+		}
+	}
+
 	// pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
-	pipeline.colorPass->GetBlocksVBO()->Store(renderData);
+	pipeline.colorPass->GetBlocksVBO()->Store(sortedBlocks);
 	pipeline.colorPass->GetWallsVBO()->Store(wallsData);
 
 	std::vector<Vec2> copy = lightData;
@@ -159,7 +174,7 @@ void MapRenderer::UpdateScene()
 	// }
 
 	// pipeline.lightPass->GetVBO()->Store(copy);
-	pipeline.lightPass->GetVBO()->Store(light_data);
+	pipeline.lightPass->GetVBO()->Store(sortedLights);
 	MW_SYNC_GPU();
 }
 
@@ -179,15 +194,15 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(oldX, y)];
 
-				Vec2 chunkPosition = Vec2(newX, y) * Vec2(8, 8) * 16.0f;
+				Vec2 chunkPosition = Vec2(newX, y) * map->GetChunkSize() * 16.0f;
 				
 				std::vector<Vec4> bls(64);
 				std::vector<Vec2> light_d(64);
 				int b = 0;
 
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < map->GetChunkSize().x; i++)
 				{
-					for (int j = 0; j < 8; j++)
+					for (int j = 0; j < map->GetChunkSize().y; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
@@ -218,15 +233,15 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(oldX, y)];
 
-				Vec2 chunkPosition = Vec2(newX, y) * Vec2(8, 8) * 16.0f;
+				Vec2 chunkPosition = Vec2(newX, y) * map->GetChunkSize() * 16.0f;
 				
 				std::vector<Vec4> bls(64);
 				std::vector<Vec2> light_d(64);
 				int b = 0;
 
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < map->GetChunkSize().x; i++)
 				{
-					for (int j = 0; j < 8; j++)
+					for (int j = 0; j < map->GetChunkSize().y; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
@@ -257,15 +272,15 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(x, oldY)];
 
-				Vec2 chunkPosition = Vec2(x, newY) * Vec2(8, 8) * 16.0f;
+				Vec2 chunkPosition = Vec2(x, newY) * map->GetChunkSize() * 16.0f;
 				
 				std::vector<Vec4> bls(64);
 				std::vector<Vec2> light_d(64);
 				int b = 0;
 
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < map->GetChunkSize().x; i++)
 				{
-					for (int j = 0; j < 8; j++)
+					for (int j = 0; j < map->GetChunkSize().y; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
@@ -296,15 +311,15 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(x, oldY)];
 
-				Vec2 chunkPosition = Vec2(x, newY) * Vec2(8, 8) * 16.0f;
+				Vec2 chunkPosition = Vec2(x, newY) * map->GetChunkSize() * 16.0f;
 				
 				std::vector<Vec4> bls(64);
 				std::vector<Vec2> light_d(64);
 				int b = 0;
 
-				for (int i = 0; i < 8; i++)
+				for (int i = 0; i < map->GetChunkSize().x; i++)
 				{
-					for (int j = 0; j < 8; j++)
+					for (int j = 0; j < map->GetChunkSize().y; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
@@ -335,8 +350,8 @@ void MapRenderer::CheckVisibleChunks()
 void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>> &additionalRenderers)
 {
 	// pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
-	pipeline.colorPass->Perform(camera, wallsData.size(), renderData.size(), additionalRenderers);
-	pipeline.lightPass->Perform(camera, light_data.size() + additionalLightData.size());
+	pipeline.colorPass->Perform(camera, wallsData.size(), sortedBlocks.size(), additionalRenderers);
+	pipeline.lightPass->Perform(camera, sortedLights.size() + additionalLightData.size());
 }
 
 void MapRenderer::Compose()
