@@ -1,10 +1,149 @@
 #include "map.h"
 
+#include "FastNoise/FastNoiseLite.h"
+
+#include "renderer/world/map/tiles.h"
+
+#include "renderer/atlas/texture_atlas.h"
+
+FastNoiseLite noise1;
+std::map<Vec2, ChunkData, Compare> chunkData;
+
+Vec2 START_POS = Vec2(31984 - 1920 / 2.0f, 32324 - 1080 / 2.0f);
+
+Chunks chunks;
+std::vector<Vec4> renderData;
+
+Vec4 WhatBlock(float x, float y)
+{
+	Tile block;
+
+	static float size = 0.5f;
+	float value = noise1.GetNoise(x * size, y * size) * 0.5f + 0.5f;
+
+	if (y > 32600 + 1000 * noise1.GetNoise(x * 0.1f, 0.0f))
+	{
+		value = 1.0f;
+	}
+
+	// float value = 0.4f;	
+	
+	if (value > 0.75f) 
+	{
+		block.type = BlockType::Empty;
+	}
+	if (value >= 0.3f && value < 0.75f)
+	{
+		block.type = BlockType::Grass;
+	}
+	if (value < 0.3f)
+	{
+		block.type = BlockType::Stone;
+	}
+	
+	Vec2 tile;
+	if (block.type == BlockType::Empty)
+	{
+		tile = Vec2(2, 4);
+	}
+	
+	if (block.type == BlockType::Grass)
+	{
+		tile = Vec2(1, 1);
+	}
+	
+	if (block.type == BlockType::Stone)
+	{
+		tile = Vec2(7, 1);
+	}
+
+	return Vec4(x, y, tile.x, tile.y);
+}
+
+void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data)
+{
+	CheckScope timer("ConvertChunksRenderData");
+
+	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+	
+	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+
+	int amountOfColumnsOfChunks = chunks.size();
+	int amountOfRowsOfChunks = chunks[0].size();
+	int amountOfColumnsOfBlocks = chunks[0][0].size();
+	int amountOfRowsOfBlocks = chunks[0][0][0].size();
+
+	int amountOfChunks = amountOfColumnsOfChunks * amountOfRowsOfChunks;
+	int amountOfBlocksInChunk = amountOfColumnsOfBlocks * amountOfRowsOfBlocks;
+	int amountOfBlocks = amountOfChunks * amountOfBlocksInChunk;
+	
+
+	int i = 0;
+
+	auto& visibleChunks = map->GetVisibleChunks();
+	data.resize(visibleChunks.GetArea() * 8 * 8);
+
+	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; xChunk++)
+	{
+		for (int yChunk = visibleChunks.y.start; yChunk < visibleChunks.y.end; yChunk++)
+		{
+			Vec2 chunkIndices = Vec2(xChunk, yChunk);
+
+			Vec2 chunkPosition = chunkIndices;
+
+			int start = i;
+
+			for (int x = 0; x < 8; x++)
+			{
+				for (int y = 0; y < 8; y++)
+				{
+					Tile block;
+
+					Vec2 blockPosition = (chunkPosition * Vec2(8, 8) + Vec2(x, y)) * 16.0f;
+					
+					data[i++] = WhatBlock(blockPosition.x, blockPosition.y);
+				}
+			}
+
+			int howMany = i - start;
+
+			Vec2 ind = chunkIndices;
+			ind = trunc(ind);
+
+			chunkData[ind] = { start, howMany };
+		}
+	}
+}
+
 Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize{chunkSize}, amountOfChunks{amountOfChunks}, blockSize{blockSize}
 {
 	MapGenerationDataSet mapGenerator = {};
 	mapGenerator.seed = seed;
 	GenerateMap(mapGenerator);
+
+	Vec2 AMOUNT_OF_CHUNKS = ceil(MW_WINDOW_SIZE() / blockSize / chunkSize);
+
+	chunks.resize(AMOUNT_OF_CHUNKS.x);
+
+	for (auto& columnOfChunks : chunks)
+	{
+		columnOfChunks.resize(AMOUNT_OF_CHUNKS.y);
+
+		for (auto& chunk : columnOfChunks)
+		{
+			chunk.resize(chunkSize.x);
+
+			for (auto& columnOfBlocks : chunk)
+			{
+				columnOfBlocks.resize(chunkSize.x);
+				
+				for (auto& block : columnOfBlocks)
+				{
+					block.type = static_cast<BlockType>(rand() % 5);
+				}
+			}
+		}
+	}
 }
 
 TileType Map::GetTileUnderCursor(const Vec2 &cameraPosition, const tiles_t &tiles) const
@@ -84,22 +223,28 @@ Map::BlockSettingData Map::PlaceWall(const Vec2 &cameraPosition, WallType wallTy
 
 void Map::CalculateVisibleChunks(Vec2 viewPos)
 {
-	const Vec2 middle = WhatChunk(GetCenter());
-	const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
-	const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
-	const Vec2 shift = (mw::Window::GetSize() / chunkSizeInPixels / 2.0f);
-	const Vec2 additionalBlocks = Vec2(-1.0f); // when map size is 25x25 chunks.
+	visibleChunks.x.start = (viewPos.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / 8.0f - 2;
+	visibleChunks.x.end = visibleChunks.x.start + 15 + 4;
 
-	visibleChunks.x.start = middle.x - shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x * 3;
-	visibleChunks.x.end = middle.x + shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x;
-	visibleChunks.y.start = middle.y - shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) + additionalBlocks.y * 3;
-	visibleChunks.y.end = middle.y + shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) + additionalBlocks.y;
+	visibleChunks.y.start = (viewPos.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / 8.0f - 2;
+	visibleChunks.y.end = visibleChunks.y.start + 9 + 4;
 
-	visibleChunks.x.start = std::max(visibleChunks.x.start, 0);
-	visibleChunks.y.start = std::max(visibleChunks.y.start, 0);
+	// const Vec2 middle = WhatChunk(GetCenter());
+	// const Vec2 centeredViewPos = viewPos - (GetCenter() - GetChunkSize() * 2.0f) * blockSize;
+	// const Vec2 chunkSizeInPixels = GetChunkSize() * blockSize;
+	// const Vec2 shift = (mw::Window::GetSize() / chunkSizeInPixels / 2.0f);
+	// const Vec2 additionalBlocks = Vec2(-1.0f); // when map size is 25x25 chunks.
 
-	visibleChunks.x.end = std::min(visibleChunks.x.end, static_cast<int>(GetAmountOfChunks().x) - 1);
-	visibleChunks.y.end = std::min(visibleChunks.y.end, static_cast<int>(GetAmountOfChunks().y) - 1);
+	// visibleChunks.x.start = middle.x - shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x * 3;
+	// visibleChunks.x.end = middle.x + shift.x + ceilf(centeredViewPos.x / chunkSizeInPixels.x) + additionalBlocks.x;
+	// visibleChunks.y.start = middle.y - shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) + additionalBlocks.y * 3;
+	// visibleChunks.y.end = middle.y + shift.y + ceilf(centeredViewPos.y / chunkSizeInPixels.y) + additionalBlocks.y;
+
+	// visibleChunks.x.start = std::max(visibleChunks.x.start, 0);
+	// visibleChunks.y.start = std::max(visibleChunks.y.start, 0);
+
+	// visibleChunks.x.end = std::min(visibleChunks.x.end, static_cast<int>(GetAmountOfChunks().x) - 1);
+	// visibleChunks.y.end = std::min(visibleChunks.y.end, static_cast<int>(GetAmountOfChunks().y) - 1);
 }
 
 bool Map::CheckBounds(int x, int y) const
@@ -249,13 +394,31 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet)
 				SetBlock(x, y, BlockType::Grass);
 			}
 
-			if (blocks[x][y].type == BlockType::Dirt || blocks[x][y].type == BlockType::Grass)
+			// if (blocks[x][y].type == BlockType::Dirt || blocks[x][y].type == BlockType::Grass)
+			// {
+				// if (rand() % 100 < 10)
+				// {
+				// 	blocks[x][y].type = BlockType::Stone;
+				// }
+			// }
+		}
+	}
+
+	static float size = 4.0f; //32
+
+	for (int x = 0; x < blocks.size(); x++)
+	{
+		for (int y = 0; y < blocks[0].size(); y++)
+		{
+			float value = noise1.GetNoise(static_cast<float>(x) * size, static_cast<float>(y) * size) * 0.5f + 0.5f;
+
+			if (blocks[x][y].type != BlockType::Empty)
 			{
-				if (rand() % 100 < 10)
+				if (value > 0.1f && value < 0.3f)
 				{
 					blocks[x][y].type = BlockType::Stone;
 				}
-			}
+			}		
 		}
 	}
 
@@ -306,9 +469,14 @@ Vec2 Map::GetCenter() const
 	return amountOfBlocks / 2.0f;
 }
 
-const bounds_t &Map::GetVisibleChunks() const
+bounds_t &Map::GetVisibleChunks()
 {
 	return visibleChunks;
+}
+
+bounds_t &Map::GetLastVisibleChunks()
+{
+	return lastVisibleChunks;
 }
 
 float Map::GetBlockSize() const

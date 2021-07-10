@@ -6,10 +6,11 @@
 
 MapRenderer::MapRenderer(const Ref<Map> &map, const Ref<Camera> &camera) : map{map}, camera{camera}
 {
-	visibleChunks = map->GetVisibleChunks();
-	lastVisibleChunks = visibleChunks;
+	// visibleChunks = map->GetVisibleChunks();
+	// lastVisibleChunks = visibleChunks;
+	map->GetLastVisibleChunks() = map->GetVisibleChunks();
 
-	pipeline.colorPass = CreateRef<ColorPass>(visibleChunks.GetArea() * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y);
+	pipeline.colorPass = CreateRef<ColorPass>(map->GetVisibleChunks().GetArea() * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y);
 	pipeline.lightPass = CreateRef<LightPass>();
 	pipeline.compositionPass = CreateRef<CompositionPass>();
 
@@ -64,9 +65,9 @@ void MapRenderer::RebuildScene()
 
 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 
-	for (int chunkX = visibleChunks.x.start; chunkX < visibleChunks.x.end; chunkX++)
+	for (int chunkX = map->GetVisibleChunks().x.start; chunkX < map->GetVisibleChunks().x.end; chunkX++)
 	{
-		for (int chunkY = visibleChunks.y.start; chunkY < visibleChunks.y.end; chunkY++)
+		for (int chunkY = map->GetVisibleChunks().y.start; chunkY < map->GetVisibleChunks().y.end; chunkY++)
 		{
 			for (int x = chunkX * map->GetChunkSize().x; x < (chunkX + 1) * map->GetChunkSize().y; x++)
 			{
@@ -141,7 +142,8 @@ void MapRenderer::UpdateScene()
 {
 	MW_PROFILER_SCOPE();
 
-	pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
+	// pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
+	pipeline.colorPass->GetBlocksVBO()->Store(renderData);
 	pipeline.colorPass->GetWallsVBO()->Store(wallsData);
 
 	std::vector<Vec2> copy = lightData;
@@ -156,18 +158,173 @@ void MapRenderer::UpdateScene()
 
 void MapRenderer::CheckVisibleChunks()
 {
-	visibleChunks = map->GetVisibleChunks();
+	auto& visibleChunks = map->GetVisibleChunks();
+	auto& lastVisibleChunks = map->GetLastVisibleChunks();
 
 	if (visibleChunks != lastVisibleChunks)
 	{
-		lastVisibleChunks = visibleChunks;
+		if (lastVisibleChunks.x.end < visibleChunks.x.end)
+		{
+			int oldX = visibleChunks.x.start;
+			int newX = visibleChunks.x.end - 1;
+
+			for (int y = visibleChunks.y.start - 1; y < visibleChunks.y.end + 1; y++)
+			{
+				auto& data = chunkData[Vec2(oldX, y)];
+
+				// if (data.start == 0)
+				// {
+				// 	MW_LOG_OUT("NOT FOUND: " << oldX << ' ' << y);
+				// }
+
+				Vec2 chunkPosition = Vec2(newX, y) * Vec2(8, 8) * 16.0f;
+				
+				std::vector<Vec4> bls(64);
+				int b = 0;
+
+				for (int i = 0; i < 8; i++)
+				{
+					for (int j = 0; j < 8; j++)
+					{
+						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
+						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+					}
+				}
+				
+				b = 0;
+				for (int i = data.start; i < data.start + data.howMany; i++)
+				{
+					renderData[i] = bls[b++];
+				}
+
+				chunkData[Vec2(newX, y)] = data;
+				chunkData.erase(Vec2(oldX, y));
+			}
+		}
+		else if (lastVisibleChunks.x.end > visibleChunks.x.end)
+		{
+			int oldX = lastVisibleChunks.x.end - 1;
+			int newX = lastVisibleChunks.x.start;
+
+			for (int y = visibleChunks.y.start - 1; y < visibleChunks.y.end + 1; y++)
+			{
+				auto& data = chunkData[Vec2(oldX, y)];
+
+				// if (data.start == 0)
+				// {
+				// 	MW_LOG_OUT("NOT FOUND: " << oldX << ' ' << y);
+				// }
+
+				Vec2 chunkPosition = Vec2(newX, y) * Vec2(8, 8) * 16.0f;
+				
+				std::vector<Vec4> bls(64);
+				int b = 0;
+
+				for (int i = 0; i < 8; i++)
+				{
+					for (int j = 0; j < 8; j++)
+					{
+						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
+						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+					}
+				}
+				
+				b = 0;
+				for (int i = data.start; i < data.start + data.howMany; i++)
+				{
+					renderData[i] = bls[b++];
+				}
+
+				chunkData[Vec2(newX, y)] = data;
+				chunkData.erase(Vec2(oldX, y));
+			}
+		}
+		if (lastVisibleChunks.y.start < visibleChunks.y.start)
+		{
+			int oldY = visibleChunks.y.start;
+			int newY = visibleChunks.y.end - 1;
+
+			for (int x = visibleChunks.x.start - 1; x < visibleChunks.x.end + 1; x++)
+			{
+				auto& data = chunkData[Vec2(x, oldY)];
+
+				// if (data.start == 0)
+				// {
+				// 	MW_LOG_OUT("NOT FOUND: " << x << ' ' << oldY);
+				// }
+
+				Vec2 chunkPosition = Vec2(x, newY) * Vec2(8, 8) * 16.0f;
+				
+				std::vector<Vec4> bls(64);
+				int b = 0;
+
+				for (int i = 0; i < 8; i++)
+				{
+					for (int j = 0; j < 8; j++)
+					{
+						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
+						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+					}
+				}
+				
+				b = 0;
+				for (int i = data.start; i < data.start + data.howMany; i++)
+				{
+					renderData[i] = bls[b++];
+				}
+
+				chunkData[Vec2(x, newY)] = data;
+				chunkData.erase(Vec2(x, oldY));
+			}
+		} 
+		else if (lastVisibleChunks.y.start > visibleChunks.y.start)
+		{
+			int oldY = lastVisibleChunks.y.end - 1;
+			int newY = lastVisibleChunks.y.start;
+
+			for (int x = visibleChunks.x.start - 1; x < visibleChunks.x.end + 1; x++)
+			{
+				auto& data = chunkData[Vec2(x, oldY)];
+
+				// if (data.start == 0)
+				// {
+				// 	MW_LOG_OUT("NOT FOUND: " << x << ' ' << oldY);
+				// }
+
+				Vec2 chunkPosition = Vec2(x, newY) * Vec2(8, 8) * 16.0f;
+				
+				std::vector<Vec4> bls(64);
+				int b = 0;
+
+				for (int i = 0; i < 8; i++)
+				{
+					for (int j = 0; j < 8; j++)
+					{
+						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
+						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+					}
+				}
+				
+				b = 0;
+				for (int i = data.start; i < data.start + data.howMany; i++)
+				{
+					renderData[i] = bls[b++];
+				}
+
+				chunkData[Vec2(x, newY)] = data;
+				chunkData.erase(Vec2(x, oldY));
+			}
+		}
+
+		map->GetLastVisibleChunks() = map->GetVisibleChunks();
 		map->chunksUpdated = true;
 	}
 }
 
 void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>> &additionalRenderers)
 {
-	pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
+	// pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
+	pipeline.colorPass->Perform(camera, wallsData.size(), renderData.size(), additionalRenderers);
 	pipeline.lightPass->Perform(camera, lightData.size() + additionalLightData.size());
 }
 

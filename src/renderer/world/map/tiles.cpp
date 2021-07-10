@@ -83,6 +83,16 @@ Vec2 DirtGenerator(const blocks_t &blocks, int x, int y)
 	CHECK_NEIGHBOURS(TOP, LEFT, BOTTOM, RIGHT);
 }
 
+Vec2 GrassGenerator1(BlockType up, BlockType down, BlockType left, BlockType right, int x, int y)
+{
+	return Vec2(0);
+}
+
+Vec2 DirtGenerator1(BlockType up, BlockType down, BlockType left, BlockType right, int x, int y)
+{
+	return Vec2(0);
+}
+
 Vec2 PickRightAngularBlock(const blocks_t &blocks, int x, int y)
 {
 #undef TOP
@@ -113,8 +123,24 @@ Vec2 PickRightAngularWall(const blocks_t &blocks, int x, int y)
 	CHECK_NEIGHBOURS(TOP, LEFT, BOTTOM, RIGHT);
 }
 
+Vec2 PickRightAngularBlock1(BlockType up, BlockType down, BlockType left, BlockType right, int x, int y)
+{
+	return Vec2(0);
+}
+
+Vec2 PickRightAngularWall1(BlockType up, BlockType down, BlockType left, BlockType right, int x, int y)
+{
+	return Vec2(0);
+}
+
 TileFunction PickTileFunction(TileType type)
 {
 	bool special = tileFunctions.find(type) != tileFunctions.end();
 	return special ? tileFunctions[type] : PickRightAngularBlock;
+}
+
+TileFunction1 PickTileFunction1(TileType type)
+{
+	bool special = tileFunctions1.find(type) != tileFunctions1.end();
+	return special ? tileFunctions1[type] : PickRightAngularBlock1;
 }

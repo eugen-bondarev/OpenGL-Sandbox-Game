@@ -103,23 +103,26 @@ void Rigidbody::Update()
 {
 	MW_PROFILER_SCOPE();
 
-	if (!onGround)
-	{
-		entity->SetPosition(entity->position + velocity * Vec2(0, 1) * mw::Time::GetDelta());
-		velocity += -Physics::g * mw::Time::GetDelta() * velocityFactor;
+	canMoveLeft = true;
+	canMoveRight = true;
 
-		if (ceiling)
-		{
-			velocity.y = 0.0f;
-			ceiling = false;
-		}
-	}
-	else
-	{
-		velocity.y = 0.0f;
-	}
+	// if (!onGround)
+	// {
+	// 	entity->SetPosition(entity->position + velocity * Vec2(0, 1) * mw::Time::GetDelta());
+	// 	velocity += -Physics::g * mw::Time::GetDelta() * velocityFactor;
 
-	CheckCollisions();
+	// 	if (ceiling)
+	// 	{
+	// 		velocity.y = 0.0f;
+	// 		ceiling = false;
+	// 	}
+	// }
+	// else
+	// {
+	// 	velocity.y = 0.0f;
+	// }
+
+	// CheckCollisions();
 }
 
 void Rigidbody::Jump()

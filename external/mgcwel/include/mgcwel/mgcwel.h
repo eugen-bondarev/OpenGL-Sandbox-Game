@@ -18,6 +18,7 @@
 
 #include "maths/maths.h"
 
+#define MW_WINDOW_SIZE() 			::mw::Window::GetSize()
 #define MW_WINDOW_WIDTH() 			::mw::Window::GetSize().x
 #define MW_WINDOW_HEIGHT() 			::mw::Window::GetSize().y
 

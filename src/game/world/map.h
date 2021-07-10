@@ -21,9 +21,42 @@ inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
 
 using TileToUpdate = Vec2;
 
+using Row = std::vector<Tile>;
+using Chunk = std::vector<Row>;
+
+using RowOfChunks = std::vector<Chunk>;
+using Chunks = std::vector<RowOfChunks>;
+
+extern Vec2 START_POS;
+
+class Map;
+
+void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data);
+
+Vec4 WhatBlock(float x, float y);
+
+struct ChunkData
+{
+	int start { 0 };
+	int howMany { 0 };
+};
+
+struct Compare final
+{
+	bool operator()(const Vec2& lhs, const Vec2& rhs) const noexcept
+	{
+		return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y);
+	}
+};
+
+extern std::map<Vec2, ChunkData, Compare> chunkData;
+extern Chunks chunks;
+extern std::vector<Vec4> renderData;
+
 class Map
 {
 public:
+
 	Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
 
 	struct BlockSettingData
@@ -65,7 +98,9 @@ public:
 
 	void CalculateVisibleChunks(Vec2 viewPos);
 
-	const bounds_t &GetVisibleChunks() const;
+	bounds_t &GetVisibleChunks();
+	bounds_t &GetLastVisibleChunks();
+
 	float GetBlockSize() const;
 
 	blocks_t &GetBlocks();

@@ -27,7 +27,7 @@ public:
 
 	inline const bounds_t &GetVisibleChunks() const
 	{
-		return visibleChunks;
+		return map->GetVisibleChunks();
 	}
 
 	inline int GetAmountOfRenderedBlocks() const
@@ -67,8 +67,8 @@ private:
 	const Ref<Map> &map;
 	const Ref<Camera> &camera;
 
-	bounds_t lastVisibleChunks;
-	bounds_t visibleChunks;
+	// bounds_t lastVisibleChunks;
+	// bounds_t visibleChunks;
 
 	MapRenderer(const MapRenderer &) = delete;
 	MapRenderer &operator=(const MapRenderer &) = delete;

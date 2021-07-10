@@ -20,7 +20,8 @@ void Player::Update()
 		}
 	}
 
-	static float defaultSpeed = 150.0f;
+	// static float defaultSpeed = 150.0f;
+	static float defaultSpeed = 1000.0f;
 
 	if (entity->animator->walkingAnimation->GetTime() > 13)
 	{
@@ -30,6 +31,16 @@ void Player::Update()
 	if (entity->animator->walkingAnimation->GetTime() < 0)
 	{
 		entity->animator->walkingAnimation->SetTime(13);
+	}
+
+	if (mw::Input::KeyDown(mw::Input::Key::W))
+	{
+		entity->SetPosition(entity->GetPosition() + Vec2(0, 1) * mw::Time::GetDelta() * defaultSpeed);
+	}
+
+	if (mw::Input::KeyDown(mw::Input::Key::S))
+	{
+		entity->SetPosition(entity->GetPosition() + Vec2(0, -1) * mw::Time::GetDelta() * defaultSpeed);
 	}
 
 	if (mw::Input::KeyDown(mw::Input::Key::A) && entity->rigidbody->CanMoveLeft())
