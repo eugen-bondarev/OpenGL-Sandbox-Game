@@ -13,7 +13,8 @@ Engine::Engine()
 	mw::Window::Create({
 		{ 1920, 1080 },
 		mw::Window::Mode::Borderless,
-		true
+		true,
+		false
 	});
 
 	mw::Input::Create(mw::Window::GetGlfwWindow());

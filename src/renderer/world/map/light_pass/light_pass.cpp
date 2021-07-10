@@ -62,12 +62,17 @@ void LightPass::Perform(const Ref<Camera> &camera, int amountOfLights)
 
 	fbo->Bind();
 	fbo->Clear();
-	shader->Bind();
-	shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
-	lightMesh.vao->Bind();
-	lightMesh.vao->GetIndexBuffer()->Bind();
-	lightMesh.texture->Bind();
-	glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
+
+	if (amountOfLights)
+	{
+		shader->Bind();
+		shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
+		lightMesh.vao->Bind();
+		lightMesh.vao->GetIndexBuffer()->Bind();
+		lightMesh.texture->Bind();
+		glDrawElementsInstanced(GL_TRIANGLES, lightMesh.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfLights);
+	}
+	
 	fbo->Unbind();
 
 	glViewport(0, 0, mw::Window::GetSize().x, mw::Window::GetSize().y);

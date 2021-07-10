@@ -24,7 +24,7 @@ void MapRenderer::PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap *bloc
 			const TileFunction &Function = PickTileFunction(map->GetBlocks()[x][y].type);
 
 			const Vec2 tile = blocksTileMap->Get(map->GetBlocks()[x][y].type) + Function(map->GetBlocks(), x, y);
-			map->GetBlocks()[x][y].texture = tile;
+			map->GetBlocks()[x][y].worldPosition = tile;
 		}
 	}
 	else
@@ -32,7 +32,7 @@ void MapRenderer::PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap *bloc
 		if (!map->WallIsEmpty(x, y))
 		{
 			const Vec2 tile = blocksTileMap->Get(map->GetWalls()[x][y].type == WallType::Grass ? WallType::Dirt : map->GetWalls()[x][y].type) + PickRightAngularWall(map->GetWalls(), x, y) + Vec2(3, 0);
-			map->GetWalls()[x][y].texture = tile;
+			map->GetWalls()[x][y].worldPosition = tile;
 		}
 	}
 }
@@ -73,7 +73,7 @@ void MapRenderer::RebuildScene()
 				{
 					if (!map->BlockIsEmpty(x, y))
 					{
-						blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), map->GetBlocks()[x][y].texture.x, map->GetBlocks()[x][y].texture.y);
+						blocksData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize(), map->GetBlocks()[x][y].worldPosition.x, map->GetBlocks()[x][y].worldPosition.y);
 
 						if (x > 1 && y > 0)
 						{
@@ -81,7 +81,7 @@ void MapRenderer::RebuildScene()
 							{
 								if ((!map->BlockIs(x, y, map->GetBlocks()[x - 1][y].type)) || (!map->BlockIs(x, y, map->GetBlocks()[x][y - 1].type)) || (!map->BlockIs(x, y, map->GetBlocks()[x - 1][y - 1].type)))
 								{
-									wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, map->GetWalls()[x][y].texture.x, map->GetWalls()[x][y].texture.y);
+									wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, map->GetWalls()[x][y].worldPosition.x, map->GetWalls()[x][y].worldPosition.y);
 								}
 							}
 						}
@@ -105,7 +105,7 @@ void MapRenderer::RebuildScene()
 								lightData.emplace_back(x * map->GetBlockSize(), y * map->GetBlockSize());
 							}
 
-							wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, map->GetWalls()[x][y].texture.x, map->GetWalls()[x][y].texture.y);
+							wallsData.emplace_back(x * map->GetBlockSize() + offset.x, y * map->GetBlockSize() + offset.y, map->GetWalls()[x][y].worldPosition.x, map->GetWalls()[x][y].worldPosition.y);
 						}
 						else
 						{
@@ -140,58 +140,106 @@ void MapRenderer::UpdateScene()
 {
 	MW_PROFILER_SCOPE();
 
+	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
+
 	sortedBlocks.clear();
+	sortedWalls.clear();
 	sortedLights.clear();
 
-	for (int i = 0; i < map->BLOCKS.size(); i++)
+	static Vec2 offset = {-4.0f, -4.0f};
+
+	for (int x = 0; x < map->BLOCKS.size(); x++)
 	{
-		for (int j = 0; j < map->BLOCKS[i].size(); j++)
+		for (int y = 0; y < map->BLOCKS[x].size(); y++)
 		{
-			if (map->BLOCKS[i][j].type != BlockType::Empty)
+			if (map->BLOCKS[x][y].type != BlockType::Empty)
 			{
-				Vec4 vec = Vec4(map->BLOCKS[i][j].texture, 1, 0);
+				const TileFunction &Function = PickTileFunction(map->BLOCKS[x][y].type);
+				const Vec2 tile = blocksTileMap->Get(map->BLOCKS[x][y].type) + Function(map->BLOCKS, x, y);
+
+				Vec4 vec = Vec4(map->BLOCKS[x][y].worldPosition, tile);
 				sortedBlocks.push_back(vec);
+				
+				if (x > 1 && y > 0)
+				{
+					if (!map->WallIsEmpty1(x, y))
+					{
+						if ((!map->BlockIs1(x, y, map->GetBlocks1()[x - 1][y].type)) || (!map->BlockIs1(x, y, map->GetBlocks1()[x][y - 1].type)) || (!map->BlockIs1(x, y, map->GetBlocks1()[x - 1][y - 1].type)))
+						{
+							const Vec2 tilew = blocksTileMap->Get(map->WALLS[x][y].type == WallType::Grass ? WallType::Dirt : map->WALLS[x][y].type) + PickRightAngularWall(map->WALLS, x, y) + Vec2(3, 0);
+							Vec4 vecw = Vec4(map->WALLS[x][y].worldPosition + offset, tilew);
+							sortedWalls.push_back(vecw);
+						}
+					}
+				}
 			}
 			else
-			{
-				if (map->BLOCKS[i][j - 1].type != BlockType::Empty)
+			{				
+				if (!map->WallIsEmpty1(x, y))
 				{
-					Vec2 vec = Vec2(map->BLOCKS[i][j].texture);
-					sortedLights.push_back(vec);
+					if (y + 6 < map->BLOCKS[0].size() && map->BlockIsEmpty1(x, y + 6) && map->WallIsEmpty1(x, y + 6))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
+
+					if (x + 6 < map->BLOCKS.size() && map->BlockIsEmpty1(x + 6, y) && map->WallIsEmpty1(x + 6, y))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
+
+					if (x - 10 >= 0 && map->BlockIsEmpty1(x - 10, y) && map->WallIsEmpty1(x - 10, y))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
+
+					const Vec2 tilew = blocksTileMap->Get(map->WALLS[x][y].type == WallType::Grass ? WallType::Dirt : map->WALLS[x][y].type) + PickRightAngularWall(map->WALLS, x, y) + Vec2(3, 0);
+					Vec4 vecw = Vec4(map->WALLS[x][y].worldPosition + offset, tilew);
+					sortedWalls.push_back(vecw);
+				}
+				else
+				{					
+					if (y > 0 && !map->BlockIsEmpty1(x, y - 1) || !map->WallIsEmpty1(x, y - 1))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
+
+					if (y > 0 && y + 1 < map->BLOCKS[0].size() && !map->BlockIsEmpty1(x, y + 1) || !map->WallIsEmpty1(x, y - 1))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
+
+					if (x > 0 && (!map->BlockIsEmpty1(x - 1, y) || !map->WallIsEmpty1(x - 1, y)))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
+
+					if (x + 1 < map->BLOCKS.size() && (!map->BlockIsEmpty1(x + 1, y) || !map->WallIsEmpty1(x + 1, y)))
+					{
+						Vec2 vec = Vec2(map->BLOCKS[x][y].worldPosition);
+						sortedLights.push_back(vec);
+					}
 				}
 			}
 		}
 	}
-
-	// for (int i = 0; i < renderData.size(); i++)
-	// {
-	// 	if (!(renderData[i].z == 2 && renderData[i].w == 4))
-	// 	{
-	// 		sortedBlocks.push_back(renderData[i]);
-	// 	}
-	// 	else
-	// 	{
-	// 		sortedLights.push_back(renderData[i]);
-	// 	}
-	// }
-
-	// pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
+	
 	pipeline.colorPass->GetBlocksVBO()->Store(sortedBlocks);
-	pipeline.colorPass->GetWallsVBO()->Store(wallsData);
+	pipeline.colorPass->GetWallsVBO()->Store(sortedWalls);
 
 	std::vector<Vec2> copy = lightData;
 	for (const Vec2 &light : additionalLightData)
 	{
 		copy.push_back(light);
 	}
-	
-	// for (int i = 0; i < copy.size(); i++)
-	// {
-	// 	MW_LOG_VAR(copy[i].x);
-	// 	MW_LOG_VAR(copy[i].y);
-	// }
 
-	// pipeline.lightPass->GetVBO()->Store(copy);
+	if (!sortedLights.size()) sortedLights.emplace_back(0);
+	
 	pipeline.lightPass->GetVBO()->Store(sortedLights);
 	MW_SYNC_GPU();
 }
@@ -203,219 +251,21 @@ void MapRenderer::CheckVisibleChunks()
 	auto& visibleChunks = map->GetVisibleChunks();
 	auto& lastVisibleChunks = map->GetLastVisibleChunks();
 
-	ConvertChunksRenderData(map.get(), renderData, light_data);
-
-	MW_SYNC_GPU();
-	return;
-
 	if (visibleChunks != lastVisibleChunks)
 	{
-		if (lastVisibleChunks.x.end < visibleChunks.x.end)
-		{
-			int oldX = visibleChunks.x.start;
-			int newX = visibleChunks.x.end - 1;
-
-			for (int y = visibleChunks.y.start - 1; y < visibleChunks.y.end + 1; y++)
-			{
-				auto& data = chunkData[Vec2(oldX, y)];
-
-				Vec2 chunkPosition = Vec2(newX, y) * map->GetChunkSize() * 16.0f;
-				
-				std::vector<Vec4> bls(64);
-				std::vector<Vec2> light_d(64);
-				int b = 0;
-
-				for (int i = 0; i < map->GetChunkSize().x; i++)
-				{
-					for (int j = 0; j < map->GetChunkSize().y; j++)
-					{
-						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
-
-						int xi = static_cast<int>(truncf((newX - (visibleChunks.x.end - 1)) * 8.0f + i));
-						int yi = static_cast<int>(truncf((y - (visibleChunks.y.start - 1)) * 8.0f + j));
-						xi = std::max<int>(xi, 0);
-						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
-						yi = std::max<int>(yi, 0);
-						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);
-						map->BLOCKS[xi][yi].type = block.type;
-						map->BLOCKS[xi][yi].texture = block.position;
-
-						bls[b] = Vec4(block.position, block.tile);
-						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
-						b++;
-					}
-				}
-				
-				b = 0;
-				for (int i = data.start; i < data.start + data.howMany; i++)
-				{
-					renderData[i] = bls[b];
-					light_data[i] = light_d[b];
-					b++;
-				}
-
-				chunkData[Vec2(newX, y)] = data;
-				chunkData.erase(Vec2(oldX, y));
-			}
-		}
-		else if (lastVisibleChunks.x.end > visibleChunks.x.end)
-		{
-			int oldX = lastVisibleChunks.x.end - 1;
-			int newX = lastVisibleChunks.x.start;
-
-			for (int y = visibleChunks.y.start - 1; y < visibleChunks.y.end + 1; y++)
-			{
-				auto& data = chunkData[Vec2(oldX, y)];
-
-				Vec2 chunkPosition = Vec2(newX, y) * map->GetChunkSize() * 16.0f;
-				
-				std::vector<Vec4> bls(64);
-				std::vector<Vec2> light_d(64);
-				int b = 0;
-
-				for (int i = 0; i < map->GetChunkSize().x; i++)
-				{
-					for (int j = 0; j < map->GetChunkSize().y; j++)
-					{
-						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
-
-						int xi = static_cast<int>(truncf((newX - lastVisibleChunks.x.start) * 8.0f + i));
-						int yi = static_cast<int>(truncf((y - (visibleChunks.y.start - 1)) * 8.0f + j));
-						xi = std::max<int>(xi, 0);
-						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
-						yi = std::max<int>(yi, 0);
-						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);
-						map->BLOCKS[xi][yi].type = block.type;
-						map->BLOCKS[xi][yi].texture = block.position;
-
-						bls[b] = Vec4(block.position, block.tile);
-						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
-						b++;
-					}
-				}
-				
-				b = 0;
-				for (int i = data.start; i < data.start + data.howMany; i++)
-				{
-					renderData[i] = bls[b];
-					light_data[i] = light_d[b];
-					b++;
-				}
-
-				chunkData[Vec2(newX, y)] = data;
-				chunkData.erase(Vec2(oldX, y));
-			}
-		}
-		if (lastVisibleChunks.y.start < visibleChunks.y.start)
-		{
-			int oldY = visibleChunks.y.start;
-			int newY = visibleChunks.y.end - 1;
-
-			for (int x = visibleChunks.x.start - 1; x < visibleChunks.x.end + 1; x++)
-			{
-				auto& data = chunkData[Vec2(x, oldY)];
-
-				Vec2 chunkPosition = Vec2(x, newY) * map->GetChunkSize() * 16.0f;
-				
-				std::vector<Vec4> bls(64);
-				std::vector<Vec2> light_d(64);
-				int b = 0;
-
-				for (int i = 0; i < map->GetChunkSize().x; i++)
-				{
-					for (int j = 0; j < map->GetChunkSize().y; j++)
-					{
-						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
-
-						int xi = static_cast<int>(truncf((x - (visibleChunks.x.start - 1)) * 8.0f + i));
-						int yi = static_cast<int>(truncf((newY - (visibleChunks.y.end - 1)) * 8.0f + j));
-						xi = std::max<int>(xi, 0);
-						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
-						yi = std::max<int>(yi, 0);
-						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);
-						map->BLOCKS[xi][yi].type = block.type;
-						map->BLOCKS[xi][yi].texture = block.position;
-
-						bls[b] = Vec4(block.position, block.tile);
-						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
-						b++;
-					}
-				}
-				
-				b = 0;
-				for (int i = data.start; i < data.start + data.howMany; i++)
-				{
-					renderData[i] = bls[b];
-					light_data[i] = light_d[b];
-					b++;
-				}
-
-				chunkData[Vec2(x, newY)] = data;
-				chunkData.erase(Vec2(x, oldY));
-			}
-		} 
-		else if (lastVisibleChunks.y.start > visibleChunks.y.start)
-		{
-			int oldY = lastVisibleChunks.y.end - 1;
-			int newY = lastVisibleChunks.y.start;
-
-			for (int x = visibleChunks.x.start - 1; x < visibleChunks.x.end + 1; x++)
-			{
-				auto& data = chunkData[Vec2(x, oldY)];
-
-				Vec2 chunkPosition = Vec2(x, newY) * map->GetChunkSize() * 16.0f;
-				
-				std::vector<Vec4> bls(64);
-				std::vector<Vec2> light_d(64);
-				int b = 0;
-
-				for (int i = 0; i < map->GetChunkSize().x; i++)
-				{
-					for (int j = 0; j < map->GetChunkSize().y; j++)
-					{
-						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
-
-						int xi = static_cast<int>(truncf((x - (visibleChunks.x.start - 1)) * 8.0f + i));
-						int yi = static_cast<int>(truncf((newY - lastVisibleChunks.y.start) * 8.0f + j));
-						xi = std::max<int>(xi, 0);
-						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
-						yi = std::max<int>(yi, 0);
-						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);						
-						map->BLOCKS[xi][yi].type = block.type;
-						map->BLOCKS[xi][yi].texture = block.position;
-
-						bls[b] = Vec4(block.position, block.tile);
-						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
-						b++;
-					}
-				}
-				
-				b = 0;
-				for (int i = data.start; i < data.start + data.howMany; i++)
-				{
-					renderData[i] = bls[b];
-					light_data[i] = light_d[b];
-					b++;
-				}
-
-				chunkData[Vec2(x, newY)] = data;
-				chunkData.erase(Vec2(x, oldY));
-			}
-		}
-
-		map->GetLastVisibleChunks() = map->GetVisibleChunks();
-		map->chunksUpdated = true;
+		ConvertChunksRenderData(map.get(), renderData);
+		lastVisibleChunks = visibleChunks;
 	}
+	
+	map->chunksUpdated = true;
+
+	MW_SYNC_GPU();
 }
 
 void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>> &additionalRenderers)
 {
 	// pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
-	pipeline.colorPass->Perform(camera, wallsData.size(), sortedBlocks.size(), additionalRenderers);
+	pipeline.colorPass->Perform(camera, sortedWalls.size(), sortedBlocks.size(), additionalRenderers);
 	pipeline.lightPass->Perform(camera, sortedLights.size() + additionalLightData.size());
 }
 
@@ -458,7 +308,7 @@ void MapRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderers)
 	{
 		if (map->chunksUpdated)
 		{
-			RebuildScene();
+			// RebuildScene();
 			map->chunksUpdated = false;
 		}
 		UpdateScene();

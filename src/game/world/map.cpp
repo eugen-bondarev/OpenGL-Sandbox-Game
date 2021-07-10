@@ -6,48 +6,67 @@
 
 #include "renderer/atlas/texture_atlas.h"
 
+#include "renderer/world/map/tiles.h"
+
 FastNoiseLite noise1;
 std::map<Vec2, ChunkData, Compare> chunkData;
 
 std::vector<Vec4> renderData;
 
-std::map<Vec2, ChunkData, Compare> light_associations;
-std::vector<Vec2> light_data;
-
-BlockType WhatBlockType(float x, float y)
+float WhatNoise(float x, float y)
 {
-	BlockType type;
+	static float size = 0.4f;
+	return noise1.GetNoise(x * size, y * size) * 0.5f + 0.5f;
+}
 
-	static float size = 0.5f;
-	float value = noise1.GetNoise(x * size, y * size) * 0.5f + 0.5f;
+BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
+{
+	BlockType type = BlockType::Empty;
 
-	if (y > 32600 + 1000 * noise1.GetNoise(x * 0.1f, 0.0f))
+	if (y > 32600 + 500 * noise1.GetNoise(x * 0.1f, 0.0f))
 	{
-		value = 1.0f;
+		return BlockType::Empty;
 	}
 	
-	if (value > 0.75f) 
+	if (tilePos == TilePos::Foreground)
 	{
-		type = BlockType::Empty;
+		if (noiseValue > 0.75f) 
+		{
+			type = BlockType::Empty;
+		}
+		if (noiseValue >= 0.3f && noiseValue < 0.75f)
+		{
+			type = BlockType::Grass;
+		}
+		if (noiseValue < 0.3f)
+		{
+			type = BlockType::Stone;
+		}
 	}
-	if (value >= 0.3f && value < 0.75f)
+	else
 	{
-		type = BlockType::Grass;
-	}
-	if (value < 0.3f)
-	{
-		type = BlockType::Stone;
+		if (noiseValue > 0.75f) 
+		{
+			type = BlockType::Grass;
+		}
+		if (noiseValue >= 0.3f && noiseValue < 0.75f)
+		{
+			type = BlockType::Grass;
+		}
+		if (noiseValue < 0.3f)
+		{
+			type = BlockType::Stone;
+		}
 	}
 
 	return type;
 }
 
-BlockRepresentation WhatBlock(float x, float y)
+BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y)
 {
 	BlockRepresentation representation;
 
-	representation.type = WhatBlockType(x, y);
-
+	representation.type = WhatBlockType(noiseValue, tilePos, x, y);
 	representation.position = Vec2(x, y);
 	
 	Vec2 tile;
@@ -69,19 +88,14 @@ BlockRepresentation WhatBlock(float x, float y)
 	return representation;
 }
 
-void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data, std::vector<Vec2>& l_data)
+void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data)
 {
-	// CheckScope timer("ConvertChunksRenderData");
-
 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 	
+	// noise1.SetNoiseType(FastNoiseLite::NoiseType_Value); REALLY LIKE IT!
 	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 
-	int i = 0;
-
 	auto& visibleChunks = map->GetVisibleChunks();
-	data.resize(visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y);
-	l_data.resize(visibleChunks.GetArea() * map->GetChunkSize().x * map->GetChunkSize().y);
 
 	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; xChunk++)
 	{
@@ -89,35 +103,26 @@ void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data, std::vector<Vec2
 		{
 			Vec2 chunkIndices = Vec2(xChunk, yChunk);
 
-			Vec2 chunkPosition = chunkIndices;
-
-			int start = i;
-
 			for (int x = 0; x < map->GetChunkSize().x; x++)
 			{
 				for (int y = 0; y < map->GetChunkSize().y; y++)
 				{
-					Vec2 blockPosition = (chunkPosition * map->GetChunkSize() + Vec2(x, y)) * 16.0f;
+					Vec2 blockPosition = (chunkIndices * map->GetChunkSize() + Vec2(x, y)) * 16.0f;
 					
-					BlockRepresentation representation = WhatBlock(blockPosition.x, blockPosition.y);
+					float noiseValue = WhatNoise(blockPosition.x, blockPosition.y);
+					BlockRepresentation computedBlock = WhatBlock(noiseValue, TilePos::Foreground, blockPosition.x, blockPosition.y);
+					BlockRepresentation computedWall = WhatBlock(noiseValue, TilePos::Background, blockPosition.x, blockPosition.y);
 
 					int xi = static_cast<int>(truncf((xChunk - visibleChunks.x.start) * 8.0f + x));
 					int yi = static_cast<int>(truncf((yChunk - visibleChunks.y.start) * 8.0f + y));
-					map->BLOCKS[xi][yi].type = representation.type;
-					map->BLOCKS[xi][yi].texture = representation.position;
 
-					data[i] = Vec4(representation.position.x, representation.position.y, representation.tile.x, representation.tile.y);
-					l_data[i] = representation.type == BlockType::Empty ? representation.position : Vec2(0);
-					i++;
+					map->BLOCKS[xi][yi].type = computedBlock.type;
+					map->BLOCKS[xi][yi].worldPosition = computedBlock.position;
+
+					map->WALLS[xi][yi].type = computedWall.type;
+					map->WALLS[xi][yi].worldPosition = computedWall.position;
 				}
 			}
-
-			int howMany = i - start;
-
-			Vec2 ind = chunkIndices;
-			ind = trunc(ind);
-
-			chunkData[ind] = { start, howMany };
 		}
 	}
 }
@@ -364,6 +369,52 @@ bool Map::WallIsEmpty(int x, int y) const
 {
 	return WallIs(x, y, WallType::Empty);
 }
+
+
+
+
+
+
+
+blocks_t &Map::GetBlocks1()
+{
+	return BLOCKS;
+}
+
+walls_t &Map::GetWalls1()
+{
+	return WALLS;
+}
+
+bool Map::BlockIs1(int x, int y, BlockType type) const
+{
+	// if (x < 0 || y < 0 || x >= BLOCKS.size() || y >= BLOCKS[0].size()) return false;
+
+	return BLOCKS[x][y].type == type;
+}
+
+bool Map::WallIs1(int x, int y, WallType type) const
+{
+	// if (x < 0 || y < 0 || x >= WALLS.size() || y >= WALLS[0].size()) return false;
+
+	return WALLS[x][y].type == type;
+}
+
+bool Map::BlockIsEmpty1(int x, int y) const
+{
+	return BlockIs1(x, y, BlockType::Empty);
+}
+
+bool Map::WallIsEmpty1(int x, int y) const
+{
+	return WallIs1(x, y, WallType::Empty);
+}
+
+
+
+
+
+
 
 int Map::GetWidth() const
 {

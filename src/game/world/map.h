@@ -23,7 +23,7 @@ using TileToUpdate = Vec2;
 
 class Map;
 
-void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data, std::vector<Vec2>& l_data);
+void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data);
 
 struct BlockRepresentation
 {
@@ -32,8 +32,8 @@ struct BlockRepresentation
 	Vec2 tile;
 };
 
-BlockType WhatBlockType(float x, float y);
-BlockRepresentation WhatBlock(float x, float y);
+BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y);
+BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y);
 
 struct ChunkData
 {
@@ -51,7 +51,6 @@ struct Compare final
 
 extern std::map<Vec2, ChunkData, Compare> chunkData;
 extern std::vector<Vec4> renderData;
-extern std::vector<Vec2> light_data;
 
 class Map
 {
@@ -59,6 +58,7 @@ public:
 	Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
 
 	blocks_t BLOCKS;
+	blocks_t WALLS;
 
 	struct BlockSettingData
 	{
@@ -107,10 +107,18 @@ public:
 	blocks_t &GetBlocks();
 	walls_t &GetWalls();
 
+	blocks_t &GetBlocks1();
+	walls_t &GetWalls1();
+
 	bool BlockIs(int x, int y, BlockType type) const;
 	bool WallIs(int x, int y, WallType type) const;
 	bool BlockIsEmpty(int x, int y) const;
 	bool WallIsEmpty(int x, int y) const;
+
+	bool BlockIs1(int x, int y, BlockType type) const;
+	bool WallIs1(int x, int y, WallType type) const;
+	bool BlockIsEmpty1(int x, int y) const;
+	bool WallIsEmpty1(int x, int y) const;
 
 	int GetWidth() const;
 	int GetHeight() const;

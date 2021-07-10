@@ -5,8 +5,9 @@
 
 struct Tile
 {
-	TileType type{TileType::Empty};
-	Vec2 texture{-1};
+	TileType type {TileType::Empty};
+	Vec2 worldPosition {-1};
+	Vec2 texture {-1};
 };
 
 enum class TilePos

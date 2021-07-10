@@ -81,10 +81,10 @@ void ColorPass::Perform(const Ref<Camera> &camera, int amountOfWalls, int amount
 
 	shader->Bind();
 	shader->SetMat4x4("u_ProjectionView", Math::ToPtr(projView));
-	// tileMap->Bind();
-	// walls.vao->Bind();
-	// walls.vao->GetIndexBuffer()->Bind();
-	// glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfWalls);
+	tileMap->Bind();
+	walls.vao->Bind();
+	walls.vao->GetIndexBuffer()->Bind();
+	glDrawElementsInstanced(GL_TRIANGLES, walls.vao->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr, amountOfWalls);
 
 	for (const auto &renderer : additionalRenderers)
 	{

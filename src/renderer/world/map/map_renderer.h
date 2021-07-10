@@ -12,6 +12,7 @@ class MapRenderer
 {
 public:
 	std::vector<Vec4> sortedBlocks;
+	std::vector<Vec4> sortedWalls;
 	std::vector<Vec2> sortedLights;
 
 	MapRenderer(const Ref<Map> &map, const Ref<Camera> &camera);
