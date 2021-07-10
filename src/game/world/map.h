@@ -31,9 +31,16 @@ extern Vec2 START_POS;
 
 class Map;
 
-void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data);
+void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data, std::vector<Vec2>& l_data);
 
-Vec4 WhatBlock(float x, float y);
+struct BlockRepresentation
+{
+	BlockType type;
+	Vec2 position;
+	Vec2 tile;
+};
+
+BlockRepresentation WhatBlock(float x, float y);
 
 struct ChunkData
 {
@@ -52,6 +59,9 @@ struct Compare final
 extern std::map<Vec2, ChunkData, Compare> chunkData;
 extern Chunks chunks;
 extern std::vector<Vec4> renderData;
+
+extern std::map<Vec2, ChunkData, Compare> light_associations;
+extern std::vector<Vec2> light_data;
 
 class Map
 {

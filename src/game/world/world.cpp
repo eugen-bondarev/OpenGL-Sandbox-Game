@@ -8,7 +8,7 @@ World::World(int seed)
 	camera->SetPosition((map->GetCenter() - Vec2(1, 0)) * map->GetBlockSize());
 	map->CalculateVisibleChunks(camera->GetPosition());
 
-	ConvertChunksRenderData(map.get(), START_POS, chunks, renderData);
+	ConvertChunksRenderData(map.get(), START_POS, chunks, renderData, light_data);
 
 	woods = CreateRef<Woods>(map);
 }

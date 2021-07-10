@@ -151,8 +151,15 @@ void MapRenderer::UpdateScene()
 	{
 		copy.push_back(light);
 	}
+	
+	// for (int i = 0; i < copy.size(); i++)
+	// {
+	// 	MW_LOG_VAR(copy[i].x);
+	// 	MW_LOG_VAR(copy[i].y);
+	// }
 
-	pipeline.lightPass->GetVBO()->Store(copy);
+	// pipeline.lightPass->GetVBO()->Store(copy);
+	pipeline.lightPass->GetVBO()->Store(light_data);
 	MW_SYNC_GPU();
 }
 
@@ -172,14 +179,10 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(oldX, y)];
 
-				// if (data.start == 0)
-				// {
-				// 	MW_LOG_OUT("NOT FOUND: " << oldX << ' ' << y);
-				// }
-
 				Vec2 chunkPosition = Vec2(newX, y) * Vec2(8, 8) * 16.0f;
 				
 				std::vector<Vec4> bls(64);
+				std::vector<Vec2> light_d(64);
 				int b = 0;
 
 				for (int i = 0; i < 8; i++)
@@ -187,14 +190,19 @@ void MapRenderer::CheckVisibleChunks()
 					for (int j = 0; j < 8; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+						bls[b] = Vec4(block.position, block.tile);
+						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
+						b++;
 					}
 				}
 				
 				b = 0;
 				for (int i = data.start; i < data.start + data.howMany; i++)
 				{
-					renderData[i] = bls[b++];
+					renderData[i] = bls[b];
+					light_data[i] = light_d[b];
+					b++;
 				}
 
 				chunkData[Vec2(newX, y)] = data;
@@ -210,14 +218,10 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(oldX, y)];
 
-				// if (data.start == 0)
-				// {
-				// 	MW_LOG_OUT("NOT FOUND: " << oldX << ' ' << y);
-				// }
-
 				Vec2 chunkPosition = Vec2(newX, y) * Vec2(8, 8) * 16.0f;
 				
 				std::vector<Vec4> bls(64);
+				std::vector<Vec2> light_d(64);
 				int b = 0;
 
 				for (int i = 0; i < 8; i++)
@@ -225,14 +229,19 @@ void MapRenderer::CheckVisibleChunks()
 					for (int j = 0; j < 8; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+						bls[b] = Vec4(block.position, block.tile);
+						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
+						b++;
 					}
 				}
 				
 				b = 0;
 				for (int i = data.start; i < data.start + data.howMany; i++)
 				{
-					renderData[i] = bls[b++];
+					renderData[i] = bls[b];
+					light_data[i] = light_d[b];
+					b++;
 				}
 
 				chunkData[Vec2(newX, y)] = data;
@@ -248,14 +257,10 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(x, oldY)];
 
-				// if (data.start == 0)
-				// {
-				// 	MW_LOG_OUT("NOT FOUND: " << x << ' ' << oldY);
-				// }
-
 				Vec2 chunkPosition = Vec2(x, newY) * Vec2(8, 8) * 16.0f;
 				
 				std::vector<Vec4> bls(64);
+				std::vector<Vec2> light_d(64);
 				int b = 0;
 
 				for (int i = 0; i < 8; i++)
@@ -263,14 +268,19 @@ void MapRenderer::CheckVisibleChunks()
 					for (int j = 0; j < 8; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+						bls[b] = Vec4(block.position, block.tile);
+						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
+						b++;
 					}
 				}
 				
 				b = 0;
 				for (int i = data.start; i < data.start + data.howMany; i++)
 				{
-					renderData[i] = bls[b++];
+					renderData[i] = bls[b];
+					light_data[i] = light_d[b];
+					b++;
 				}
 
 				chunkData[Vec2(x, newY)] = data;
@@ -286,14 +296,10 @@ void MapRenderer::CheckVisibleChunks()
 			{
 				auto& data = chunkData[Vec2(x, oldY)];
 
-				// if (data.start == 0)
-				// {
-				// 	MW_LOG_OUT("NOT FOUND: " << x << ' ' << oldY);
-				// }
-
 				Vec2 chunkPosition = Vec2(x, newY) * Vec2(8, 8) * 16.0f;
 				
 				std::vector<Vec4> bls(64);
+				std::vector<Vec2> light_d(64);
 				int b = 0;
 
 				for (int i = 0; i < 8; i++)
@@ -301,14 +307,19 @@ void MapRenderer::CheckVisibleChunks()
 					for (int j = 0; j < 8; j++)
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
-						bls[b++] = WhatBlock(blockPosition.x, blockPosition.y);
+						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+						bls[b] = Vec4(block.position, block.tile);
+						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
+						b++;
 					}
 				}
 				
 				b = 0;
 				for (int i = data.start; i < data.start + data.howMany; i++)
 				{
-					renderData[i] = bls[b++];
+					renderData[i] = bls[b];
+					light_data[i] = light_d[b];
+					b++;
 				}
 
 				chunkData[Vec2(x, newY)] = data;
@@ -325,7 +336,7 @@ void MapRenderer::PerformRenderPasses(const std::vector<Ref<IRenderer>> &additio
 {
 	// pipeline.colorPass->Perform(camera, wallsData.size(), blocksData.size(), additionalRenderers);
 	pipeline.colorPass->Perform(camera, wallsData.size(), renderData.size(), additionalRenderers);
-	pipeline.lightPass->Perform(camera, lightData.size() + additionalLightData.size());
+	pipeline.lightPass->Perform(camera, light_data.size() + additionalLightData.size());
 }
 
 void MapRenderer::Compose()

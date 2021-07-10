@@ -14,74 +14,69 @@ Vec2 START_POS = Vec2(31984 - 1920 / 2.0f, 32324 - 1080 / 2.0f);
 Chunks chunks;
 std::vector<Vec4> renderData;
 
-Vec4 WhatBlock(float x, float y)
+std::map<Vec2, ChunkData, Compare> light_associations;
+std::vector<Vec2> light_data;
+
+BlockRepresentation WhatBlock(float x, float y)
 {
-	Tile block;
+	BlockRepresentation representation;
 
 	static float size = 0.5f;
 	float value = noise1.GetNoise(x * size, y * size) * 0.5f + 0.5f;
+	// float value = 0.4f;	
 
 	if (y > 32600 + 1000 * noise1.GetNoise(x * 0.1f, 0.0f))
 	{
 		value = 1.0f;
 	}
 
-	// float value = 0.4f;	
+	representation.position = Vec2(x, y);
 	
 	if (value > 0.75f) 
 	{
-		block.type = BlockType::Empty;
+		representation.type = BlockType::Empty;
 	}
 	if (value >= 0.3f && value < 0.75f)
 	{
-		block.type = BlockType::Grass;
+		representation.type = BlockType::Grass;
 	}
 	if (value < 0.3f)
 	{
-		block.type = BlockType::Stone;
+		representation.type = BlockType::Stone;
 	}
 	
 	Vec2 tile;
-	if (block.type == BlockType::Empty)
+	if (representation.type == BlockType::Empty)
 	{
-		tile = Vec2(2, 4);
+		representation.tile = Vec2(2, 4);
 	}
 	
-	if (block.type == BlockType::Grass)
+	if (representation.type == BlockType::Grass)
 	{
-		tile = Vec2(1, 1);
+		representation.tile = Vec2(1, 1);
 	}
 	
-	if (block.type == BlockType::Stone)
+	if (representation.type == BlockType::Stone)
 	{
-		tile = Vec2(7, 1);
+		representation.tile = Vec2(7, 1);
 	}
 
-	return Vec4(x, y, tile.x, tile.y);
+	return representation;
 }
 
-void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data)
+void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data, std::vector<Vec2>& l_data)
 {
 	CheckScope timer("ConvertChunksRenderData");
 
 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 	
-	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-
-	int amountOfColumnsOfChunks = chunks.size();
-	int amountOfRowsOfChunks = chunks[0].size();
-	int amountOfColumnsOfBlocks = chunks[0][0].size();
-	int amountOfRowsOfBlocks = chunks[0][0][0].size();
-
-	int amountOfChunks = amountOfColumnsOfChunks * amountOfRowsOfChunks;
-	int amountOfBlocksInChunk = amountOfColumnsOfBlocks * amountOfRowsOfBlocks;
-	int amountOfBlocks = amountOfChunks * amountOfBlocksInChunk;
-	
+	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);	
 
 	int i = 0;
 
 	auto& visibleChunks = map->GetVisibleChunks();
 	data.resize(visibleChunks.GetArea() * 8 * 8);
+	l_data.resize(visibleChunks.GetArea() * 8 * 8);
 
 	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; xChunk++)
 	{
@@ -97,11 +92,12 @@ void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, st
 			{
 				for (int y = 0; y < 8; y++)
 				{
-					Tile block;
-
 					Vec2 blockPosition = (chunkPosition * Vec2(8, 8) + Vec2(x, y)) * 16.0f;
 					
-					data[i++] = WhatBlock(blockPosition.x, blockPosition.y);
+					BlockRepresentation representation = WhatBlock(blockPosition.x, blockPosition.y);
+					data[i] = Vec4(representation.position.x, representation.position.y, representation.tile.x, representation.tile.y);
+					l_data[i] = representation.type == BlockType::Empty ? representation.position : Vec2(0);
+					i++;
 				}
 			}
 
