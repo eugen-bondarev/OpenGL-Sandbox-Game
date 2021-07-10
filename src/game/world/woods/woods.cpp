@@ -2,11 +2,11 @@
 
 Woods::Woods(const Ref<Map> &map)
 {
-	for (int x = 0; x < map->GetBlocks().size(); x++)
+	for (int x = 0; x < map->GetBlocks1().size(); x++)
 	{
-		for (int y = 0; y < map->GetBlocks()[x].size(); y++)
+		for (int y = 0; y < map->GetBlocks1()[x].size(); y++)
 		{
-			if (!map->BlockIs(x, y, BlockType::Empty) && map->BlockIs(x, y + 1, BlockType::Empty))
+			if (!map->BlockIs1(x, y, BlockType::Empty) && map->BlockIs1(x, y + 1, BlockType::Empty))
 			{
 				if (rand() % 100 < 5)
 				{

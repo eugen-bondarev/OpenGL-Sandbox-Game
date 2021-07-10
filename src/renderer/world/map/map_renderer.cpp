@@ -194,12 +194,12 @@ void MapRenderer::UpdateScene()
 				}
 				else
 				{					
-					if (y > 0 && !map->BlockIsEmpty1(x, y - 1) || !map->WallIsEmpty1(x, y - 1))
+					if (y > 0 && (!map->BlockIsEmpty1(x, y - 1) || !map->WallIsEmpty1(x, y - 1)))
 					{
 						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
 
-					if (y > 0 && y + 1 < map->BLOCKS[0].size() && !map->BlockIsEmpty1(x, y + 1) || !map->WallIsEmpty1(x, y - 1))
+					if (y > 0 && y + 1 < map->BLOCKS[0].size() && (!map->BlockIsEmpty1(x, y + 1) || !map->WallIsEmpty1(x, y - 1)))
 					{
 						sortedLights.push_back(map->BLOCKS[x][y].worldPosition);
 					}
@@ -267,32 +267,6 @@ void MapRenderer::Compose()
 void MapRenderer::Render(const std::vector<Ref<IRenderer>> &additionalRenderers)
 {
 	CheckVisibleChunks();
-
-	// if (map->blockToUpdate != Vec2(-1))
-	// {
-	// 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
-
-	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x - 1, map->blockToUpdate.y, blocksTileMap);
-	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x + 1, map->blockToUpdate.y, blocksTileMap);
-	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y, blocksTileMap);
-	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y - 1, blocksTileMap);
-	// 	PrepareTile(TilePos::Foreground, map->blockToUpdate.x, map->blockToUpdate.y + 1, blocksTileMap);
-
-	// 	map->blockToUpdate = Vec2(-1);
-	// }
-
-	// if (map->wallToUpdate != Vec2(-1))
-	// {
-	// 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
-
-	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x - 1, map->wallToUpdate.y, blocksTileMap);
-	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x + 1, map->wallToUpdate.y, blocksTileMap);
-	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y, blocksTileMap);
-	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y - 1, blocksTileMap);
-	// 	PrepareTile(TilePos::Background, map->wallToUpdate.x, map->wallToUpdate.y + 1, blocksTileMap);
-
-	// 	map->wallToUpdate = Vec2(-1);
-	// }
 
 	if (map->blocksUpdated)
 	{

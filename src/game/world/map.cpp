@@ -23,7 +23,9 @@ BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
 {
 	BlockType type = BlockType::Empty;
 
-	if (y > 4075 * 5 + 500 * noise1.GetNoise(x * 0.1f, 0.0f))
+	int height = 5000 * noise1.GetNoise(x * 0.001f, 0.0f);
+
+	if (y > 4000 * 2 + height * noise1.GetNoise(x * 0.1f, 0.0f))
 	{
 		return BlockType::Empty;
 	}
@@ -97,15 +99,15 @@ void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data)
 
 	auto& visibleChunks = map->GetVisibleChunks();
 
-	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; xChunk++)
+	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; ++xChunk)
 	{
-		for (int yChunk = visibleChunks.y.start; yChunk < visibleChunks.y.end; yChunk++)
+		for (int yChunk = visibleChunks.y.start; yChunk < visibleChunks.y.end; ++yChunk)
 		{
 			Vec2 chunkIndices = Vec2(xChunk, yChunk);
 
-			for (int x = 0; x < map->GetChunkSize().x; x++)
+			for (int x = 0; x < map->GetChunkSize().x; ++x)
 			{
-				for (int y = 0; y < map->GetChunkSize().y; y++)
+				for (int y = 0; y < map->GetChunkSize().y; ++y)
 				{
 					Vec2 blockPosition = (chunkIndices * map->GetChunkSize() + Vec2(x, y)) * 16.0f;
 					
@@ -115,6 +117,11 @@ void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data)
 
 					int xi = static_cast<int>(truncf((xChunk - visibleChunks.x.start) * map->GetChunkSize().x + x));
 					int yi = static_cast<int>(truncf((yChunk - visibleChunks.y.start) * map->GetChunkSize().y + y));
+					
+					if (yi >= map->BLOCKS[0].size())
+					{
+						continue;
+					}
 
 					map->BLOCKS[xi][yi].type = computedBlock.type;
 					map->BLOCKS[xi][yi].worldPosition = computedBlock.position;
@@ -214,13 +221,16 @@ Map::BlockSettingData Map::PlaceWall(const Vec2 &cameraPosition, WallType wallTy
 
 void Map::CalculateVisibleChunks(Vec2 viewPos)
 {
-	Vec2 correction = Vec2(-16, 54);
+	Vec2 correction = Vec2(-16, 16);
 
-	visibleChunks.x.start = (viewPos.x + correction.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / GetChunkSize().x - 0;
+	visibleChunks.x.start = (viewPos.x + correction.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / GetChunkSize().x;
 	visibleChunks.x.end = visibleChunks.x.start + MW_WINDOW_WIDTH() / (GetChunkSize().x * blockSize) + 2;
 
-	visibleChunks.y.start = (viewPos.y + correction.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / GetChunkSize().y - 1;
+	visibleChunks.y.start = (viewPos.y + correction.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / GetChunkSize().y;
 	visibleChunks.y.end = visibleChunks.y.start + MW_WINDOW_HEIGHT() / (GetChunkSize().y * blockSize) + 2;
+
+	visibleChunks.x.start -= 1;
+	visibleChunks.y.start -= 1;
 }
 
 bool Map::CheckBounds(int x, int y) const
