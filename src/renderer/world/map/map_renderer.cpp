@@ -6,8 +6,6 @@
 
 MapRenderer::MapRenderer(const Ref<Map> &map, const Ref<Camera> &camera) : map{map}, camera{camera}
 {
-	// visibleChunks = map->GetVisibleChunks();
-	// lastVisibleChunks = visibleChunks;
 	map->GetLastVisibleChunks() = map->GetVisibleChunks();
 
 	pipeline.colorPass = CreateRef<ColorPass>(map->GetVisibleChunks().GetArea() * map->GetAmountOfChunks().x * map->GetAmountOfChunks().y);
@@ -145,17 +143,37 @@ void MapRenderer::UpdateScene()
 	sortedBlocks.clear();
 	sortedLights.clear();
 
-	for (int i = 0; i < renderData.size(); i++)
+	for (int i = 0; i < map->BLOCKS.size(); i++)
 	{
-		if (!(renderData[i].z == 2 && renderData[i].w == 4))
+		for (int j = 0; j < map->BLOCKS[i].size(); j++)
 		{
-			sortedBlocks.push_back(renderData[i]);
-		}
-		else
-		{
-			sortedLights.push_back(renderData[i]);
+			if (map->BLOCKS[i][j].type != BlockType::Empty)
+			{
+				Vec4 vec = Vec4(map->BLOCKS[i][j].texture, 1, 0);
+				sortedBlocks.push_back(vec);
+			}
+			else
+			{
+				if (map->BLOCKS[i][j - 1].type != BlockType::Empty)
+				{
+					Vec2 vec = Vec2(map->BLOCKS[i][j].texture);
+					sortedLights.push_back(vec);
+				}
+			}
 		}
 	}
+
+	// for (int i = 0; i < renderData.size(); i++)
+	// {
+	// 	if (!(renderData[i].z == 2 && renderData[i].w == 4))
+	// 	{
+	// 		sortedBlocks.push_back(renderData[i]);
+	// 	}
+	// 	else
+	// 	{
+	// 		sortedLights.push_back(renderData[i]);
+	// 	}
+	// }
 
 	// pipeline.colorPass->GetBlocksVBO()->Store(blocksData);
 	pipeline.colorPass->GetBlocksVBO()->Store(sortedBlocks);
@@ -180,8 +198,15 @@ void MapRenderer::UpdateScene()
 
 void MapRenderer::CheckVisibleChunks()
 {
+	MW_PROFILER_SCOPE();
+
 	auto& visibleChunks = map->GetVisibleChunks();
 	auto& lastVisibleChunks = map->GetLastVisibleChunks();
+
+	ConvertChunksRenderData(map.get(), renderData, light_data);
+
+	MW_SYNC_GPU();
+	return;
 
 	if (visibleChunks != lastVisibleChunks)
 	{
@@ -206,6 +231,16 @@ void MapRenderer::CheckVisibleChunks()
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+
+						int xi = static_cast<int>(truncf((newX - (visibleChunks.x.end - 1)) * 8.0f + i));
+						int yi = static_cast<int>(truncf((y - (visibleChunks.y.start - 1)) * 8.0f + j));
+						xi = std::max<int>(xi, 0);
+						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
+						yi = std::max<int>(yi, 0);
+						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);
+						map->BLOCKS[xi][yi].type = block.type;
+						map->BLOCKS[xi][yi].texture = block.position;
+
 						bls[b] = Vec4(block.position, block.tile);
 						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
 						b++;
@@ -245,6 +280,16 @@ void MapRenderer::CheckVisibleChunks()
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+
+						int xi = static_cast<int>(truncf((newX - lastVisibleChunks.x.start) * 8.0f + i));
+						int yi = static_cast<int>(truncf((y - (visibleChunks.y.start - 1)) * 8.0f + j));
+						xi = std::max<int>(xi, 0);
+						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
+						yi = std::max<int>(yi, 0);
+						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);
+						map->BLOCKS[xi][yi].type = block.type;
+						map->BLOCKS[xi][yi].texture = block.position;
+
 						bls[b] = Vec4(block.position, block.tile);
 						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
 						b++;
@@ -284,6 +329,16 @@ void MapRenderer::CheckVisibleChunks()
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+
+						int xi = static_cast<int>(truncf((x - (visibleChunks.x.start - 1)) * 8.0f + i));
+						int yi = static_cast<int>(truncf((newY - (visibleChunks.y.end - 1)) * 8.0f + j));
+						xi = std::max<int>(xi, 0);
+						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
+						yi = std::max<int>(yi, 0);
+						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);
+						map->BLOCKS[xi][yi].type = block.type;
+						map->BLOCKS[xi][yi].texture = block.position;
+
 						bls[b] = Vec4(block.position, block.tile);
 						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
 						b++;
@@ -323,6 +378,16 @@ void MapRenderer::CheckVisibleChunks()
 					{
 						Vec2 blockPosition = chunkPosition + Vec2(i, j) * 16.0f;
 						auto& block = WhatBlock(blockPosition.x, blockPosition.y);
+
+						int xi = static_cast<int>(truncf((x - (visibleChunks.x.start - 1)) * 8.0f + i));
+						int yi = static_cast<int>(truncf((newY - lastVisibleChunks.y.start) * 8.0f + j));
+						xi = std::max<int>(xi, 0);
+						xi = std::min<int>(xi, map->BLOCKS.size() - 1);
+						yi = std::max<int>(yi, 0);
+						yi = std::min<int>(yi, map->BLOCKS[0].size() - 1);						
+						map->BLOCKS[xi][yi].type = block.type;
+						map->BLOCKS[xi][yi].texture = block.position;
+
 						bls[b] = Vec4(block.position, block.tile);
 						light_d[b] = block.type == BlockType::Empty ? block.position : Vec2(0);
 						b++;

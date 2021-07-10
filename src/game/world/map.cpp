@@ -9,9 +9,6 @@
 FastNoiseLite noise1;
 std::map<Vec2, ChunkData, Compare> chunkData;
 
-Vec2 START_POS = Vec2(31984 - 1920 / 2.0f, 32324 - 1080 / 2.0f);
-
-Chunks chunks;
 std::vector<Vec4> renderData;
 
 std::map<Vec2, ChunkData, Compare> light_associations;
@@ -72,13 +69,13 @@ BlockRepresentation WhatBlock(float x, float y)
 	return representation;
 }
 
-void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data, std::vector<Vec2>& l_data)
+void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data, std::vector<Vec2>& l_data)
 {
-	CheckScope timer("ConvertChunksRenderData");
+	// CheckScope timer("ConvertChunksRenderData");
 
 	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
 	
-	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);	
+	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 
 	int i = 0;
 
@@ -103,6 +100,12 @@ void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, st
 					Vec2 blockPosition = (chunkPosition * map->GetChunkSize() + Vec2(x, y)) * 16.0f;
 					
 					BlockRepresentation representation = WhatBlock(blockPosition.x, blockPosition.y);
+
+					int xi = static_cast<int>(truncf((xChunk - visibleChunks.x.start) * 8.0f + x));
+					int yi = static_cast<int>(truncf((yChunk - visibleChunks.y.start) * 8.0f + y));
+					map->BLOCKS[xi][yi].type = representation.type;
+					map->BLOCKS[xi][yi].texture = representation.position;
+
 					data[i] = Vec4(representation.position.x, representation.position.y, representation.tile.x, representation.tile.y);
 					l_data[i] = representation.type == BlockType::Empty ? representation.position : Vec2(0);
 					i++;
@@ -124,30 +127,9 @@ Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunk
 	MapGenerationDataSet mapGenerator = {};
 	mapGenerator.seed = seed;
 	GenerateMap(mapGenerator);
+	noise1.SetSeed(seed);
 
 	Vec2 AMOUNT_OF_CHUNKS = ceil(MW_WINDOW_SIZE() / blockSize / chunkSize);
-
-	chunks.resize(AMOUNT_OF_CHUNKS.x);
-
-	for (auto& columnOfChunks : chunks)
-	{
-		columnOfChunks.resize(AMOUNT_OF_CHUNKS.y);
-
-		for (auto& chunk : columnOfChunks)
-		{
-			chunk.resize(chunkSize.x);
-
-			for (auto& columnOfBlocks : chunk)
-			{
-				columnOfBlocks.resize(chunkSize.x);
-				
-				for (auto& block : columnOfBlocks)
-				{
-					block.type = static_cast<BlockType>(rand() % 5);
-				}
-			}
-		}
-	}
 }
 
 TileType Map::GetTileUnderCursor(const Vec2 &cameraPosition, const tiles_t &tiles) const
@@ -289,141 +271,6 @@ void Map::GenerateMap(MapGenerationDataSet generationDataSet)
 	for (int x = 0; x < amountOfColumns; x++)
 	{
 		blocks[x].resize(amountOfRows);
-	}
-
-	int middle = static_cast<int>(amountOfBlocks.y / 2.0f);
-
-	std::vector<int> points;
-
-	for (int x = 0; x < amountOfBlocks.x; x++)
-	{
-		for (int y = 0; y < middle; y++)
-		{
-			blocks[x][y].type = BlockType::Dirt;
-		}
-
-		if (rand() % 100 < generationDataSet.blockProbabilityInPercent)
-		{
-			points.push_back(x);
-		}
-
-		for (int y = middle + 1; y < amountOfBlocks.y; y++)
-		{
-			blocks[x][y].type = BlockType::Empty;
-		}
-	}
-
-	int lastChange = 0;
-	bool lastType = 0;
-
-	for (const int point : points)
-	{
-		int l = std::max<int>(rand() % generationDataSet.maxLength, generationDataSet.minLength);
-		int m = middle;
-
-		bool type = rand() % 2;
-
-		bool possible = point - l / 2 > lastChange;
-		if (!possible && type != lastType)
-		{
-			continue;
-		}
-
-		int h = (type ? 1 : -1) * rand() % (type ? generationDataSet.maxHeight : generationDataSet.maxDepth);
-		int currentHeight = h;
-
-		if (type)
-		{
-			for (int x = point; x < point + l / 2; x++)
-			{
-				for (int y = m; y < m + currentHeight; y++)
-				{
-					SetBlock(x, y, BlockType::Dirt);
-				}
-
-				int slope = currentHeight / (point + l / 2 - x);
-				currentHeight -= slope + rand() % (generationDataSet.maxSlopeMistake + 1);
-			}
-
-			currentHeight = h;
-
-			for (int x = point; x > point - l / 2; x--)
-			{
-				for (int y = m; y < m + currentHeight; y++)
-				{
-					SetBlock(x, y, BlockType::Dirt);
-				}
-
-				int slope = currentHeight / -(point - l / 2 - x);
-				currentHeight -= slope + rand() % (generationDataSet.maxSlopeMistake + 1);
-			}
-		}
-		else
-		{
-			for (int x = point; x < point + l / 2; x++)
-			{
-				for (int y = m; y > m + currentHeight; y--)
-				{
-					SetBlock(x, y, BlockType::Empty);
-				}
-
-				int slope = currentHeight / -(point + l / 2 - x);
-				currentHeight += slope + rand() % (generationDataSet.maxSlopeMistake + 1);
-			}
-
-			currentHeight = h;
-
-			for (int x = point; x > point - l / 2; x--)
-			{
-				for (int y = m; y > m + currentHeight; y--)
-				{
-					SetBlock(x, y, BlockType::Empty);
-				}
-
-				int slope = currentHeight / (point - l / 2 - x);
-				currentHeight += slope + rand() % (generationDataSet.maxSlopeMistake + 1);
-			}
-		}
-
-		lastChange = point + l / 2;
-		lastType = type;
-	}
-
-	for (int x = 0; x < blocks.size(); x++)
-	{
-		for (int y = 0; y < blocks[x].size(); y++)
-		{
-			if (blocks[x][y].type == BlockType::Dirt && HasEmptyNeighbor(x, y))
-			{
-				SetBlock(x, y, BlockType::Grass);
-			}
-
-			// if (blocks[x][y].type == BlockType::Dirt || blocks[x][y].type == BlockType::Grass)
-			// {
-				// if (rand() % 100 < 10)
-				// {
-				// 	blocks[x][y].type = BlockType::Stone;
-				// }
-			// }
-		}
-	}
-
-	static float size = 4.0f; //32
-
-	for (int x = 0; x < blocks.size(); x++)
-	{
-		for (int y = 0; y < blocks[0].size(); y++)
-		{
-			float value = noise1.GetNoise(static_cast<float>(x) * size, static_cast<float>(y) * size) * 0.5f + 0.5f;
-
-			if (blocks[x][y].type != BlockType::Empty)
-			{
-				if (value > 0.1f && value < 0.3f)
-				{
-					blocks[x][y].type = BlockType::Stone;
-				}
-			}		
-		}
 	}
 
 	walls = blocks;

@@ -21,17 +21,9 @@ inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
 
 using TileToUpdate = Vec2;
 
-using Row = std::vector<Tile>;
-using Chunk = std::vector<Row>;
-
-using RowOfChunks = std::vector<Chunk>;
-using Chunks = std::vector<RowOfChunks>;
-
-extern Vec2 START_POS;
-
 class Map;
 
-void ConvertChunksRenderData(Map* map, Vec2 startWorldCoords, Chunks& chunks, std::vector<Vec4>& data, std::vector<Vec2>& l_data);
+void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data, std::vector<Vec2>& l_data);
 
 struct BlockRepresentation
 {
@@ -58,17 +50,15 @@ struct Compare final
 };
 
 extern std::map<Vec2, ChunkData, Compare> chunkData;
-extern Chunks chunks;
 extern std::vector<Vec4> renderData;
-
-extern std::map<Vec2, ChunkData, Compare> light_associations;
 extern std::vector<Vec2> light_data;
 
 class Map
 {
 public:
-
 	Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
+
+	blocks_t BLOCKS;
 
 	struct BlockSettingData
 	{
