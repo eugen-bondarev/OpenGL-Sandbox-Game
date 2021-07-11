@@ -1,20 +1,20 @@
 #include "woods.h"
 
-Woods::Woods(const Ref<Map> &map)
+Woods::Woods()
 {
-	for (int x = 0; x < map->GetBlocks1().size(); x++)
-	{
-		for (int y = 0; y < map->GetBlocks1()[x].size(); y++)
-		{
-			if (!map->BlockIs1(x, y, BlockType::Empty) && map->BlockIs1(x, y + 1, BlockType::Empty))
-			{
-				if (rand() % 100 < 5)
-				{
-					trees.emplace_back(Vec2{x * map->GetBlockSize(), (y + 6.55f) * map->GetBlockSize()});
-				}
-			}
-		}
-	}
+	// for (int x = 0; x < map->GetBlocks1().size(); x++)
+	// {
+	// 	for (int y = 0; y < map->GetBlocks1()[x].size(); y++)
+	// 	{
+	// 		if (!map->BlockIs1(x, y, BlockType::Empty) && map->BlockIs1(x, y + 1, BlockType::Empty))
+	// 		{
+	// 			if (rand() % 100 < 5)
+	// 			{
+	// 				trees.emplace_back(Vec2{x * map->GetBlockSize(), (y + 6.55f) * map->GetBlockSize()});
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 void Woods::GetVisibleTrees(std::vector<Vec2> &vector, const Ref<Camera> &camera) const

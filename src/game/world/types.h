@@ -19,10 +19,10 @@ enum class TilePos
 using tiles_row_t = std::vector<Tile>;
 using tiles_t = std::vector<tiles_row_t>;
 
-using blocks_t = tiles_t;
-using walls_t = tiles_t;
+using Blocks_t = tiles_t;
+using Walls_t = tiles_t;
 
-using bounds_t = struct __bounds_t
+using Bounds_t = struct __bounds_t
 {
 	Period<> x;
 	Period<> y;
@@ -43,6 +43,6 @@ using bounds_t = struct __bounds_t
 	}
 };
 
-using chunk_t = bounds_t;
+using chunk_t = Bounds_t;
 
 using light_data_t = std::vector<Vec2>;

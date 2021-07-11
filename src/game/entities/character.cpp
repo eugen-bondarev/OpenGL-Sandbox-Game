@@ -3,14 +3,10 @@
 Character::Character(const Ref<World> &world) : world{world}
 {
 	AddComponent<Animator>();
-	AddComponent<Rigidbody>(world->GetMap());
+	AddComponent<Rigidbody>();
 	AddComponent<Player>(world);
 
 	SetPosition(world->GetCamera()->GetPosition());
-	// SetPosition(Vec2(0, 0));
-	// Land();
-	MW_LOG_VAR(position.x);
-	MW_LOG_VAR(position.y);
 }
 
 void Character::CollectLights(std::vector<Vec2> &lights) const

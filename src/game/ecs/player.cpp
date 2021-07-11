@@ -61,7 +61,7 @@ void Player::Update()
 		if (entity->animator->walkingAnimation->GetTime() != frame)
 		{
 			entity->animator->walkingAnimation->SetTime(0.0f);
-			world->GetMap()->blocksUpdated = true;
+			Map::Flags |= MapFlags_BlocksUpdated;
 		}
 	}
 
@@ -72,7 +72,7 @@ void Player::Update()
 		{
 			inventory.selectedItem = 9;
 		}
-		world->GetMap()->blocksUpdated = true;
+		Map::Flags |= MapFlags_BlocksUpdated;
 	}
 
 	if (mw::Input::GetMouseWheelState() == MouseWheelState::Down)
@@ -82,7 +82,7 @@ void Player::Update()
 		{
 			inventory.selectedItem = 0;
 		}
-		world->GetMap()->blocksUpdated = true;
+		Map::Flags |= MapFlags_BlocksUpdated;
 	}
 
 	if (mw::Input::MouseButtonDown(mw::Input::Button::Left))
@@ -105,7 +105,7 @@ void Player::Update()
 			entity->animator->attackingAnimation->SetTime(0.0f);
 			entity->animator->SetState(0.0f);
 		}
-		world->GetMap()->blocksUpdated = true;
+		Map::Flags |= MapFlags_BlocksUpdated;
 	}
 }
 

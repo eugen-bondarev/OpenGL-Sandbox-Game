@@ -15,12 +15,8 @@ public:
 	std::vector<Vec4> sortedWalls;
 	std::vector<Vec2> sortedLights;
 
-	MapRenderer(const Ref<Map> &map, const Ref<Camera> &camera);
+	MapRenderer(const Ref<Camera> &camera);
 
-	void PrepareTile(TilePos tilePos, int x, int y, BlocksTileMap *blocksTileMap);
-	void PrepareTiles();
-
-	void RebuildScene();
 	void UpdateScene();
 
 	void CheckVisibleChunks();
@@ -28,11 +24,6 @@ public:
 	void Compose();
 
 	void Render(const std::vector<Ref<IRenderer>> &additionalRenderers);
-
-	inline const bounds_t &GetVisibleChunks() const
-	{
-		return map->GetVisibleChunks();
-	}
 
 	inline int GetAmountOfRenderedBlocks() const
 	{
@@ -68,11 +59,7 @@ private:
 	std::vector<WallData> wallsData;
 	std::vector<Vec2> lightData;
 
-	const Ref<Map> &map;
 	const Ref<Camera> &camera;
-
-	// bounds_t lastVisibleChunks;
-	// bounds_t visibleChunks;
 
 	MapRenderer(const MapRenderer &) = delete;
 	MapRenderer &operator=(const MapRenderer &) = delete;

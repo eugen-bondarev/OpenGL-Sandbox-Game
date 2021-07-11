@@ -9,12 +9,10 @@ class World
 public:
 	World(int seed);
 
-	Ref<Map> &GetMap();
 	Ref<Camera> &GetCamera();
 	Ref<Woods> &GetWoods();
 
 private:
-	Ref<Map> map;
 	Ref<Camera> camera;
 
 	Ref<Woods> woods;

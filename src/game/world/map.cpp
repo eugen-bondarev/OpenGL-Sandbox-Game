@@ -9,53 +9,66 @@
 #include "renderer/world/map/tiles.h"
 
 FastNoiseLite noise1;
-std::map<Vec2, ChunkData, Compare> chunkData;
 
-std::vector<Vec4> renderData;
+namespace MapSettings {
+
+float SIZE_0 = 0.3f;
+float SIZE_1 = 0.001f;
+float SIZE_2 = 0.1f;
+float BIAS_0 = 0.0f;
+float BIAS_1 = 0.0f;
+
+}
+
+namespace Map
+{
+	Blocks_t Blocks;
+	Walls_t Walls;
+	PlacedBlocks_t PlacedBlocks;
+
+	Bounds_t VisibleChunks;
+	Bounds_t LastVisibleChunks;
+
+	MapFlags_ Flags = MapFlags_None;
+
+	Vec2 ChunkSize = { 2, 2 };
+}
 
 float WhatNoise(float x, float y)
 {
-	static float size = 0.4f;
-	return noise1.GetNoise(x * size, y * size) * 0.5f + 0.5f;
+	return noise1.GetNoise(x * MapSettings::SIZE_0, y * MapSettings::SIZE_0) * 0.5f + 0.5f;
 }
 
 BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
 {
 	BlockType type = BlockType::Empty;
 
-	int height = 5000 * noise1.GetNoise(x * 0.001f, 0.0f);
-
-	if (y > 4000 * 2 + height * noise1.GetNoise(x * 0.1f, 0.0f))
-	{
-		return BlockType::Empty;
-	}
-	
 	if (tilePos == TilePos::Foreground)
 	{
-		if (noiseValue > 0.75f) 
+		if (noiseValue + MapSettings::BIAS_0 > 0.75f) 
 		{
 			type = BlockType::Empty;
 		}
-		if (noiseValue >= 0.3f && noiseValue < 0.75f)
+		if (noiseValue + MapSettings::BIAS_0 >= 0.3f && noiseValue < 0.75f)
 		{
 			type = BlockType::Grass;
 		}
-		if (noiseValue < 0.3f)
+		if (noiseValue + MapSettings::BIAS_0 < 0.3f)
 		{
 			type = BlockType::Stone;
 		}
 	}
 	else
 	{
-		if (noiseValue > 0.75f) 
+		if (noiseValue + MapSettings::BIAS_1 > 0.75f) 
 		{
 			type = BlockType::Grass;
 		}
-		if (noiseValue >= 0.3f && noiseValue < 0.75f)
+		if (noiseValue + MapSettings::BIAS_1 >= 0.3f && noiseValue < 0.75f)
 		{
 			type = BlockType::Grass;
 		}
-		if (noiseValue < 0.3f)
+		if (noiseValue + MapSettings::BIAS_1 < 0.3f)
 		{
 			type = BlockType::Stone;
 		}
@@ -90,353 +103,145 @@ BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float 
 	return representation;
 }
 
-void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data)
+void Map::PopulateVisibleMap()
 {
-	BlocksTileMap *blocksTileMap = TextureAtlas::Get<BlocksTileMap>(TextureAtlasType::Map);
-	
-	// noise1.SetNoiseType(FastNoiseLite::NoiseType_Value); REALLY LIKE IT!
-	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	MW_PROFILER_SCOPE();
 
-	auto& visibleChunks = map->GetVisibleChunks();
+	static int height_variation = 5000;
+	static int horizon = 0;
 
-	for (int xChunk = visibleChunks.x.start; xChunk < visibleChunks.x.end; ++xChunk)
+	Vec2 chunk_indices;
+	Vec2 block_indices;
+
+	for (chunk_indices.x = VisibleChunks.x.start; chunk_indices.x < VisibleChunks.x.end; ++chunk_indices.x)
 	{
-		for (int yChunk = visibleChunks.y.start; yChunk < visibleChunks.y.end; ++yChunk)
+		for (chunk_indices.y = VisibleChunks.y.start; chunk_indices.y < VisibleChunks.y.end; ++chunk_indices.y)
 		{
-			Vec2 chunkIndices = Vec2(xChunk, yChunk);
+			PlacedBlocks_t::iterator chunk_iterator = PlacedBlocks.find(chunk_indices);
 
-			for (int x = 0; x < map->GetChunkSize().x; ++x)
+			for (block_indices.x = 0; block_indices.x < ChunkSize.x; ++block_indices.x)
 			{
-				for (int y = 0; y < map->GetChunkSize().y; ++y)
-				{
-					Vec2 blockPosition = (chunkIndices * map->GetChunkSize() + Vec2(x, y)) * 16.0f;
-					
-					float noiseValue = WhatNoise(blockPosition.x, blockPosition.y);
-					BlockRepresentation computedBlock = WhatBlock(noiseValue, TilePos::Foreground, blockPosition.x, blockPosition.y);
-					BlockRepresentation computedWall = WhatBlock(noiseValue, TilePos::Background, blockPosition.x, blockPosition.y);
+				Vec2 block_pos;
+				block_pos.x = (chunk_indices.x * ChunkSize.x + block_indices.x) * BLOCK_SIZE;				
 
-					int xi = static_cast<int>(truncf((xChunk - visibleChunks.x.start) * map->GetChunkSize().x + x));
-					int yi = static_cast<int>(truncf((yChunk - visibleChunks.y.start) * map->GetChunkSize().y + y));
-					
-					if (yi >= map->BLOCKS[0].size())
-					{
+				int height_in_this_area = height_variation * noise1.GetNoise(block_pos.x * MapSettings::SIZE_1, 0.0f);
+
+				for (block_indices.y = 0; block_indices.y < ChunkSize.y; ++block_indices.y)
+				{
+					block_pos.y = (chunk_indices.y * ChunkSize.y + block_indices.y) * BLOCK_SIZE;
+
+					Vec2 visible_chunks_start = Vec2(VisibleChunks.x.start, VisibleChunks.y.start);
+					Vec2 indices = trunc(chunk_indices - visible_chunks_start) * ChunkSize + block_indices;
+						
+					// I don't know why this case occures.
+					if (indices.y >= Blocks[0].size() || indices.x >= Blocks.size())
 						continue;
+
+					if (chunk_iterator != PlacedBlocks.end())
+					{
+						PlacedBlocksInChunk_t::iterator block_iterator = chunk_iterator->second.find(block_indices);
+						if (block_iterator != chunk_iterator->second.end())
+						{
+							Blocks[indices.x][indices.y].type = block_iterator->second;
+							Blocks[indices.x][indices.y].worldPosition = block_pos;
+
+							continue;
+						}
 					}
 
-					map->BLOCKS[xi][yi].type = computedBlock.type;
-					map->BLOCKS[xi][yi].worldPosition = computedBlock.position;
+					if (block_pos.y > horizon * ChunkSize.y + height_in_this_area * noise1.GetNoise(block_pos.x * MapSettings::SIZE_2, 0.0f))
+					{
+						Blocks[indices.x][indices.y].type = BlockType::Empty;
+						Blocks[indices.x][indices.y].worldPosition = block_pos;
 
-					map->WALLS[xi][yi].type = computedWall.type;
-					map->WALLS[xi][yi].worldPosition = computedWall.position;
+						Walls[indices.x][indices.y].type = BlockType::Empty;
+						Walls[indices.x][indices.y].worldPosition = block_pos;
+					}
+					else
+					{
+						float noiseValue = WhatNoise(block_pos.x, block_pos.y);
+
+						BlockRepresentation computedBlock = WhatBlock(noiseValue, TilePos::Foreground, block_pos.x, block_pos.y);
+						BlockRepresentation computedWall = WhatBlock(noiseValue, TilePos::Background, block_pos.x, block_pos.y);
+
+						Blocks[indices.x][indices.y].type = computedBlock.type;
+						Blocks[indices.x][indices.y].worldPosition = computedBlock.position;
+
+						Walls[indices.x][indices.y].type = computedWall.type;
+						Walls[indices.x][indices.y].worldPosition = computedWall.position;
+					}					
 				}
 			}
 		}
 	}
+
+	MW_SYNC_GPU();
 }
 
-Map::Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize) : chunkSize{chunkSize}, amountOfChunks{amountOfChunks}, blockSize{blockSize}
+void Map::Init(int seed)
 {
-	MapGenerationDataSet mapGenerator = {};
-	mapGenerator.seed = seed;
-	GenerateMap(mapGenerator);
+	auto& chunk = PlacedBlocks[{ 0, 0 }];
+	auto& block = chunk[{ 0, 0 }];
+	block = BlockType::Wood;
+	
+	// noise1.SetNoiseType(FastNoiseLite::NoiseType_Value); // REALLY LIKE IT!
+	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noise1.SetSeed(seed);
-
-	Vec2 AMOUNT_OF_CHUNKS = ceil(MW_WINDOW_SIZE() / blockSize / chunkSize);
 }
 
-TileType Map::GetTileUnderCursor(const Vec2 &cameraPosition, const tiles_t &tiles) const
-{
-	Vec2 mousePos = mw::Window::GetMousePosition() - mw::Window::GetSize() / 2.0f;
-	mousePos.y = mw::Window::GetSize().y - mw::Window::GetMousePosition().y - mw::Window::GetSize().y / 2.0f;
-	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
-	Vec2 tilePos = mousePosWorldSpace / Vec2(GetBlockSize());
-
-	tilePos = round(tilePos);
-
-	return tiles[tilePos.x][tilePos.y].type;
-}
-
-BlockType Map::GetBlockUnderCursor(const Vec2 &cameraPosition) const
-{
-	return GetTileUnderCursor(cameraPosition, blocks);
-}
-
-WallType Map::GetWallUnderCursor(const Vec2 &cameraPosition) const
-{
-	return GetTileUnderCursor(cameraPosition, walls);
-}
-
-Map::BlockSettingData Map::Place(const Vec2 &cameraPosition, BlockType blockType, TilePos tilePos)
-{
-	Vec2 mousePos = mw::Window::GetMousePosition() - mw::Window::GetSize() / 2.0f;
-	mousePos.y = mw::Window::GetSize().y - mw::Window::GetMousePosition().y - mw::Window::GetSize().y / 2.0f;
-	Vec2 mousePosWorldSpace = cameraPosition + mousePos;
-
-	Vec2 chunkPos = mousePosWorldSpace / Vec2(GetBlockSize() * GetChunkSize());
-	Vec2 blockPos = mousePosWorldSpace / Vec2(GetBlockSize());
-
-	blockPos = round(blockPos);
-
-	auto &block = (tilePos == TilePos::Foreground ? blocks : walls)[blockPos.x][blockPos.y];
-
-	BlockSettingData result;
-	if ((blockType == BlockType::Empty && blockType != block.type) || (blockType != BlockType::Empty && block.type == BlockType::Empty))
+void Map::CheckVisibleChunks()
+{	
+	if (VisibleChunks != LastVisibleChunks)
 	{
-		result.blockType = block.type;
-		result.oldBlock = block.type;
-
-		block.type = blockType;
-
-		result.block = blockPos;
-		result.chunk = blockPos / GetChunkSize();
+		PopulateVisibleMap();
+		LastVisibleChunks = VisibleChunks;
+		Flags |= MapFlags_ChunksUpdated;
 	}
-
-	if (result.IsSet())
-	{
-		blocksUpdated = true;
-		chunksUpdated = true;
-
-		if (tilePos == TilePos::Foreground)
-		{
-			blockToUpdate = blockPos;
-		}
-		else
-		{
-			wallToUpdate = blockPos;
-		}
-	}
-
-	return result;
 }
 
-Map::BlockSettingData Map::PlaceBlock(const Vec2 &cameraPosition, BlockType blockType)
-{
-	return Place(cameraPosition, blockType, TilePos::Foreground);
-}
-
-Map::BlockSettingData Map::PlaceWall(const Vec2 &cameraPosition, WallType wallType)
-{
-	return Place(cameraPosition, wallType, TilePos::Background);
-}
-
-void Map::CalculateVisibleChunks(Vec2 viewPos)
-{
+void Map::CalculateVisibleChunks(Vec2 view_pos)
+{	
 	Vec2 correction = Vec2(-16, 16);
 
-	visibleChunks.x.start = (viewPos.x + correction.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / GetChunkSize().x;
-	visibleChunks.x.end = visibleChunks.x.start + MW_WINDOW_WIDTH() / (GetChunkSize().x * blockSize) + 2;
-
-	visibleChunks.y.start = (viewPos.y + correction.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / GetChunkSize().y;
-	visibleChunks.y.end = visibleChunks.y.start + MW_WINDOW_HEIGHT() / (GetChunkSize().y * blockSize) + 2;
-
-	visibleChunks.x.start -= 1;
-	visibleChunks.y.start -= 1;
+	VisibleChunks.x.start = (view_pos.x + correction.x - MW_WINDOW_WIDTH() / 2.0f) / 16.0f / GetChunkSize().x;
+	VisibleChunks.x.end = VisibleChunks.x.start + MW_WINDOW_WIDTH() / (GetChunkSize().x * BLOCK_SIZE) + 2;
+	VisibleChunks.y.start = (view_pos.y + correction.y - MW_WINDOW_HEIGHT() / 2.0f) / 16.0f / GetChunkSize().y;
+	VisibleChunks.y.end = VisibleChunks.y.start + MW_WINDOW_HEIGHT() / (GetChunkSize().y * BLOCK_SIZE) + 2;
+	VisibleChunks.x.start -= 1;
+	VisibleChunks.y.start -= 2;
 }
 
-bool Map::CheckBounds(int x, int y) const
+Vec2 Map::GetChunkSize()
 {
-	return x >= 0 && x < blocks.size() && y >= 0 && y < blocks[0].size();
+	return ChunkSize;
 }
 
-void Map::SetBlock(int x, int y, BlockType type)
+Blocks_t &Map::GetBlocks()
 {
-	if (CheckBounds(x, y))
-	{
-		blocks[x][y].type = type;
-	}
+	return Blocks;
 }
 
-bool Map::HasNeighbor(int x, int y, BlockType block) const
+Walls_t &Map::GetWalls()
 {
-	if (x < 1 || x > blocks.size() - 2)
-		return false;
-
-	return blocks[x - 1][y + 1].type == block || blocks[x - 1][y].type == block || blocks[x + 1][y].type == block || blocks[x][y + 1].type == block;
+	return Walls;
 }
 
-bool Map::HasEmptyNeighbor(int x, int y) const
+bool Map::BlockIs(int x, int y, BlockType type)
 {
-	return HasNeighbor(x, y, BlockType::Empty);
+	return Blocks[x][y].type == type;
 }
 
-void Map::GenerateMap(MapGenerationDataSet generationDataSet)
+bool Map::WallIs(int x, int y, WallType type)
 {
-	srand(generationDataSet.seed);
-
-	amountOfBlocks = GetChunkSize() * GetAmountOfChunks();
-	const int amountOfColumns = amountOfBlocks.x;
-	const int amountOfRows = amountOfBlocks.y;
-
-	blocks.resize(amountOfColumns);
-	for (int x = 0; x < amountOfColumns; x++)
-	{
-		blocks[x].resize(amountOfRows);
-	}
-
-	walls = blocks;
+	return Walls[x][y].type == type;
 }
 
-Vec2 Map::WhatChunk(Vec2 block) const
-{
-	int x = static_cast<int>(truncf(block.x / GetChunkSize().x));
-	int y = static_cast<int>(truncf(block.y / GetChunkSize().y));
-
-	return {x, y};
-}
-
-chunk_t Map::WhatBlocks(Vec2 chunk) const
-{
-	Period<> x{static_cast<int>(chunk.x * GetChunkSize().x), static_cast<int>((chunk.x + 1.0f) * GetChunkSize().x)};
-	Period<> y{static_cast<int>(chunk.y * GetChunkSize().y), static_cast<int>((chunk.y + 1.0f) * GetChunkSize().y)};
-	return {x, y};
-}
-
-Vec2 Map::WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4 &projectionMatrix, const Mat4 &viewMatrix) const
-{
-	const Vec2 &viewPos = viewMatrix[0];
-
-	const Vec2 screenCoords = (windowCoords / mw::Window::GetSize() - Vec2(0.5f, 0.5f)) * Vec2(1.0f, -1.0f) * 2.0f;
-	const Vec4 projCoords = Math::Inverse(projectionMatrix) * Vec4(screenCoords, 0.0f, 1.0f);
-	const Vec4 projViewCoords = Math::Inverse(viewMatrix) * projCoords;
-
-	static const Vec2 normalization = Vec2(0.0f);
-	const Vec2 block = (Vec2(projViewCoords) - viewPos) / blockSize + normalization + GetChunkSize() / 2.0f;
-
-	return block;
-}
-
-Vec2 Map::GetChunkSize() const
-{
-	return chunkSize;
-}
-
-Vec2 Map::GetAmountOfChunks() const
-{
-	return amountOfChunks;
-}
-
-Vec2 Map::GetCenter() const
-{
-	return amountOfBlocks / 2.0f;
-}
-
-bounds_t &Map::GetVisibleChunks()
-{
-	return visibleChunks;
-}
-
-bounds_t &Map::GetLastVisibleChunks()
-{
-	return lastVisibleChunks;
-}
-
-float Map::GetBlockSize() const
-{
-	return blockSize;
-}
-
-blocks_t &Map::GetBlocks()
-{
-	return blocks;
-}
-
-walls_t &Map::GetWalls()
-{
-	return walls;
-}
-
-bool Map::BlockIs(int x, int y, BlockType type) const
-{
-	return blocks[x][y].type == type;
-}
-
-bool Map::WallIs(int x, int y, WallType type) const
-{
-	return walls[x][y].type == type;
-}
-
-bool Map::BlockIsEmpty(int x, int y) const
+bool Map::BlockIsEmpty(int x, int y)
 {
 	return BlockIs(x, y, BlockType::Empty);
 }
 
-bool Map::WallIsEmpty(int x, int y) const
+bool Map::WallIsEmpty(int x, int y)
 {
 	return WallIs(x, y, WallType::Empty);
-}
-
-
-
-
-
-
-
-blocks_t &Map::GetBlocks1()
-{
-	return BLOCKS;
-}
-
-walls_t &Map::GetWalls1()
-{
-	return WALLS;
-}
-
-bool Map::BlockIs1(int x, int y, BlockType type) const
-{
-	// if (x < 0 || y < 0 || x >= BLOCKS.size() || y >= BLOCKS[0].size()) return false;
-
-	return BLOCKS[x][y].type == type;
-}
-
-bool Map::WallIs1(int x, int y, WallType type) const
-{
-	// if (x < 0 || y < 0 || x >= WALLS.size() || y >= WALLS[0].size()) return false;
-
-	return WALLS[x][y].type == type;
-}
-
-bool Map::BlockIsEmpty1(int x, int y) const
-{
-	return BlockIs1(x, y, BlockType::Empty);
-}
-
-bool Map::WallIsEmpty1(int x, int y) const
-{
-	return WallIs1(x, y, WallType::Empty);
-}
-
-
-
-
-
-
-
-int Map::GetWidth() const
-{
-	return blocks.size();
-}
-
-int Map::GetHeight() const
-{
-	return blocks[0].size();
-}
-
-int Map::GetArea() const
-{
-	return GetWidth() * GetHeight();
-}
-
-int Map::GetSizeInBytes() const
-{
-	return GetArea() * sizeof(Tile) * 2 /* blocks AND walls */;
-}
-
-int Map::GetSizeInKilobytes() const
-{
-	return BytesTo(GetSizeInBytes(), SizeUnits::Kilobyte);
-}
-
-int Map::GetSizeInMegabytes() const
-{
-	return BytesTo(GetSizeInBytes(), SizeUnits::Megabyte);
 }

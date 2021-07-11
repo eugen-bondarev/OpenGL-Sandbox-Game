@@ -7,12 +7,12 @@ Block::Block(BlockType type, int amount) : type{type}, Item(64, amount)
 
 void Block::Use(GameState state)
 {
-	Map::BlockSettingData settingBlock = state.world->GetMap()->PlaceBlock(state.world->GetCamera()->GetPosition(), type);
+	// Map::BlockSettingData settingBlock = state.world->GetMap()->PlaceBlock(state.world->GetCamera()->GetPosition(), type);
 
-	if (settingBlock.IsSet())
-	{
-		currentAmount -= 1;
-	}
+	// if (settingBlock.IsSet())
+	// {
+	// 	currentAmount -= 1;
+	// }
 }
 
 BlockType Block::GetBlockType() const

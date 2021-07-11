@@ -16,7 +16,7 @@ public:
 
 	Blocks::Representations::IndexAndPosition GetBlockNearby(Vec2 fix, Vec2 offset = Vec2(0, 0)) const;
 
-	Rigidbody(Entity *entity, const Ref<Map> map);
+	Rigidbody(Entity *entity);
 
 	void Update() override;
 	void CheckCollisions();
@@ -33,8 +33,6 @@ public:
 	bool CanMoveRight() const;
 
 private:
-	const Ref<Map> map;
-
 	bool ceiling{false};
 	bool onGround{false};
 	bool canMoveLeft{true};

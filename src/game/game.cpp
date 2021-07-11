@@ -93,17 +93,25 @@ void Game::Render()
 
 	interfaceRenderer->Render();
 
+	ImGui::SetNextWindowPos(ImVec2(20, 160));
+	ImGui::SetNextWindowSize(ImVec2(200, 160));
+	ImGui::Begin("Map settings", nullptr, ImGuiWindowFlags_NoResize);
+		ImGui::DragFloat("Size 0", &MapSettings::SIZE_0, 0.001f, 0.00001f, 32.0f);
+		ImGui::DragFloat("Size 1", &MapSettings::SIZE_1, 0.001f, 0.00001f, 32.0f);
+		ImGui::DragFloat("Size 2", &MapSettings::SIZE_2, 0.001f, 0.00001f, 32.0f);
+		ImGui::DragFloat("Bias 0", &MapSettings::BIAS_0, 0.001f, -1.0f, 1.0f);
+		ImGui::DragFloat("Bias 1", &MapSettings::BIAS_1, 0.001f, -1.0f, 1.0f);
+	ImGui::End();
+
 	Linow::Render(Math::ToPtr(mw::Window::GetSpace()), Math::ToPtr(world->GetCamera()->GetTransform()));
 
 #ifdef NF_SHOW_DEBUG_GUI
-	ImGui::SetNextWindowSize(ImVec2(220, 120));
+	ImGui::SetNextWindowSize(ImVec2(120, 120));
 	ImGui::SetNextWindowPos(ImVec2(140 + 20 + 20, 20));
 	ImGui::Begin("Map info", nullptr, ImGuiWindowFlags_NoResize);
 	ImGui::Text(std::string("Blocks: " + std::to_string(worldRenderer->GetMapRenderer()->sortedBlocks.size())).c_str());
 	ImGui::Text(std::string("Lights: " + std::to_string(worldRenderer->GetMapRenderer()->sortedLights.size())).c_str());
 	ImGui::Text(std::string("Walls: " + std::to_string(worldRenderer->GetMapRenderer()->sortedWalls.size())).c_str());
-	ImGui::Text(std::string("Area: " + std::to_string(world->GetMap()->GetWidth()) + 'x' + std::to_string(world->GetMap()->GetHeight()) + " = " + std::to_string(world->GetMap()->GetArea())).c_str());
-	ImGui::Text(std::string("Size (mb): " + std::to_string(world->GetMap()->GetSizeInMegabytes())).c_str());
 	ImGui::End();
 #endif
 }

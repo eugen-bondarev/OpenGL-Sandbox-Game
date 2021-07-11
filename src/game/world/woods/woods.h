@@ -7,7 +7,7 @@
 class Woods
 {
 public:
-	Woods(const Ref<Map> &map);
+	Woods();
 
 	const std::vector<Tree> &GetTrees() const;
 	void GetVisibleTrees(std::vector<Vec2> &vector, const Ref<Camera> &camera) const;

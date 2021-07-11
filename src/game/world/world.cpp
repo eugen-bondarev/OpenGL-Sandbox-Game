@@ -3,31 +3,28 @@
 World::World(int seed)
 {
 	// Terraria - 1680x480
-	map = CreateRef<Map>(seed, Vec2(2), Vec2(500));
+	// map = CreateRef<Map>(seed, Vec2(2), Vec2(500));
+	Map::Init(seed);
 	camera = CreateRef<Camera>();
-	camera->SetPosition((map->GetCenter() - Vec2(1, 0)) * map->GetBlockSize());
-	map->CalculateVisibleChunks(camera->GetPosition());
+	camera->SetPosition(0, 0);
 
-	map->BLOCKS.resize((map->GetVisibleChunks().x.end - map->GetVisibleChunks().x.start) * map->GetChunkSize().x);
-	for (int i = 0; i < map->BLOCKS.size(); i++)
+	Map::CalculateVisibleChunks(camera->GetPosition());
+
+	Map::Blocks.resize((Map::VisibleChunks.x.end - Map::VisibleChunks.x.start) * Map::GetChunkSize().x);
+	for (int i = 0; i < Map::Blocks.size(); i++)
 	{
-		map->BLOCKS[i].resize((map->GetVisibleChunks().y.end - map->GetVisibleChunks().y.start) * map->GetChunkSize().y);
+		Map::Blocks[i].resize((Map::VisibleChunks.y.end - Map::VisibleChunks.y.start) * Map::GetChunkSize().y);
 	}
 
-	map->WALLS.resize((map->GetVisibleChunks().x.end - map->GetVisibleChunks().x.start) * map->GetChunkSize().x);
-	for (int i = 0; i < map->WALLS.size(); i++)
+	Map::Walls.resize((Map::VisibleChunks.x.end - Map::VisibleChunks.x.start) * Map::GetChunkSize().x);
+	for (int i = 0; i < Map::Walls.size(); i++)
 	{
-		map->WALLS[i].resize((map->GetVisibleChunks().y.end - map->GetVisibleChunks().y.start) * map->GetChunkSize().y);
+		Map::Walls[i].resize((Map::VisibleChunks.y.end - Map::VisibleChunks.y.start) * Map::GetChunkSize().y);
 	}
 
-	ConvertChunksRenderData(map.get(), renderData);
+	Map::PopulateVisibleMap();
 
-	woods = CreateRef<Woods>(map);
-}
-
-Ref<Map> &World::GetMap()
-{
-	return map;
+	woods = CreateRef<Woods>();
 }
 
 Ref<Camera> &World::GetCamera()

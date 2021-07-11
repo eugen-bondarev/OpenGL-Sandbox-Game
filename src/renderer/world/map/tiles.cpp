@@ -1,21 +1,21 @@
 #include "tiles.h"
 
-bool TopBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type)
+bool TopBlockIsNot(const Blocks_t &blocks, int x, int y, BlockType type)
 {
 	return y < blocks[x].size() - 1 && blocks[x][y + 1].type != type;
 }
 
-bool LeftBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type)
+bool LeftBlockIsNot(const Blocks_t &blocks, int x, int y, BlockType type)
 {
 	return x > 0 && blocks[x - 1][y].type != type;
 }
 
-bool BottomBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type)
+bool BottomBlockIsNot(const Blocks_t &blocks, int x, int y, BlockType type)
 {
 	return y > 0 && blocks[x][y - 1].type != type;
 }
 
-bool RightBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type)
+bool RightBlockIsNot(const Blocks_t &blocks, int x, int y, BlockType type)
 {
 	return x < blocks.size() - 1 && blocks[x + 1][y].type != type;
 }
@@ -53,7 +53,7 @@ bool RightBlockIsNot(const blocks_t &blocks, int x, int y, BlockType type)
 		return Vec2{1, 0};                         \
 	return Vec2 { 0, 0 }
 
-Vec2 GrassGenerator(const blocks_t &blocks, int x, int y)
+Vec2 GrassGenerator(const Blocks_t &blocks, int x, int y)
 {
 #undef TOP
 #undef LEFT
@@ -68,7 +68,7 @@ Vec2 GrassGenerator(const blocks_t &blocks, int x, int y)
 	CHECK_NEIGHBOURS(TOP, LEFT, BOTTOM, RIGHT);
 }
 
-Vec2 DirtGenerator(const blocks_t &blocks, int x, int y)
+Vec2 DirtGenerator(const Blocks_t &blocks, int x, int y)
 {
 #undef TOP
 #undef LEFT
@@ -93,7 +93,7 @@ Vec2 DirtGenerator1(BlockType up, BlockType down, BlockType left, BlockType righ
 	return Vec2(0);
 }
 
-Vec2 PickRightAngularBlock(const blocks_t &blocks, int x, int y)
+Vec2 PickRightAngularBlock(const Blocks_t &blocks, int x, int y)
 {
 #undef TOP
 #undef LEFT
@@ -108,7 +108,7 @@ Vec2 PickRightAngularBlock(const blocks_t &blocks, int x, int y)
 	CHECK_NEIGHBOURS(TOP, LEFT, BOTTOM, RIGHT);
 }
 
-Vec2 PickRightAngularWall(const blocks_t &blocks, int x, int y)
+Vec2 PickRightAngularWall(const Blocks_t &blocks, int x, int y)
 {
 #undef TOP
 #undef LEFT

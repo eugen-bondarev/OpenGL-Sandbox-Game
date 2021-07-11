@@ -3,27 +3,78 @@
 #include "blocks.h"
 #include "types.h"
 
-struct MapGenerationDataSet
+namespace MapSettings {
+
+extern float SIZE_0;
+extern float SIZE_1;
+extern float SIZE_2;
+extern float BIAS_0;
+extern float BIAS_1;
+
+}
+
+// The specialized hash function for `unordered_map` keys
+struct hash_fn
 {
-	int maxHeight = 50;
-	int maxDepth = 25;
-	int maxSlopeMistake = 2;
-
-	int maxLength = 200;
-	int minLength = 15;
-
-	int blockProbabilityInPercent = 10;
-
-	int seed = 669;
+    std::size_t operator()(const Vec2 &node) const
+    {
+        std::size_t h1 = std::hash<float>()(node.x);
+        std::size_t h2 = std::hash<float>()(node.y);
+ 
+        return h1 ^ h2;
+    }
 };
 
-inline static constexpr MapGenerationDataSet DEFAULT_DATA_SET = {};
+enum MapFlags_
+{
+	MapFlags_None = 0,
+	MapFlags_BlocksUpdated = 1 << 0,
+	MapFlags_ChunksUpdated = 1 << 1,
+};
+
+inline MapFlags_& operator |=(MapFlags_& a, MapFlags_ b)
+{
+	return a = static_cast<MapFlags_>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+namespace Map
+{
+	static constexpr float BLOCK_SIZE = 16.0f;
+
+	using PlacedBlocksInChunk_t = std::unordered_map<Vec2, BlockType, hash_fn>;  // Indexed by (relative) block's index.
+	using PlacedBlocks_t = std::unordered_map<Vec2, PlacedBlocksInChunk_t, hash_fn>;  // Indexed by absolute chunk's index.
+
+	using MapFlags_t = int;
+
+	extern Blocks_t Blocks;
+	extern Walls_t Walls;
+	extern PlacedBlocks_t PlacedBlocks;
+
+	extern Vec2 ChunkSize;
+
+	extern Bounds_t VisibleChunks;
+	extern Bounds_t LastVisibleChunks;
+
+	extern MapFlags_ Flags;
+
+	void Init(int seed);
+
+	void PopulateVisibleMap();
+
+	void CheckVisibleChunks();
+	void CalculateVisibleChunks(Vec2 view_pos);
+	Vec2 GetChunkSize();
+
+	Blocks_t &GetBlocks();
+	Walls_t &GetWalls();
+
+	bool BlockIs(int x, int y, BlockType type);
+	bool WallIs(int x, int y, WallType type);
+	bool BlockIsEmpty(int x, int y);
+	bool WallIsEmpty(int x, int y);
+}
 
 using TileToUpdate = Vec2;
-
-class Map;
-
-void ConvertChunksRenderData(Map* map, std::vector<Vec4>& data);
 
 struct BlockRepresentation
 {
@@ -34,117 +85,3 @@ struct BlockRepresentation
 
 BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y);
 BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y);
-
-struct ChunkData
-{
-	int start { 0 };
-	int howMany { 0 };
-};
-
-struct Compare final
-{
-	bool operator()(const Vec2& lhs, const Vec2& rhs) const noexcept
-	{
-		return lhs.x < rhs.x || (lhs.x == rhs.x && lhs.y < rhs.y);
-	}
-};
-
-extern std::map<Vec2, ChunkData, Compare> chunkData;
-extern std::vector<Vec4> renderData;
-
-class Map
-{
-public:
-	Map(int seed, Vec2 chunkSize, Vec2 amountOfChunks, float blockSize = 16.0f);
-
-	blocks_t BLOCKS;
-	blocks_t WALLS;
-
-	struct BlockSettingData
-	{
-		Vec2 block{-1, -1};
-		Vec2 chunk{-1, -1};
-
-		BlockType blockType;
-		BlockType oldBlock;
-
-		inline bool IsSet() const
-		{
-			return chunk != Vec2{-1, -1};
-		}
-	};
-
-	TileType GetTileUnderCursor(const Vec2 &cameraPosition, const tiles_t &tiles) const;
-	BlockType GetBlockUnderCursor(const Vec2 &cameraPosition) const;
-	WallType GetWallUnderCursor(const Vec2 &cameraPosition) const;
-
-	BlockSettingData Place(const Vec2 &cameraPosition, BlockType blockType, TilePos tilePos);
-	BlockSettingData PlaceBlock(const Vec2 &cameraPosition, BlockType blockType);
-	BlockSettingData PlaceWall(const Vec2 &cameraPosition, WallType wallType);
-
-	bool HasNeighbor(int x, int y, BlockType block) const;
-	bool HasEmptyNeighbor(int x, int y) const;
-
-	bool CheckBounds(int x, int y) const;
-	void SetBlock(int x, int y, BlockType type);
-
-	Vec2 WhatChunk(Vec2 block) const;
-	chunk_t WhatBlocks(Vec2 chunk) const;
-
-	Vec2 WindowCoordsToBlockCoords(Vec2 windowCoords, const Mat4 &projectionMatrix, const Mat4 &viewMatrix) const;
-
-	Vec2 GetChunkSize() const;
-	Vec2 GetAmountOfChunks() const;
-	Vec2 GetCenter() const;
-
-	void CalculateVisibleChunks(Vec2 viewPos);
-
-	bounds_t &GetVisibleChunks();
-	bounds_t &GetLastVisibleChunks();
-
-	float GetBlockSize() const;
-
-	blocks_t &GetBlocks();
-	walls_t &GetWalls();
-
-	blocks_t &GetBlocks1();
-	walls_t &GetWalls1();
-
-	bool BlockIs(int x, int y, BlockType type) const;
-	bool WallIs(int x, int y, WallType type) const;
-	bool BlockIsEmpty(int x, int y) const;
-	bool WallIsEmpty(int x, int y) const;
-
-	bool BlockIs1(int x, int y, BlockType type) const;
-	bool WallIs1(int x, int y, WallType type) const;
-	bool BlockIsEmpty1(int x, int y) const;
-	bool WallIsEmpty1(int x, int y) const;
-
-	int GetWidth() const;
-	int GetHeight() const;
-	int GetArea() const;
-	int GetSizeInBytes() const;
-	int GetSizeInKilobytes() const;
-	int GetSizeInMegabytes() const;
-
-	bool blocksUpdated{true};
-	bool chunksUpdated{true};
-
-	TileToUpdate blockToUpdate{-1};
-	TileToUpdate wallToUpdate{-1};
-
-private:
-	blocks_t blocks;
-	walls_t walls;
-
-	Vec2 chunkSize;
-	Vec2 amountOfChunks;
-	Vec2 amountOfBlocks;
-
-	float blockSize;
-
-	void GenerateMap(MapGenerationDataSet generationDataSet);
-
-	bounds_t visibleChunks;
-	bounds_t lastVisibleChunks;
-};
