@@ -20,6 +20,7 @@ public:
 
 	void Update() override;
 	void CheckCollisions();
+	void CheckCollisions1();
 	void Jump();
 
 	void SetCeiling(bool value);

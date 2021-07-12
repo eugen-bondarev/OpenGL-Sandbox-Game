@@ -20,8 +20,8 @@ void Player::Update()
 		}
 	}
 
-	// static float defaultSpeed = 150.0f;
-	static float defaultSpeed = 1000.0f;
+	static float defaultSpeed = 150.0f;
+	// static float defaultSpeed = 1000.0f;
 
 	if (entity->animator->walkingAnimation->GetTime() > 13)
 	{

@@ -5,8 +5,8 @@ Character::Character(const Ref<World> &world) : world{world}
 	AddComponent<Animator>();
 	AddComponent<Rigidbody>();
 	AddComponent<Player>(world);
-
 	SetPosition(world->GetCamera()->GetPosition());
+	// SetPosition(256, 0);
 }
 
 void Character::CollectLights(std::vector<Vec2> &lights) const

@@ -4,6 +4,8 @@
 
 #include "FastNoise/FastNoiseLite.h"
 
+#include "interface/console.h"
+
 mw::Texture* noiseTexture { nullptr };
 
 FastNoiseLite noise;

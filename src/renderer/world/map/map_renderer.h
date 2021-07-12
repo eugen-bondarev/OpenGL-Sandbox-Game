@@ -19,7 +19,6 @@ public:
 
 	void UpdateScene();
 
-	void CheckVisibleChunks();
 	void PerformRenderPasses(const std::vector<Ref<IRenderer>> &additionalRenderers);
 	void Compose();
 

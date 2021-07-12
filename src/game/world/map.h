@@ -3,6 +3,8 @@
 #include "blocks.h"
 #include "types.h"
 
+#include "FastNoise/FastNoiseLite.h"
+
 namespace MapSettings {
 
 extern float SIZE_0;
@@ -37,14 +39,25 @@ inline MapFlags_& operator |=(MapFlags_& a, MapFlags_ b)
 	return a = static_cast<MapFlags_>(static_cast<int>(a) | static_cast<int>(b));
 }
 
+struct BlockRepresentation
+{
+	BlockType type;
+	Vec2 position;
+	Vec2 tile;
+};
+
 namespace Map
 {
 	static constexpr float BLOCK_SIZE = 16.0f;
+
+	extern FastNoiseLite noise1;
 
 	using PlacedBlocksInChunk_t = std::unordered_map<Vec2, BlockType, hash_fn>;  // Indexed by (relative) block's index.
 	using PlacedBlocks_t = std::unordered_map<Vec2, PlacedBlocksInChunk_t, hash_fn>;  // Indexed by absolute chunk's index.
 
 	using MapFlags_t = int;
+
+	extern std::vector<Vec2> SolidBlocks;
 
 	extern Blocks_t Blocks;
 	extern Walls_t Walls;
@@ -65,6 +78,10 @@ namespace Map
 	void CalculateVisibleChunks(Vec2 view_pos);
 	Vec2 GetChunkSize();
 
+	float WhatNoise(float x, float y);
+	BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y);
+	BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y);
+
 	Blocks_t &GetBlocks();
 	Walls_t &GetWalls();
 
@@ -75,13 +92,3 @@ namespace Map
 }
 
 using TileToUpdate = Vec2;
-
-struct BlockRepresentation
-{
-	BlockType type;
-	Vec2 position;
-	Vec2 tile;
-};
-
-BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y);
-BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y);

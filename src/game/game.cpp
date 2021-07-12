@@ -4,6 +4,8 @@
 
 #include "imgui/imgui.h"
 
+#include "interface/console.h"
+
 Game::Game(int seed)
 {
 	const mw::ImageAsset toolsTileMapTexture("assets/images/tools.png");
@@ -13,7 +15,9 @@ Game::Game(int seed)
 		toolsTileMapTexture.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
 		mw::Texture::Parameters_t{
-			mw::Texture::SetInterpolation(mw::Interpolation::Constant)}));
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)
+		}
+	));
 
 	toolsTileMap->Add(ToolType::BronzePickaxe, Vec2(0, 0));
 	toolsTileMap->Add(ToolType::BronzeAxe, Vec2(1, 0));
@@ -26,7 +30,9 @@ Game::Game(int seed)
 		interfaceIconsTileMapAsset.GetData(),
 		GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
 		mw::Texture::Parameters_t{
-			mw::Texture::SetInterpolation(mw::Interpolation::Constant)}));
+			mw::Texture::SetInterpolation(mw::Interpolation::Constant)
+		}
+	));
 
 	interfaceIconsTileMap->Add(InterfaceIconType::Bag, Vec2(0, 0));
 
@@ -91,7 +97,13 @@ void Game::Render()
 		characterRenderer
 	});
 
+	// Vec2 diff = trunc(Vec2(character->GetPosition().x, character->GetPosition().y + 8.0f) / 16.0f) * 16.0f;
+
+	// Linow::AddQuad(Vec3(-8.0f + diff.x, -8.0f + diff.y, 0.0f), Vec3(8.0f + diff.x, 8.0f + diff.y, 0.0f));
+
 	interfaceRenderer->Render();
+
+	Console::Render();
 
 	ImGui::SetNextWindowPos(ImVec2(20, 160));
 	ImGui::SetNextWindowSize(ImVec2(200, 160));

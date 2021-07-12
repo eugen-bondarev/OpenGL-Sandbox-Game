@@ -1,14 +1,10 @@
 #include "map.h"
 
-#include "FastNoise/FastNoiseLite.h"
-
 #include "renderer/world/map/tiles.h"
 
 #include "renderer/atlas/texture_atlas.h"
 
 #include "renderer/world/map/tiles.h"
-
-FastNoiseLite noise1;
 
 namespace MapSettings {
 
@@ -22,6 +18,8 @@ float BIAS_1 = 0.0f;
 
 namespace Map
 {
+	FastNoiseLite noise1;
+
 	Blocks_t Blocks;
 	Walls_t Walls;
 	PlacedBlocks_t PlacedBlocks;
@@ -32,14 +30,16 @@ namespace Map
 	MapFlags_ Flags = MapFlags_None;
 
 	Vec2 ChunkSize = { 2, 2 };
+
+	std::vector<Vec2> SolidBlocks;
 }
 
-float WhatNoise(float x, float y)
+float Map::WhatNoise(float x, float y)
 {
 	return noise1.GetNoise(x * MapSettings::SIZE_0, y * MapSettings::SIZE_0) * 0.5f + 0.5f;
 }
 
-BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
+BlockType Map::WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
 {
 	BlockType type = BlockType::Empty;
 
@@ -77,7 +77,7 @@ BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
 	return type;
 }
 
-BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y)
+BlockRepresentation Map::WhatBlock(float noiseValue, TilePos tilePos, float x, float y)
 {
 	BlockRepresentation representation;
 
@@ -169,7 +169,7 @@ void Map::PopulateVisibleMap()
 
 						Walls[indices.x][indices.y].type = computedWall.type;
 						Walls[indices.x][indices.y].worldPosition = computedWall.position;
-					}					
+					}
 				}
 			}
 		}
