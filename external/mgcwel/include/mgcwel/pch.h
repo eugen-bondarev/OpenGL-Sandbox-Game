@@ -23,6 +23,7 @@
 #include "pch/log.h"
 #include "pch/platform.h"
 #include "pch/console.h"
+#include "pch/flags.h"
 
 #include "maths/maths.h"
 

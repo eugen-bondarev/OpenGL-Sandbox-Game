@@ -14,7 +14,8 @@ void Player::Update()
 {
 	if (mw::Input::KeyPressed(mw::Input::Key::Space))
 	{
-		if (entity->rigidbody->GetOnGround())
+		// if (entity->rigidbody->GetOnGround())
+		if (entity->rigidbody->GetState() & RigidbodyState_OnGround)
 		{
 			entity->rigidbody->Jump();
 		}
@@ -43,13 +44,14 @@ void Player::Update()
 		entity->SetPosition(entity->GetPosition() + Vec2(0, -1) * mw::Time::GetDelta() * defaultSpeed);
 	}
 
-	if (mw::Input::KeyDown(mw::Input::Key::A) && entity->rigidbody->CanMoveLeft())
+	// if (mw::Input::KeyDown(mw::Input::Key::A) && entity->rigidbody->CanMoveLeft())
+	if (mw::Input::KeyDown(mw::Input::Key::A) && entity->rigidbody->GetState() & RigidbodyState_CanMoveLeft)
 	{
 		entity->SetPosition(entity->GetPosition() + Vec2(-1, 0) * mw::Time::GetDelta() * defaultSpeed);
 		entity->animator->walkingAnimation->SetTime(entity->animator->walkingAnimation->GetTime() - 0.2f * mw::Time::GetDelta() * defaultSpeed);
 		entity->animator->SetDirection(-1);
 	}
-	else if (mw::Input::KeyDown(mw::Input::Key::D) && entity->rigidbody->CanMoveRight())
+	else if (mw::Input::KeyDown(mw::Input::Key::D) && entity->rigidbody->GetState() & RigidbodyState_CanMoveRight)
 	{
 		entity->SetPosition(entity->GetPosition() + Vec2(1, 0) * mw::Time::GetDelta() * defaultSpeed);
 		entity->animator->walkingAnimation->SetTime(entity->animator->walkingAnimation->GetTime() + 0.2f * mw::Time::GetDelta() * defaultSpeed);

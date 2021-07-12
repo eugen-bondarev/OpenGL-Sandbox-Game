@@ -9,6 +9,16 @@
 
 #include "entity.h"
 
+enum RigidbodyState_
+{
+	RigidbodyState_Undefined 		= 0,
+	RigidbodyState_OnGround 		= 1 << 0,
+	RigidbodyState_CanMoveLeft 		= 1 << 1,
+	RigidbodyState_CanMoveRight 	= 1 << 2,
+	RigidbodyState_Ceiling 			= 1 << 3,
+};
+MW_ENUM_USE_FOR_FLAGS(RigidbodyState_)
+
 class Rigidbody : public IUpdatable, public Component
 {
 public:
@@ -20,24 +30,15 @@ public:
 
 	void Update() override;
 	void CheckCollisions();
+
+	void CheckBottomCollisions();
 	void CheckCollisions1();
 	void Jump();
 
-	void SetCeiling(bool value);
-	void SetOnGround(bool value);
-	void CanMoveLeft(bool value);
-	void CanMoveRight(bool value);
-
-	bool GetCeiling() const;
-	bool GetOnGround() const;
-	bool CanMoveLeft() const;
-	bool CanMoveRight() const;
+	RigidbodyState_ GetState() const;
 
 private:
-	bool ceiling{false};
-	bool onGround{false};
-	bool canMoveLeft{true};
-	bool canMoveRight{true};
+	RigidbodyState_ State;
 
 	Vec2 velocity{0};
 };

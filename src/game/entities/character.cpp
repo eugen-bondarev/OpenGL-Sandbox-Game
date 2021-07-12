@@ -35,7 +35,8 @@ void Character::Land()
 
 	bool posChanged{false};
 
-	while (rigidbody->GetCeiling())
+	// while (rigidbody->GetCeiling())
+	while (rigidbody->GetState() & RigidbodyState_Ceiling)
 	{
 		SetPositionY(GetPosition().y + 16.0f);
 		rigidbody->Update();
@@ -48,7 +49,8 @@ void Character::Land()
 		rigidbody->Update();
 	}
 
-	while (!rigidbody->GetOnGround())
+	// while (!rigidbody->GetOnGround())
+	while (!rigidbody->GetState() & RigidbodyState_OnGround)
 	{
 		rigidbody->Update();
 	}

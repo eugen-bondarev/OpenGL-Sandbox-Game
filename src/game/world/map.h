@@ -31,13 +31,9 @@ enum MapFlags_
 {
 	MapFlags_None = 0,
 	MapFlags_BlocksUpdated = 1 << 0,
-	MapFlags_ChunksUpdated = 1 << 1,
+	MapFlags_ChunksUpdated = 1 << 1
 };
-
-inline MapFlags_& operator |=(MapFlags_& a, MapFlags_ b)
-{
-	return a = static_cast<MapFlags_>(static_cast<int>(a) | static_cast<int>(b));
-}
+MW_ENUM_USE_FOR_FLAGS(MapFlags_)
 
 struct BlockRepresentation
 {

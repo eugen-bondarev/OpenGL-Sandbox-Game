@@ -27,10 +27,12 @@ void Rigidbody::CheckCollisions()
 	// auto &blocks = map->GetBlocks();
 	auto& blocks = Map::GetBlocks();
 
-	onGround = false;
-	ceiling = false;
-	canMoveLeft = true;
-	canMoveRight = true;
+	State = RigidbodyState_Undefined;
+
+	// onGround = false;
+	// ceiling = false;
+	// canMoveLeft = true;
+	// canMoveRight = true;
 
 	// - Map::VisibleChunks.x.start;
 	// - Map::VisibleChunks.y.start;
@@ -60,7 +62,8 @@ void Rigidbody::CheckCollisions()
 				}
 			}
 
-			onGround = true;
+			// onGround = true;
+			State |= RigidbodyState_OnGround;
 			break;
 		}
 	}
@@ -75,82 +78,94 @@ void Rigidbody::CheckCollisions()
 		if (blocks[block.index.x - Map::VisibleChunks.x.start][block.index.y - Map::VisibleChunks.y.start - 1].type != BlockType::Empty)
 		{
 			// entity->SetPositionY(block.worldPosition.y - 5 * Map::BLOCK_SIZE);
-			ceiling = true;
+			// ceiling = true;
+			// State |= RigidbodyState_OnGround;
 			break;
 		}
 	}
 
 	for (int i = 1; i < 5; i++)
 	{
-		Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f * (onGround ? 1 : -1)), Vec2(1, i));
+		// Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f * (onGround ? 1 : -1)), Vec2(1, i));
 
-		if (RENDER_COLLIDERS)
-			Linow::AddQuad(block.worldPosition, block.worldPosition + Map::BLOCK_SIZE);
+		// if (RENDER_COLLIDERS)
+		// 	Linow::AddQuad(block.worldPosition, block.worldPosition + Map::BLOCK_SIZE);
 
-		if (blocks[block.index.x - Map::VisibleChunks.x.start][block.index.y - Map::VisibleChunks.y.start].type != BlockType::Empty)
-		{
-			canMoveLeft = false;
-			break;
-		}
+		// if (blocks[block.index.x - Map::VisibleChunks.x.start][block.index.y - Map::VisibleChunks.y.start].type != BlockType::Empty)
+		// {
+		// 	// canMoveLeft = false;
+		// 	break;
+		// }
 	}
 
 	for (int i = 1; i < 5; i++)
 	{
-		Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f * (onGround ? 1 : -1)), Vec2(3, i));
+		// Blocks::Representations::IndexAndPosition block = GetBlockNearby(Vec2(-2.0f, 10.0f * (onGround ? 1 : -1)), Vec2(3, i));
 
-		if (RENDER_COLLIDERS)
-			Linow::AddQuad(block.worldPosition, block.worldPosition + Map::BLOCK_SIZE);
+		// if (RENDER_COLLIDERS)
+		// 	Linow::AddQuad(block.worldPosition, block.worldPosition + Map::BLOCK_SIZE);
 
-		if (blocks[block.index.x - Map::VisibleChunks.x.start][block.index.y - Map::VisibleChunks.y.start].type != BlockType::Empty)
-		{
-			canMoveRight = false;
-			break;
-		}
+		// if (blocks[block.index.x - Map::VisibleChunks.x.start][block.index.y - Map::VisibleChunks.y.start].type != BlockType::Empty)
+		// {
+		// 	// canMoveRight = false;
+		// 	break;
+		// }
 	}
+}
+
+void Rigidbody::CheckBottomCollisions()
+{
+	if (velocity.y > 0) return;
+
+	// onGround = false;	
+	State &= ~RigidbodyState_OnGround;
+
+	float factor = static_cast<int>(truncf(abs(entity->position.y) / 8.0f) * 1) % 2;
+	Console::PushInfo(std::to_string(factor));
+
+	Vec2 pos = trunc((entity->position + Vec2(16.0f, factor ? 8.0f : 0.0f)) / 16.0f) * 16.0f;
+	pos -= Vec2(Map::VisibleChunks.x.start, Map::VisibleChunks.y.start) * 2.0f * 16.0f;
+	pos /= 16.0f;
+
+	BlockType block_under_player_0 = Map::Blocks[pos.x][pos.y].type;
+	BlockType block_under_player_1 = Map::Blocks[pos.x + 1][pos.y].type;
+
+	if (block_under_player_0 != BlockType::Empty || block_under_player_1 != BlockType::Empty)
+	{
+		// onGround = true;
+		State |= RigidbodyState_OnGround;
+		float new_pos_y = truncf(entity->position.y / 16.0f) * 16.0f;
+	}
+
+	Console::PushInfo("x: " + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
 }
 
 void Rigidbody::CheckCollisions1()
 {
 	Blocks_t& blocks = Map::GetBlocks();
 
-	onGround = false;
-	ceiling = false;
-	canMoveLeft = true;
-	canMoveRight = true;
+	// ceiling = false;
+	// canMoveLeft = true;
+	// canMoveRight = true;
 
-	float factor = static_cast<int>(truncf(abs(entity->position.y) / 1) * 1) % 8;
-	Console::PushInfo(std::to_string(factor));
-
-	Vec2 pos = trunc((entity->position + Vec2(16, factor ? 8.0f : 0.0f)) / 16.0f) * 16.0f;
-	pos -= Vec2(Map::VisibleChunks.x.start, Map::VisibleChunks.y.start) * 2.0f * 16.0f;
-	pos /= 16.0f;
-
-	BlockType block_under_player = Map::Blocks[pos.x][pos.y].type;
-
-	if (block_under_player != BlockType::Empty)
-	{
-		onGround = true;
-	}
-
-	Console::PushInfo("x: " + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
+	CheckBottomCollisions();	
 }
 
 void Rigidbody::Update()
 {
 	MW_PROFILER_SCOPE();
 
-	canMoveLeft = true;
-	canMoveRight = true;
+	State |= RigidbodyState_CanMoveLeft | RigidbodyState_CanMoveRight;
 
-	if (!onGround)
+	if (!(State & RigidbodyState_OnGround))
 	{
 		entity->SetPosition(entity->position + velocity * Vec2(0, 1) * mw::Time::GetDelta());
 		velocity += -Physics::g * mw::Time::GetDelta() * velocityFactor;
 
-		if (ceiling)
+		if (State & RigidbodyState_Ceiling)
 		{
 			velocity.y = 0.0f;
-			ceiling = false;
+			State &= ~RigidbodyState_Ceiling;
 		}
 	}
 	else
@@ -159,22 +174,16 @@ void Rigidbody::Update()
 	}
 
 	CheckCollisions1();
-	// CheckCollisions();
 }
 
 void Rigidbody::Jump()
 {
 	entity->SetPositionY(entity->position.y + Map::BLOCK_SIZE - 4.0f - 10.0f);
 	velocity = Vec2(0.0f, 3.25f * velocityFactor);
-	onGround = false;
+	State &= ~RigidbodyState_OnGround;
 }
 
-void Rigidbody::SetCeiling(bool value) { ceiling = value; }
-void Rigidbody::SetOnGround(bool value) { onGround = value; }
-void Rigidbody::CanMoveLeft(bool value) { canMoveLeft = value; }
-void Rigidbody::CanMoveRight(bool value) { canMoveRight = value; }
-
-bool Rigidbody::GetCeiling() const { return ceiling; }
-bool Rigidbody::GetOnGround() const { return onGround; }
-bool Rigidbody::CanMoveLeft() const { return canMoveLeft; }
-bool Rigidbody::CanMoveRight() const { return canMoveRight; }
+RigidbodyState_ Rigidbody::GetState() const
+{
+	return State;
+}
