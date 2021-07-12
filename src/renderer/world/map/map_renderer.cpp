@@ -4,6 +4,10 @@
 
 #include "util/imgui_helper.h"
 
+#include "interface/console.h"
+
+#include <sstream>
+
 MapRenderer::MapRenderer(const Ref<Camera> &camera) : camera{camera}
 {
 	pipeline.colorPass = CreateRef<ColorPass>(0);
@@ -96,7 +100,7 @@ void MapRenderer::UpdateScene()
 						sortedLights.push_back(Map::Blocks[x][y].worldPosition);
 					}
 				}
-			}
+			}	
 		}
 	}
 

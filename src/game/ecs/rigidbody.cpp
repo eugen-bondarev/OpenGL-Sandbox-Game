@@ -118,41 +118,21 @@ void Rigidbody::CheckCollisions1()
 	canMoveLeft = true;
 	canMoveRight = true;
 
-	Vec2 pos = trunc((entity->position + 8.0f) / 16.0f) * 16.0f;
+	float factor = static_cast<int>(truncf(abs(entity->position.y) / 1) * 1) % 8;
+	Console::PushInfo(std::to_string(factor));
 
-	// MW_LOG_VAR(entity->position.y);
-	Console::PushInfo(std::to_string(pos.y));
+	Vec2 pos = trunc((entity->position + Vec2(16, factor ? 8.0f : 0.0f)) / 16.0f) * 16.0f;
+	pos -= Vec2(Map::VisibleChunks.x.start, Map::VisibleChunks.y.start) * 2.0f * 16.0f;
+	pos /= 16.0f;
 
-	for (int i = 0; i < Map::SolidBlocks.size(); i++)
+	BlockType block_under_player = Map::Blocks[pos.x][pos.y].type;
+
+	if (block_under_player != BlockType::Empty)
 	{
-		if (pos.y == Map::SolidBlocks[i].y && abs(pos.x - Map::SolidBlocks[i].x) <= 8.0f)
-		{
-			onGround = true;
-
-			// std::ostringstream ss;
-			// ss << "Block pos: " << std::to_string(pos.x) << ' ' << std::to_string(pos.y);
-			// Console::PushInfo(ss.str());
-			entity->SetPositionY(pos.y + 7);
-
-			break;
-
-		}
+		onGround = true;
 	}
 
-	// int chunksx = Map::VisibleChunks.x.end - Map::VisibleChunks.x.start;
-	// int chunksy = Map::VisibleChunks.y.end - Map::VisibleChunks.y.start;
-	// chunksx *= 2;
-	// chunksy *= 2;
-	// chunksx /= 2;
-	// chunksy /= 2;
-
-	// Vec2 block_coords = trunc(Vec2(chunksx, chunksy));
-	// BlockType block = Map::GetBlocks()[block_coords.x][block_coords.y].type;
-
-	// if (block != BlockType::Empty)
-	// {
-	// 	onGround = true;
-	// }
+	Console::PushInfo("x: " + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
 }
 
 void Rigidbody::Update()
