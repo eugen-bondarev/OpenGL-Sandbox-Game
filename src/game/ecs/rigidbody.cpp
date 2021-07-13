@@ -117,24 +117,54 @@ void Rigidbody::CheckBottomCollisions()
 {
 	if (velocity.y > 0) return;
 
-	// onGround = false;	
 	State &= ~RigidbodyState_OnGround;
 
+	int pos_level = entity->position.y >= 0.0f;
+
+	static float value = -4.0f;
+
+	if (!pos_level)
+	{
+		entity->position.y += value;
+	}
+
 	float factor = static_cast<int>(truncf(abs(entity->position.y) / 8.0f) * 1) % 2;
+	// float factor = 0;
 	Console::PushInfo(std::to_string(factor));
 
-	Vec2 pos = trunc((entity->position + Vec2(16.0f, factor ? 8.0f : 0.0f)) / 16.0f) * 16.0f;
-	pos -= Vec2(Map::VisibleChunks.x.start, Map::VisibleChunks.y.start) * 2.0f * 16.0f;
+	Vec2 pos_0 = trunc((entity->position + Vec2(16.0f, factor ? 8.0f : 0.0f)) / 16.0f) * 16.0f;
+	Vec2 pos = pos_0 - Vec2(Map::VisibleChunks.x.start, Map::VisibleChunks.y.start) * 2.0f * 16.0f;
 	pos /= 16.0f;
+
+	if (pos.x < 0 || pos.x + 1 >= Map::Blocks.size() || pos.y < 0 || pos.y >= Map::Blocks[0].size())
+	{
+		return;
+	}
 
 	BlockType block_under_player_0 = Map::Blocks[pos.x][pos.y].type;
 	BlockType block_under_player_1 = Map::Blocks[pos.x + 1][pos.y].type;
 
-	if (block_under_player_0 != BlockType::Empty || block_under_player_1 != BlockType::Empty)
+
+	float new_pos = truncf(entity->position.y / 16.0f) * 16.0f;
+	float new_pos_y = Vec2(trunc((entity->position + Vec2(16.0f, factor ? 8.0f : 0.0f)) / 16.0f) * 16.0f).y;
+	
+	if (!pos_level)
 	{
-		// onGround = true;
+		entity->position.y -= value;
+	}
+
+	if (block_under_player_0 != BlockType::Empty || block_under_player_1 != BlockType::Empty && (abs(new_pos - new_pos_y - 4.0f) < 2.0f))
+	{
 		State |= RigidbodyState_OnGround;
-		float new_pos_y = truncf(entity->position.y / 16.0f) * 16.0f;
+
+		if (pos_level)
+		{
+			entity->SetPositionY(new_pos_y + 4.0f);
+		}
+		else
+		{
+			entity->SetPositionY(new_pos_y + 4.0f);
+		}
 	}
 
 	Console::PushInfo("x: " + std::to_string(pos.x) + ", y:" + std::to_string(pos.y));
