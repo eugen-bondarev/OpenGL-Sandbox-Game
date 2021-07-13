@@ -1,10 +1,9 @@
 #include "map.h"
 
 #include "renderer/world/map/tiles.h"
-
 #include "renderer/atlas/texture_atlas.h"
 
-#include "renderer/world/map/tiles.h"
+#include "FastNoise/FastNoiseLite.h"
 
 namespace MapSettings {
 
@@ -18,7 +17,7 @@ float BIAS_1 = 0.0f;
 
 namespace Map
 {
-	FastNoiseLite noise1;
+	FastNoiseLite Noise;
 
 	Blocks_t Blocks;
 	Walls_t Walls;
@@ -30,13 +29,11 @@ namespace Map
 	MapFlags_ Flags = MapFlags_None;
 
 	Vec2 ChunkSize = { 2, 2 };
-
-	std::vector<Vec2> SolidBlocks;
 }
 
 float Map::WhatNoise(float x, float y)
 {
-	return noise1.GetNoise(x * MapSettings::SIZE_0, y * MapSettings::SIZE_0) * 0.5f + 0.5f;
+	return Noise.GetNoise(x * MapSettings::SIZE_0, y * MapSettings::SIZE_0) * 0.5f + 0.5f;
 }
 
 BlockType Map::WhatBlockType(float noiseValue, TilePos tilePos, float x, float y)
@@ -124,7 +121,7 @@ void Map::PopulateVisibleMap()
 				Vec2 block_pos;
 				block_pos.x = (chunk_indices.x * ChunkSize.x + block_indices.x) * BLOCK_SIZE;				
 
-				int height_in_this_area = height_variation * noise1.GetNoise(block_pos.x * MapSettings::SIZE_1, 0.0f);
+				int height_in_this_area = height_variation * Noise.GetNoise(block_pos.x * MapSettings::SIZE_1, 0.0f);
 
 				for (block_indices.y = 0; block_indices.y < ChunkSize.y; ++block_indices.y)
 				{
@@ -149,7 +146,7 @@ void Map::PopulateVisibleMap()
 						}
 					}
 
-					if (block_pos.y > horizon * ChunkSize.y + height_in_this_area * noise1.GetNoise(block_pos.x * MapSettings::SIZE_2, 0.0f))
+					if (block_pos.y > horizon * ChunkSize.y + height_in_this_area * Noise.GetNoise(block_pos.x * MapSettings::SIZE_2, 0.0f))
 					{
 						Blocks[indices.x][indices.y].type = BlockType::Empty;
 						Blocks[indices.x][indices.y].worldPosition = block_pos;
@@ -184,9 +181,9 @@ void Map::Init(int seed)
 	auto& block = chunk[{ 0, 0 }];
 	block = BlockType::Wood;
 	
-	// noise1.SetNoiseType(FastNoiseLite::NoiseType_Value); // REALLY LIKE IT!
-	noise1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	noise1.SetSeed(seed);
+	// Noise.SetNoiseType(FastNoiseLite::NoiseType_Value);
+	Noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	Noise.SetSeed(seed);
 }
 
 void Map::CheckVisibleChunks()
@@ -244,4 +241,19 @@ bool Map::BlockIsEmpty(int x, int y)
 bool Map::WallIsEmpty(int x, int y)
 {
 	return WallIs(x, y, WallType::Empty);
+}
+
+bool Map::InBounds(int x, int y)
+{
+	return x >= 0 && y >= 0 && x < Blocks.size() && y < Blocks[0].size();
+}
+
+Bounds_t& Map::GetVisibleChunks()
+{
+	return VisibleChunks;
+}
+
+Bounds_t& Map::GetLastVisibleChunks()
+{
+	return LastVisibleChunks;
 }

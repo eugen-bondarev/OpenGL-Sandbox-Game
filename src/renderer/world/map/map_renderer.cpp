@@ -25,8 +25,6 @@ void MapRenderer::UpdateScene()
 	sortedWalls.clear();
 	sortedLights.clear();
 
-	Map::SolidBlocks.clear();
-
 	static Vec2 offset = {-4.0f, -4.0f};
 
 	for (int x = 0; x < Map::Blocks.size(); x++)
@@ -39,11 +37,6 @@ void MapRenderer::UpdateScene()
 				const Vec2 blockTextureTile = blocksTileMap->Get(Map::Blocks[x][y].type) + Function(Map::Blocks, x, y);
 				sortedBlocks.emplace_back(Map::Blocks[x][y].worldPosition, blockTextureTile);
 
-				// if (Map::Blocks[x][y + 1].type == BlockType::Empty)
-				{
-					Map::SolidBlocks.push_back(Map::Blocks[x][y].worldPosition);
-				}
-				
 				if (x > 1 && y > 0)
 				{
 					if (!Map::WallIsEmpty(x, y))
