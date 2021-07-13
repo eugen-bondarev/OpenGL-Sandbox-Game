@@ -3,16 +3,13 @@
 #include "blocks.h"
 #include "types.h"
 
-#include "FastNoise/FastNoiseLite.h"
-
-namespace MapSettings {
-
-extern float SIZE_0;
-extern float SIZE_1;
-extern float SIZE_2;
-extern float BIAS_0;
-extern float BIAS_1;
-
+namespace MapSettings 
+{
+	extern float SIZE_0;
+	extern float SIZE_1;
+	extern float SIZE_2;
+	extern float BIAS_0;
+	extern float BIAS_1;
 }
 
 // The specialized hash function for `unordered_map` keys
@@ -45,6 +42,7 @@ struct BlockRepresentation
 namespace Map
 {
 	static constexpr float BLOCK_SIZE = 16.0f;
+	static constexpr float CHUNK_SIZE = 2;
 
 	using PlacedBlocksInChunk_t = std::unordered_map<Vec2, BlockType, hash_fn>;  // Indexed by (relative) block's index.
 	using PlacedBlocks_t = std::unordered_map<Vec2, PlacedBlocksInChunk_t, hash_fn>;  // Indexed by absolute chunk's index.
@@ -52,8 +50,6 @@ namespace Map
 	extern Blocks_t Blocks;
 	extern Walls_t Walls;
 	extern PlacedBlocks_t PlacedBlocks;
-
-	extern Vec2 ChunkSize;
 
 	extern Bounds_t VisibleChunks;
 	extern Bounds_t LastVisibleChunks;
@@ -66,11 +62,11 @@ namespace Map
 
 	void CheckVisibleChunks();
 	void CalculateVisibleChunks(Vec2 view_pos);
-	Vec2 GetChunkSize();
 
+	// Wanna do something with this:
 	float WhatNoise(float x, float y);
-	BlockType WhatBlockType(float noiseValue, TilePos tilePos, float x, float y);
-	BlockRepresentation WhatBlock(float noiseValue, TilePos tilePos, float x, float y);
+	BlockType WhatBlockType(float noise_value, TilePos tile_pos, float x, float y);
+	BlockRepresentation WhatBlock(float noise_value, TilePos tile_pos, float x, float y);
 
 	bool BlockIs(int x, int y, BlockType type);
 	bool WallIs(int x, int y, WallType type);
@@ -85,5 +81,3 @@ namespace Map
 	Bounds_t& GetVisibleChunks();
 	Bounds_t& GetLastVisibleChunks();
 }
-
-using TileToUpdate = Vec2;

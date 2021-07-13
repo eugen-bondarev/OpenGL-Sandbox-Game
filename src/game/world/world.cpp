@@ -10,16 +10,16 @@ World::World(int seed)
 
 	Map::CalculateVisibleChunks(camera->GetPosition());
 
-	Map::Blocks.resize((Map::VisibleChunks.x.end - Map::VisibleChunks.x.start) * Map::GetChunkSize().x);
+	Map::Blocks.resize((Map::VisibleChunks.x.end - Map::VisibleChunks.x.start) * Map::CHUNK_SIZE);
 	for (int i = 0; i < Map::Blocks.size(); i++)
 	{
-		Map::Blocks[i].resize((Map::VisibleChunks.y.end - Map::VisibleChunks.y.start) * Map::GetChunkSize().y);
+		Map::Blocks[i].resize((Map::VisibleChunks.y.end - Map::VisibleChunks.y.start) * Map::CHUNK_SIZE);
 	}
 
-	Map::Walls.resize((Map::VisibleChunks.x.end - Map::VisibleChunks.x.start) * Map::GetChunkSize().x);
+	Map::Walls.resize((Map::VisibleChunks.x.end - Map::VisibleChunks.x.start) * Map::CHUNK_SIZE);
 	for (int i = 0; i < Map::Walls.size(); i++)
 	{
-		Map::Walls[i].resize((Map::VisibleChunks.y.end - Map::VisibleChunks.y.start) * Map::GetChunkSize().y);
+		Map::Walls[i].resize((Map::VisibleChunks.y.end - Map::VisibleChunks.y.start) * Map::CHUNK_SIZE);
 	}
 
 	Map::PopulateVisibleMap();

@@ -131,7 +131,7 @@ void Rigidbody::CheckBottomCollisions()
 	float factor = static_cast<int>(truncf(abs(entity->position.y) / 8.0f) * 1) % 2;
 
 	Vec2 desired_pos = trunc((entity->position + Vec2(16.0f, factor ? 8.0f : 0.0f)) / Map::BLOCK_SIZE) * Map::BLOCK_SIZE;
-	Vec2 block_index = (desired_pos - Vec2(Map::GetVisibleChunks().x.start, Map::GetVisibleChunks().y.start) * Map::ChunkSize * Map::BLOCK_SIZE) / Map::BLOCK_SIZE;
+	Vec2 block_index = (desired_pos - Vec2(Map::GetVisibleChunks().x.start, Map::GetVisibleChunks().y.start) * Map::CHUNK_SIZE * Map::BLOCK_SIZE) / Map::BLOCK_SIZE;
 
 	if (!pos_y_is_positive)
 		entity->position.y += shift;
