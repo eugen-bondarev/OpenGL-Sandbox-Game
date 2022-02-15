@@ -49,7 +49,7 @@ void Engine::BeginFrame()
 
 void Engine::Run()
 {
-#ifdef NF_RENDER_GAME
+// #ifdef NF_RENDER_GAME
 	if (resetGame)
 	{
 		game.reset();
@@ -74,13 +74,13 @@ void Engine::Run()
 		ImGui::End();
 	#endif
 
-#else
-	mw::GraphicsContext::Clear();
+// #else
+// 	mw::GraphicsContext::Clear();
 
-	ImGui::Image((void*)(intptr_t)noiseTexture->GetHandle(), ImVec2(512, 512));
+// 	ImGui::Image((void*)(intptr_t)noiseTexture->GetHandle(), ImVec2(512, 512));
 
-	// ImGui::ShowDemoWindow();
-#endif
+// 	// ImGui::ShowDemoWindow();
+// #endif
 }
 
 void Engine::EndFrame()
